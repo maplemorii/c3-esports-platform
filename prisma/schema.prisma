@@ -1,0 +1,863 @@
+// =============================================================================
+// C3 ESPORTS LEAGUE — PRISMA SCHEMA
+// =============================================================================
+// Generator & Datasource
+// =============================================================================
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// =============================================================================
+// ENUMS
+// =============================================================================
+
+enum Role {
+  USER          // Default — registered account, no team yet
+  TEAM_MANAGER  // Owns or captains at least one team
+  STAFF         // League staff — can manage seasons, matches, divisions
+  ADMIN         // Full platform access including user management
+}
+
+enum SeasonStatus {
+  DRAFT         // Being configured; not yet visible to public
+  REGISTRATION  // Open for team sign-ups
+  ACTIVE        // Regular season matches being played
+  PLAYOFFS      // Bracket/playoff phase
+  COMPLETED     // Season archived; results locked
+  CANCELLED
+}
+
+enum DivisionTier {
+  PREMIER       // Top tier — highest level competition
+  CHALLENGERS   // Open tier — upper bracket (Open Challengers)
+  CONTENDERS    // Open tier — lower bracket (Open Contenders)
+}
+
+enum RegistrationStatus {
+  PENDING       // Submitted, awaiting staff review
+  APPROVED      // Accepted into a division
+  REJECTED      // Denied (reason stored in notes)
+  WAITLISTED    // Over capacity; queued
+  WITHDRAWN     // Team voluntarily withdrew
+}
+
+enum MatchStatus {
+  SCHEDULED       // Assigned to a week; check-in not yet open
+  CHECKING_IN     // Check-in window open
+  IN_PROGRESS     // Both teams checked in; match being played
+  MATCH_FINISHED  // Games done; awaiting score entry / replay parse
+  VERIFYING       // One side submitted scores; opponent must confirm
+  COMPLETED       // Result locked; standings updated
+  DISPUTED        // Score conflict; awaiting staff resolution
+  FORFEITED       // One team failed to appear
+  NO_SHOW         // Neither team appeared
+  CANCELLED
+}
+
+enum MatchFormat {
+  BO1
+  BO3
+  BO5
+  BO7
+}
+
+enum MatchType {
+  REGULAR_SEASON
+  PLAYOFF
+  BRACKET
+  FRIENDLY       // Unranked; no standings impact
+}
+
+enum GameResultSource {
+  REPLAY_AUTO    // Populated from parsed .replay file
+  MANUAL         // Entered by a team manager
+  STAFF_OVERRIDE // Entered or corrected by staff
+}
+
+enum ReplayParseStatus {
+  PENDING        // Uploaded to storage; parse not yet started
+  PROCESSING     // Submitted to ballchasing.com; awaiting result
+  SUCCESS        // Parsed; scores and stats extracted
+  FAILED         // Parse error; manual entry required for this game
+  MISMATCH       // Parsed scores conflict with manually entered scores
+}
+
+enum BracketType {
+  SINGLE_ELIMINATION
+  DOUBLE_ELIMINATION
+  SWISS
+  GSL
+  ROUND_ROBIN
+}
+
+enum BracketSide {
+  WINNERS
+  LOSERS
+  GRAND_FINALS
+}
+
+enum CheckInStatus {
+  PENDING
+  CHECKED_IN
+  MISSED        // Window closed; team did not check in
+}
+
+enum MembershipRole {
+  PLAYER
+  SUBSTITUTE
+  COACH
+}
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+enum AnnouncementVisibility {
+  PUBLIC        // Anyone can see
+  REGISTERED    // Must be logged in
+  TEAMS_ONLY    // Must manage a team in the relevant season
+  STAFF_ONLY
+}
+
+// =============================================================================
+// USERS & AUTH (Auth.js / NextAuth compatible)
+// =============================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?   // Avatar URL (OAuth provider or uploaded)
+  password      String?   // Hashed (bcrypt). Null for OAuth-only accounts.
+  role          Role      @default(USER)
+
+  // Soft delete
+  deletedAt     DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Auth.js relations
+  accounts      Account[]
+  sessions      Session[]
+
+  // Platform relations
+  player            Player?
+  ownedTeams        Team[]              @relation("TeamOwner")
+  staffActions      AuditLog[]          @relation("AuditActor")
+  disputesFiled     Dispute[]           @relation("DisputeFiler")
+  disputesResolved  Dispute[]           @relation("DisputeResolver")
+  announcements     Announcement[]      @relation("AnnouncementAuthor")
+  matchReports      MatchReport[]       @relation("ReportSubmitter")
+
+  @@index([email])
+  @@index([role])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// =============================================================================
+// PLAYERS
+// =============================================================================
+
+model Player {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  displayName     String
+  avatarUrl       String?
+  epicUsername    String?   @unique  // Rocket League / Epic Games username
+  steamId         String?   @unique
+  discordUsername String?
+  country         String?   // ISO 3166-1 alpha-2 e.g. "US"
+  bio             String?   @db.Text
+
+  // Soft delete
+  deletedAt       DateTime?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  memberships     TeamMembership[]
+  replayStats     ReplayPlayerStat[]
+
+  @@index([epicUsername])
+  @@index([deletedAt])
+  @@map("players")
+}
+
+// =============================================================================
+// TEAMS
+// =============================================================================
+
+model Team {
+  id            String    @id @default(cuid())
+  slug          String    @unique   // URL-safe identifier e.g. "team-liquid"
+  name          String    @unique
+  logoUrl       String?
+  logoKey       String?             // S3/R2 object key
+  primaryColor  String?             // Hex e.g. "#C0273A"
+  secondaryColor String?
+  region        String?             // e.g. "NA", "EU", "OCE"
+  ownerId       String
+  website       String?
+  twitterHandle String?
+  discordInvite String?
+
+  // Soft delete — retains season history
+  deletedAt     DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  owner           User                @relation("TeamOwner", fields: [ownerId], references: [id])
+  memberships     TeamMembership[]
+  registrations   SeasonRegistration[]
+  homeMatches     Match[]             @relation("HomeTeam")
+  awayMatches     Match[]             @relation("AwayTeam")
+  standingEntries StandingEntry[]
+  bracketSlots    BracketSlot[]
+  checkIns        MatchCheckIn[]
+  winnerOf        Match[]             @relation("MatchWinner")
+
+  @@index([slug])
+  @@index([ownerId])
+  @@index([deletedAt])
+  @@map("teams")
+}
+
+// =============================================================================
+// TEAM MEMBERSHIP
+// Constraint: a player cannot be on multiple teams in the same division.
+// Enforced via unique index on (playerId, divisionId) for active memberships.
+// =============================================================================
+
+model TeamMembership {
+  id          String         @id @default(cuid())
+  teamId      String
+  playerId    String
+  role        MembershipRole @default(PLAYER)
+  isCaptain   Boolean        @default(false)
+  jerseyNumber Int?
+
+  // Temporal: null leftAt = currently active member
+  joinedAt    DateTime       @default(now())
+  leftAt      DateTime?
+
+  // Denormalized for the division-uniqueness constraint below.
+  // Set when the team is approved into a division; cleared when membership ends.
+  activeDivisionId String?
+
+  team        Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  player      Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  // A player can only be active on one team per division at a time.
+  // leftAt = null means currently active.
+  @@unique([playerId, activeDivisionId], name: "one_active_slot_per_division")
+
+  // Allow historical memberships (player left and re-joined same team).
+  @@index([teamId])
+  @@index([playerId])
+  @@index([activeDivisionId])
+  @@map("team_memberships")
+}
+
+// =============================================================================
+// SEASONS
+// =============================================================================
+
+model Season {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        String
+  description String?      @db.Text
+  status      SeasonStatus @default(DRAFT)
+  logoUrl     String?
+
+  // Dates
+  startDate         DateTime?
+  endDate           DateTime?
+  registrationStart DateTime?
+  registrationEnd   DateTime?
+
+  // League play configuration
+  leagueWeeks               Int   @default(8)   // Number of regular-season weeks
+  checkInWindowMinutes      Int   @default(15)  // Minutes before match time check-in opens
+  checkInGraceMinutes       Int   @default(5)   // Grace period after match time before forfeit
+  resultWindowHours         Int   @default(24)  // Hours after match to submit scores
+
+  // Points awarded per result (stored as JSON for flexibility)
+  // Default: { "win": 3, "loss": 0, "forfeitWin": 3, "forfeitLoss": 0 }
+  pointsConfig  Json   @default("{\"win\":3,\"loss\":0,\"forfeitWin\":3,\"forfeitLoss\":0}")
+
+  maxTeamsTotal Int?          // Overall cap across all divisions
+  isVisible     Boolean @default(false)  // Controls public visibility before REGISTRATION
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  divisions       Division[]
+  registrations   SeasonRegistration[]
+  leagueWeeks_rel LeagueWeek[]          @relation("SeasonWeeks")
+  announcements   Announcement[]
+
+  @@index([status])
+  @@index([slug])
+  @@map("seasons")
+}
+
+// =============================================================================
+// DIVISIONS
+// =============================================================================
+
+model Division {
+  id          String       @id @default(cuid())
+  seasonId    String
+  name        String                       // e.g. "Premier", "Open Challengers", "Open Contenders"
+  tier        DivisionTier @default(CONTENDERS)
+  description String?
+  maxTeams    Int?
+  bracketType BracketType  @default(DOUBLE_ELIMINATION)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  season          Season               @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  registrations   SeasonRegistration[]
+  matches         Match[]
+  standingEntries StandingEntry[]
+  bracket         Bracket?
+
+  // Division names must be unique within a season
+  @@unique([seasonId, name])
+  @@index([seasonId])
+  @@map("divisions")
+}
+
+// =============================================================================
+// LEAGUE WEEKS (regular season scheduling buckets)
+// =============================================================================
+
+model LeagueWeek {
+  id          String   @id @default(cuid())
+  seasonId    String
+  weekNumber  Int                     // 1-based
+  label       String?                 // Optional override e.g. "Opening Week"
+  startDate   DateTime
+  endDate     DateTime
+  isComplete  Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+
+  season      Season  @relation("SeasonWeeks", fields: [seasonId], references: [id], onDelete: Cascade)
+  matches     Match[]
+
+  @@unique([seasonId, weekNumber])
+  @@index([seasonId])
+  @@map("league_weeks")
+}
+
+// =============================================================================
+// SEASON REGISTRATIONS
+// Constraint: a team cannot register twice for the same season.
+// =============================================================================
+
+model SeasonRegistration {
+  id          String             @id @default(cuid())
+  teamId      String
+  seasonId    String
+  divisionId  String?            // Assigned by staff on approval
+  status      RegistrationStatus @default(PENDING)
+  notes       String?            @db.Text  // Staff notes on decision
+  registeredAt DateTime          @default(now())
+  updatedAt   DateTime           @updatedAt
+  reviewedAt  DateTime?
+  reviewedBy  String?            // userId of staff who actioned
+
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  season      Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  division    Division? @relation(fields: [divisionId], references: [id])
+
+  // A team may only register once per season
+  @@unique([teamId, seasonId])
+  @@index([seasonId, status])
+  @@index([divisionId])
+  @@map("season_registrations")
+}
+
+// =============================================================================
+// MATCHES
+// =============================================================================
+
+model Match {
+  id          String      @id @default(cuid())
+  divisionId  String
+  leagueWeekId String?                // null for playoff/bracket matches
+  homeTeamId  String
+  awayTeamId  String
+  format      MatchFormat @default(BO3)
+  matchType   MatchType   @default(REGULAR_SEASON)
+  status      MatchStatus @default(SCHEDULED)
+
+  // Scheduling & derived timing windows
+  scheduledAt       DateTime?
+  checkInOpenAt     DateTime?   // Derived: scheduledAt - checkInWindowMinutes
+  checkInDeadlineAt DateTime?   // Derived: scheduledAt + checkInGraceMinutes
+  resultDeadlineAt  DateTime?   // Derived: scheduledAt + resultWindowHours
+  completedAt       DateTime?
+
+  // Series scores (number of games won, e.g. 2-1 in BO3)
+  homeScore   Int?
+  awayScore   Int?
+  winnerId    String?     // teamId — set on COMPLETED or FORFEITED
+
+  // Replay coverage counters
+  // gamesExpected is set when the match starts (max possible games: BO3=3, BO5=5, BO7=7)
+  // replaysVerified increments each time a replay parses successfully
+  gamesExpected    Int?
+  replaysVerified  Int  @default(0)
+
+  // Result provenance tracking
+  submittedByTeamId  String?
+  submittedAt        DateTime?
+  confirmedByTeamId  String?
+  confirmedAt        DateTime?
+  enteredByStaffId   String?    // userId — set when staff enters/overrides result
+
+  // Bracket context
+  isBracketMatch  Boolean @default(false)
+  bracketSlotId   String? @unique
+
+  notes           String? @db.Text   // Admin/staff notes
+
+  // Soft delete
+  deletedAt       DateTime?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  division        Division       @relation(fields: [divisionId], references: [id])
+  leagueWeek      LeagueWeek?    @relation(fields: [leagueWeekId], references: [id])
+  homeTeam        Team           @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam        Team           @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  winner          Team?          @relation("MatchWinner", fields: [winnerId], references: [id])
+  checkIns        MatchCheckIn[]
+  games           MatchGame[]
+  replays         ReplayUpload[]
+  reports         MatchReport[]
+  dispute         Dispute?
+  bracketSlot     BracketSlot?   @relation(fields: [bracketSlotId], references: [id])
+
+  @@index([divisionId, status])
+  @@index([leagueWeekId])
+  @@index([homeTeamId])
+  @@index([awayTeamId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([deletedAt])
+  @@map("matches")
+}
+
+// =============================================================================
+// MATCH CHECK-IN
+// One record per team per match. Created when match enters CHECKING_IN.
+// =============================================================================
+
+model MatchCheckIn {
+  id          String        @id @default(cuid())
+  matchId     String
+  teamId      String
+  status      CheckInStatus @default(PENDING)
+  checkedInAt DateTime?
+  checkedInBy String?       // userId of team member who clicked "Check In"
+
+  match       Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  team        Team  @relation(fields: [teamId], references: [id])
+
+  @@unique([matchId, teamId])
+  @@index([matchId])
+  @@map("match_check_ins")
+}
+
+// =============================================================================
+// MATCH GAMES
+// One row per individual game in a series (Game 1, Game 2, …).
+// Created automatically from replay parse, or manually by team/staff.
+// =============================================================================
+
+model MatchGame {
+  id          String           @id @default(cuid())
+  matchId     String
+  gameNumber  Int              // 1-based position in the series
+  homeGoals   Int
+  awayGoals   Int
+  overtime    Boolean          @default(false)
+  duration    Int?             // seconds — populated from replay when available
+  source      GameResultSource @default(MANUAL)
+  replayUploadId String? @unique // links to the replay that produced this result
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  match       Match         @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  replayUpload ReplayUpload? @relation(fields: [replayUploadId], references: [id])
+
+  @@unique([matchId, gameNumber])
+  @@index([matchId])
+  @@map("match_games")
+}
+
+// =============================================================================
+// MATCH REPORTS
+// Used when teams submit scores manually (the "fallback" path when
+// no valid replay is available). Staff can also submit directly.
+// =============================================================================
+
+model MatchReport {
+  id            String  @id @default(cuid())
+  matchId       String
+  submittedById String  // userId
+  submittingTeamId String // teamId
+
+  // Snapshot of what the submitter claimed
+  reportedHomeScore Int
+  reportedAwayScore Int
+  // Per-game breakdown as reported (JSON array of { gameNumber, homeGoals, awayGoals })
+  gameBreakdown Json
+
+  notes         String? @db.Text
+  isAccepted    Boolean @default(false)  // true once opponent confirms or staff validates
+  rejectedAt    DateTime?
+  rejectedReason String?
+
+  createdAt     DateTime @default(now())
+
+  match         Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  submittedBy   User  @relation("ReportSubmitter", fields: [submittedById], references: [id])
+
+  @@index([matchId])
+  @@index([submittingTeamId])
+  @@map("match_reports")
+}
+
+// =============================================================================
+// REPLAY UPLOADS
+// One canonical replay per game slot per match.
+// =============================================================================
+
+model ReplayUpload {
+  id              String            @id @default(cuid())
+  matchId         String
+  gameNumber      Int               // Which game in the series (1-based)
+  fileKey         String            // S3/R2 object key
+  uploadedById    String            // userId of uploader
+  uploadedByTeamId String           // teamId — used for dual-upload fast-path detection
+  homeTeamColor   String?           // "blue" | "orange" — maps RL team colors to home/away
+
+  // Parse state
+  parseStatus      ReplayParseStatus @default(PENDING)
+  parseStartedAt   DateTime?
+  parseCompletedAt DateTime?
+  parseError       String?
+
+  // ballchasing.com integration
+  ballchasingId    String?  @unique
+  ballchasingUrl   String?
+
+  // Parsed output
+  parsedData       Json?             // Full raw JSON from ballchasing (source of truth)
+  parsedHomeGoals  Int?
+  parsedAwayGoals  Int?
+  parsedDuration   Int?              // seconds
+  parsedOvertime   Boolean?
+  scoresAccepted   Boolean @default(false)  // true when GameResult was created from this
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  match            Match              @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  gameResult       MatchGame?         // reverse side of MatchGame.replayUploadId
+  playerStats      ReplayPlayerStat[]
+
+  // One canonical replay per game slot
+  @@unique([matchId, gameNumber])
+  @@index([parseStatus])             // cron queries PENDING / PROCESSING
+  @@index([matchId])
+  @@map("replay_uploads")
+}
+
+// =============================================================================
+// REPLAY PLAYER STATS
+// Per-player scoreboard data extracted from a parsed replay.
+// =============================================================================
+
+model ReplayPlayerStat {
+  id             String @id @default(cuid())
+  replayUploadId String
+  epicUsername   String
+  playerId       String?   // null until epicUsername is linked to a Player record
+  teamSide       String    // "home" | "away"
+
+  // Standard RL scoreboard
+  score          Int   @default(0)
+  goals          Int   @default(0)
+  assists        Int   @default(0)
+  saves          Int   @default(0)
+  shots          Int   @default(0)
+  demos          Int   @default(0)
+
+  // ballchasing.com advanced stats (nullable — not all parsers provide these)
+  boostUsed        Float?
+  avgBoostAmount   Float?
+  timeSupersonic   Float?   // seconds
+  distanceTraveled Float?
+  timeInAir        Float?
+  boostCollected   Float?
+
+  replayUpload   ReplayUpload @relation(fields: [replayUploadId], references: [id], onDelete: Cascade)
+  player         Player?      @relation(fields: [playerId], references: [id])
+
+  @@index([replayUploadId])
+  @@index([epicUsername])
+  @@index([playerId])
+  @@map("replay_player_stats")
+}
+
+// =============================================================================
+// STANDINGS
+// One row per team per division. Updated transactionally on every
+// COMPLETED or FORFEITED match via the standings service.
+// =============================================================================
+
+model StandingEntry {
+  id          String   @id @default(cuid())
+  divisionId  String
+  teamId      String
+
+  // Match-level record
+  wins              Int @default(0)
+  losses            Int @default(0)
+  matchesPlayed     Int @default(0)
+  forfeitWins       Int @default(0)
+  forfeitLosses     Int @default(0)
+
+  // Game-level aggregates (across all series games)
+  gamesWon          Int @default(0)
+  gamesLost         Int @default(0)
+  gameDifferential  Int @default(0)   // gamesWon - gamesLost (materialized for sort performance)
+  goalsFor          Int @default(0)   // total goals scored across all games
+  goalsAgainst      Int @default(0)   // total goals conceded across all games
+  goalDifferential  Int @default(0)   // goalsFor - goalsAgainst
+
+  // Points — computed from season.pointsConfig
+  points            Int @default(0)
+
+  // Streak: positive = win streak, negative = loss streak
+  streak            Int @default(0)
+
+  // Win percentage stored as float for sort efficiency
+  winPct            Float @default(0)
+
+  lastUpdated DateTime @default(now())
+
+  division    Division @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  // One standing entry per team per division
+  @@unique([divisionId, teamId])
+  @@index([divisionId, points, gameDifferential])  // hot sort path
+  @@index([teamId])
+  @@map("standing_entries")
+}
+
+// =============================================================================
+// BRACKETS
+// One bracket per division (created when playoffs begin).
+// =============================================================================
+
+model Bracket {
+  id          String      @id @default(cuid())
+  divisionId  String      @unique
+  type        BracketType
+  totalRounds Int?
+  isGenerated Boolean     @default(false)
+  generatedAt DateTime?
+  // Swiss-specific: which round is currently being played
+  currentSwissRound Int?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  division    Division      @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  slots       BracketSlot[]
+
+  @@map("brackets")
+}
+
+// =============================================================================
+// BRACKET SLOTS
+// Each node in the bracket tree. Teams advance into slots as they win.
+// =============================================================================
+
+model BracketSlot {
+  id          String       @id @default(cuid())
+  bracketId   String
+  round       Int
+  position    Int          // 0-indexed position within the round
+  side        BracketSide? // WINNERS | LOSERS | GRAND_FINALS (for double elim)
+  teamId      String?      // null until a team advances here
+  seedNumber  Int?         // Initial seeding position (set on generation)
+  isBye       Boolean      @default(false)  // Placeholder slot for byes
+
+  bracket     Bracket  @relation(fields: [bracketId], references: [id], onDelete: Cascade)
+  team        Team?    @relation(fields: [teamId], references: [id])
+  match       Match?   // The match played in this slot (via Match.bracketSlotId)
+
+  @@unique([bracketId, round, position, side])
+  @@index([bracketId, round])
+  @@index([teamId])
+  @@map("bracket_slots")
+}
+
+// =============================================================================
+// DISPUTES
+// =============================================================================
+
+model Dispute {
+  id              String        @id @default(cuid())
+  matchId         String        @unique
+  filedByUserId   String
+  filedByTeamId   String
+  reason          String        @db.Text
+  evidenceUrl     String?       // Link to screenshot, video, etc.
+  status          DisputeStatus @default(OPEN)
+  resolution      String?       @db.Text  // Staff notes on outcome
+  resolvedByUserId String?
+  resolvedAt      DateTime?
+
+  // If staff corrects the result as part of resolution, store both for audit
+  originalHomeScore Int?
+  originalAwayScore Int?
+  resolvedHomeScore Int?
+  resolvedAwayScore Int?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  match           Match  @relation(fields: [matchId], references: [id])
+  filedBy         User   @relation("DisputeFiler",   fields: [filedByUserId],   references: [id])
+  resolvedBy      User?  @relation("DisputeResolver", fields: [resolvedByUserId], references: [id])
+
+  @@index([status])
+  @@map("disputes")
+}
+
+// =============================================================================
+// ANNOUNCEMENTS
+// Platform-wide or season-scoped news/updates.
+// =============================================================================
+
+model Announcement {
+  id          String                  @id @default(cuid())
+  authorId    String
+  seasonId    String?                 // null = platform-wide
+  title       String
+  body        String                  @db.Text
+  visibility  AnnouncementVisibility  @default(PUBLIC)
+  isPinned    Boolean                 @default(false)
+  publishedAt DateTime?               // null = draft; set to publish
+  expiresAt   DateTime?               // optional auto-hide date
+
+  // Soft delete
+  deletedAt   DateTime?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author      User    @relation("AnnouncementAuthor", fields: [authorId], references: [id])
+  season      Season? @relation(fields: [seasonId], references: [id])
+
+  @@index([seasonId, publishedAt])
+  @@index([isPinned])
+  @@index([deletedAt])
+  @@map("announcements")
+}
+
+// =============================================================================
+// AUDIT LOG
+// Immutable record of all consequential admin/staff actions.
+// =============================================================================
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorId     String
+  action      String   // e.g. "MATCH_RESULT_OVERRIDE", "TEAM_REGISTRATION_APPROVED"
+  entityType  String   // e.g. "Match", "Team", "Season"
+  entityId    String
+  before      Json?    // Snapshot of entity state before the change
+  after       Json?    // Snapshot of entity state after the change
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  actor       User @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
