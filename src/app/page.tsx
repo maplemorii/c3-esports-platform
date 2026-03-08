@@ -41,7 +41,7 @@ export default async function Home() {
 
         <div className="relative flex flex-col items-center gap-6">
           <div className="inline-flex items-center gap-2 rounded-sm border border-brand/40 bg-brand/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand">
-            Rocket League Competitive Platform
+            Rocket League In The Carolinas
           </div>
 
           <h1 className="font-display max-w-3xl text-6xl font-bold uppercase tracking-wide sm:text-8xl">
@@ -52,8 +52,8 @@ export default async function Home() {
           </h1>
 
           <p className="max-w-lg text-base text-muted-foreground sm:text-lg">
-            Organised Rocket League competition — match scheduling, replay parsing, live standings,
-            and double-elimination brackets managed end to end.
+            Welcome to the Carolina Collegiate Clash — match scheduling, replay parsing, live standings,
+            all managed end to end.
           </p>
 
           <div className="flex flex-wrap justify-center gap-3 pt-2">
