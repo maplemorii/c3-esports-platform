@@ -1,0 +1,19 @@
+.git
+.next
+node_modules
+npm-debug.log*
+
+# Local env files — secrets must be injected at runtime, never baked in
+.env
+.env.*
+!.env.example
+
+# Dev/editor artifacts
+.DS_Store
+*.pem
+.vscode
+.idea
+
+# Prisma migrations are run separately; not needed in the image
+# (keep prisma/ so `prisma generate` can read the schema)
+prisma/migrations
