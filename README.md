@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rocket League League Website
 
-## Getting Started
+This project is a website for a Rocket League league.
 
-First, run the development server:
+The site is designed to serve as the official hub for the league, providing information about teams, matches, standings, and seasons. It is intended for use by this league only and is not designed to function as a platform for other leagues.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+The purpose of the website is to give players, staff, and viewers a central place to follow the league, view schedules and results, and keep track of standings throughout the season.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Frontend
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Next.js (App Router)
+- React
+- Tailwind CSS
+- shadcn/ui
 
-## Learn More
+### Backend
 
-To learn more about Next.js, take a look at the following resources:
+- NextAuth.js (authentication)
+- Prisma (ORM)
+- PostgreSQL (database)
+- Redis (caching / background jobs)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Infrastructure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Docker
+- Docker Compose
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### League Management
+
+- Create seasons  
+- Register teams  
+- Assign team captains  
+- Manage players  
+
+### Match System
+
+- Schedule matches  
+- Submit match results  
+- Track match history  
+
+### Standings
+
+- Automatic standings calculation  
+- Win/loss tracking  
+- Season rankings  
+
+### Admin Tools
+
+- Create and manage seasons  
+- Control match scheduling  
+- Approve match results  
+
+### Replay Processing (Planned)
+
+- Upload Rocket League replay files  
+- Parse match stats  
+- Generate advanced analytics
