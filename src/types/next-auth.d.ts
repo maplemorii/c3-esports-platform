@@ -1,0 +1,25 @@
+import type { Role } from "@prisma/client"
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string
+      role: Role
+      name?: string | null
+      email?: string | null
+      image?: string | null
+    }
+  }
+
+  // Extends the DB User shape returned by the adapter
+  interface User {
+    role: Role
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string
+    role: Role
+  }
+}
