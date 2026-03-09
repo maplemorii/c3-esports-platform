@@ -10,33 +10,73 @@
  */
 
 import { prisma } from "@/lib/prisma"
-import type { LeagueWeek } from "@prisma/client"
+import type { LeagueWeek, MatchStatus } from "@prisma/client"
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const TERMINAL_STATUSES: MatchStatus[] = [
+  "COMPLETED", "FORFEITED", "NO_SHOW", "CANCELLED",
+]
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000
 
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
 /**
- * Auto-generates LeagueWeek rows for a season based on season.leagueWeeks,
- * season.startDate, and a configurable start-of-week day.
+ * Auto-generates LeagueWeek rows for a season based on season.leagueWeeks
+ * and season.startDate.
  *
  * Week N:
- *   startDate = season.startDate + (N-1) * 7 days
- *   endDate   = startDate + 6 days 23:59:59 UTC
+ *   startDate = season.startDate + (N-1) × 7 days
+ *   endDate   = startDate + 6 days, 23:59:59.999 UTC
  *
- * Idempotent — skips weeks that already exist (by weekNumber).
+ * Idempotent — upserts by (seasonId, weekNumber), so existing weeks are not
+ * overwritten. Only newly created weeks are returned.
  *
- * @returns Array of created (or already-existing) LeagueWeek records.
+ * @returns All LeagueWeek records for the season (existing + created).
  */
 export async function generateWeeks(seasonId: string): Promise<LeagueWeek[]> {
-  // TODO:
-  // 1. Fetch season: id, startDate, leagueWeeks
-  // 2. Guard: season.startDate must be set
-  // 3. For i = 1..leagueWeeks:
-  //    a. Compute startDate and endDate
-  //    b. prisma.leagueWeek.upsert({ where: { seasonId_weekNumber: { seasonId, weekNumber: i } }, ... })
-  // 4. Return all weeks for the season
-  throw new Error("Not implemented: generateWeeks")
+  const season = await prisma.season.findUnique({
+    where:  { id: seasonId },
+    select: { id: true, startDate: true, leagueWeeks: true },
+  })
+  if (!season) throw new Error(`Season ${seasonId} not found`)
+  if (!season.startDate) {
+    throw new Error(
+      `Season ${seasonId} has no startDate — set it before generating weeks`
+    )
+  }
+
+  const base = season.startDate.getTime()
+
+  for (let i = 1; i <= season.leagueWeeks; i++) {
+    const weekStart = new Date(base + (i - 1) * 7 * MS_PER_DAY)
+    // End of week: startDate + 6 days, end of day UTC
+    const weekEnd = new Date(
+      weekStart.getTime() + 6 * MS_PER_DAY + 23 * 3600_000 + 59 * 60_000 + 59_999
+    )
+
+    await prisma.leagueWeek.upsert({
+      where:  { seasonId_weekNumber: { seasonId, weekNumber: i } },
+      update: {}, // never overwrite existing weeks (staff may have adjusted dates)
+      create: {
+        seasonId,
+        weekNumber: i,
+        startDate:  weekStart,
+        endDate:    weekEnd,
+      },
+    })
+  }
+
+  // Return all weeks for the season
+  return prisma.leagueWeek.findMany({
+    where:   { seasonId },
+    orderBy: { weekNumber: "asc" },
+  })
 }
 
 /**
@@ -45,14 +85,26 @@ export async function generateWeeks(seasonId: string): Promise<LeagueWeek[]> {
  * If so, marks the week as complete.
  *
  * Called after each match completes.
+ *
+ * @returns true if the week was just marked complete, false otherwise.
  */
 export async function checkWeekCompletion(weekId: string): Promise<boolean> {
-  // TODO:
-  // 1. Fetch all matches for weekId
-  // 2. Return false if any match is in a non-terminal status
-  // 3. If all terminal: prisma.leagueWeek.update({ isComplete: true })
-  // 4. Return true
-  throw new Error("Not implemented: checkWeekCompletion")
+  const matches = await prisma.match.findMany({
+    where:  { leagueWeekId: weekId, deletedAt: null },
+    select: { status: true },
+  })
+
+  // A week with no matches is not complete
+  if (matches.length === 0) return false
+
+  const allTerminal = matches.every((m) => TERMINAL_STATUSES.includes(m.status))
+  if (!allTerminal) return false
+
+  await prisma.leagueWeek.update({
+    where: { id: weekId },
+    data:  { isComplete: true },
+  })
+  return true
 }
 
 /**
@@ -60,28 +112,61 @@ export async function checkWeekCompletion(weekId: string): Promise<boolean> {
  * Writes an AuditLog entry.
  */
 export async function markWeekComplete(weekId: string, staffId: string): Promise<void> {
-  // TODO:
-  // 1. prisma.leagueWeek.update({ isComplete: true })
-  // 2. Write AuditLog: action="LEAGUE_WEEK_MARKED_COMPLETE"
-  throw new Error("Not implemented: markWeekComplete")
+  await prisma.$transaction([
+    prisma.leagueWeek.update({
+      where: { id: weekId },
+      data:  { isComplete: true },
+    }),
+    prisma.auditLog.create({
+      data: {
+        actorId:    staffId,
+        action:     "LEAGUE_WEEK_MARKED_COMPLETE",
+        entityType: "LeagueWeek",
+        entityId:   weekId,
+      },
+    }),
+  ])
 }
 
 /**
- * Updates a week's date range. Recalculates affected match timestamps
- * if any scheduled matches fall within the old or new range.
+ * Updates a week's date range and writes an AuditLog entry.
+ * Does NOT recalculate match timestamps — that is handled by the caller
+ * if needed (match rescheduling is a separate staff operation).
  */
 export async function adjustWeekDates(
-  weekId: string,
+  weekId:    string,
   startDate: Date,
-  endDate: Date,
-  staffId: string
+  endDate:   Date,
+  staffId:   string
 ): Promise<LeagueWeek> {
-  // TODO:
-  // 1. Guard: startDate < endDate
-  // 2. Update LeagueWeek dates
-  // 3. Write AuditLog: action="LEAGUE_WEEK_DATES_ADJUSTED"
-  // 4. Return updated week
-  throw new Error("Not implemented: adjustWeekDates")
+  if (startDate >= endDate) {
+    throw new Error("startDate must be before endDate")
+  }
+
+  const existing = await prisma.leagueWeek.findUnique({
+    where:  { id: weekId },
+    select: { id: true, startDate: true, endDate: true },
+  })
+  if (!existing) throw new Error(`LeagueWeek ${weekId} not found`)
+
+  const [updated] = await prisma.$transaction([
+    prisma.leagueWeek.update({
+      where: { id: weekId },
+      data:  { startDate, endDate },
+    }),
+    prisma.auditLog.create({
+      data: {
+        actorId:    staffId,
+        action:     "LEAGUE_WEEK_DATES_ADJUSTED",
+        entityType: "LeagueWeek",
+        entityId:   weekId,
+        before:     { startDate: existing.startDate, endDate: existing.endDate },
+        after:      { startDate, endDate },
+      },
+    }),
+  ])
+
+  return updated
 }
 
 // ---------------------------------------------------------------------------
@@ -95,7 +180,7 @@ export async function getWeeksForSeason(seasonId: string): Promise<
   Array<LeagueWeek & { _count: { matches: number } }>
 > {
   return prisma.leagueWeek.findMany({
-    where: { seasonId },
+    where:   { seasonId },
     include: { _count: { select: { matches: true } } },
     orderBy: { weekNumber: "asc" },
   })
@@ -109,9 +194,10 @@ export async function getWeekWithMatches(seasonId: string, weekNumber: number) {
     where: { seasonId_weekNumber: { seasonId, weekNumber } },
     include: {
       matches: {
+        where:   { deletedAt: null },
         include: {
-          homeTeam: { select: { id: true, name: true, slug: true, logoUrl: true } },
-          awayTeam: { select: { id: true, name: true, slug: true, logoUrl: true } },
+          homeTeam: { select: { id: true, name: true, slug: true, logoUrl: true, primaryColor: true } },
+          awayTeam: { select: { id: true, name: true, slug: true, logoUrl: true, primaryColor: true } },
         },
         orderBy: { scheduledAt: "asc" },
       },

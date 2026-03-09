@@ -121,51 +121,51 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 ### Season API
 
 - [x] `GET /api/seasons` — list seasons (`src/app/api/seasons/route.ts` — public, filterable by status, includes divisions)
-- [~] `POST /api/seasons` — create season
-- [ ] `GET /api/seasons/:seasonId` — season detail
-- [ ] `PATCH /api/seasons/:seasonId` — update season (staff)
-- [ ] `DELETE /api/seasons/:seasonId` — delete season (admin)
-- [ ] Enforce single ACTIVE season constraint at API level
+- [x] `POST /api/seasons` — create season
+- [x] `GET /api/seasons/:seasonId` — season detail
+- [x] `PATCH /api/seasons/:seasonId` — update season (staff)
+- [x] `DELETE /api/seasons/:seasonId` — delete season (admin)
+- [x] Enforce single ACTIVE season constraint at API level
 
 ### Division API
 
-- [ ] `GET /api/seasons/:seasonId/divisions` — list divisions
-- [ ] `POST /api/seasons/:seasonId/divisions` — create division (staff)
-- [ ] `PATCH /api/seasons/:seasonId/divisions/:id` — update division
-- [ ] `DELETE /api/seasons/:seasonId/divisions/:id` — delete division
-- [ ] Auto-create Premier, Open Challengers, Open Contenders on season create
-- [ ] Division settings (max teams, bracket type per division)
+- [x] `GET /api/seasons/:seasonId/divisions` — list divisions
+- [x] `POST /api/seasons/:seasonId/divisions` — create division (staff)
+- [x] `PATCH /api/seasons/:seasonId/divisions/:id` — update division
+- [x] `DELETE /api/seasons/:seasonId/divisions/:id` — delete division
+- [x] Auto-create Premier, Open Challengers, Open Contenders on season create
+- [x] Division settings (max teams, bracket type per division)
 
 ### Registration API
 
 - [x] `GET /api/seasons/:seasonId/registrations` — list registrations (filtered by teamId)
 - [x] `POST /api/seasons/:seasonId/registrations` — register team for season (manager picks division)
-- [ ] `PATCH /api/seasons/:seasonId/registrations/:id` — approve/reject (staff; division already set by manager)
+- [x] `PATCH /api/seasons/:seasonId/registrations/:id` — approve/reject (staff; division already set by manager)
 - [x] `DELETE /api/seasons/:seasonId/registrations/:id` — withdraw registration (manager)
-- [ ] Registration approval queue UI (staff dashboard — approve/reject only)
+- [x] Registration approval queue UI (staff dashboard — approve/reject only)
 
 ### League Week API
 
-- [ ] `GET /api/seasons/:seasonId/weeks` — list league weeks + match counts
-- [ ] `GET /api/seasons/:seasonId/weeks/:weekNumber` — week detail + matches
-- [ ] `POST /api/seasons/:seasonId/weeks/generate` — auto-generate weeks on season publish
-- [ ] `PATCH /api/seasons/:seasonId/weeks/:weekId` — manually adjust date range
+- [x] `GET /api/seasons/:seasonId/weeks` — list league weeks + match counts
+- [x] `GET /api/seasons/:seasonId/weeks/:weekNumber` — week detail + matches
+- [x] `POST /api/seasons/:seasonId/weeks/generate` — auto-generate weeks on season publish
+- [x] `PATCH /api/seasons/:seasonId/weeks/:weekId` — manually adjust date range
 
 ### Season Pages
 
-- [ ] Public seasons list page (`/(public)/seasons`)
-- [ ] Public season overview (`/(public)/seasons/[seasonSlug]`)
-- [ ] Public standings page per division (`/(public)/seasons/[seasonSlug]/standings`)
-- [ ] Public match schedule page (`/(public)/seasons/[seasonSlug]/matches`)
-- [ ] Dashboard standings page (`/(dashboard)/standings`) — standings for the user's active division with link to full public standings
+- [x] Public seasons list page (`/(public)/seasons`)
+- [x] Public season overview (`/(public)/seasons/[seasonSlug]`)
+- [x] Public standings page per division (`/(public)/seasons/[seasonSlug]/standings`)
+- [x] Public match schedule page (`/(public)/seasons/[seasonSlug]/matches`)
+- [x] Dashboard standings page (`/(dashboard)/standings`) — standings for the user's active division with link to full public standings
 
 ### Season Components
 
-- [ ] `SeasonCard.tsx`, `SeasonCreateForm.tsx`, `DivisionManager.tsx`
+- [x] `SeasonCard.tsx`, `SeasonCreateForm.tsx`, `DivisionManager.tsx`
 
 ### Season Service
 
-- [ ] `src/lib/services/leagueWeek.service.ts` — week generation + completion checks
+- [x] `src/lib/services/leagueWeek.service.ts` — week generation + completion checks
 
 ---
 

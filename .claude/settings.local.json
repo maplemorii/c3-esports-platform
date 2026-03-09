@@ -8,7 +8,8 @@
       "Bash(1:*)",
       "Bash(npm install openid)",
       "Bash(npm install --save-dev @types/openid)",
-      "Bash(ls \"c:/Users/benit/c3-esports-platform/\"*.md)"
+      "Bash(ls \"c:/Users/benit/c3-esports-platform/\"*.md)",
+      "Bash(npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script)"
     ]
   }
 }
