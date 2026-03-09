@@ -5,13 +5,11 @@
  * Works with both AWS S3 and Cloudflare R2 (R2 has an S3-compatible API).
  *
  * Environment variables (see .env.example):
- *   STORAGE_ENDPOINT        — R2: https://<account-id>.r2.cloudflarestorage.com
- *                             S3: omit (uses regional endpoint automatically)
- *   STORAGE_REGION          — R2: "auto" | S3: "us-east-1" etc.
- *   STORAGE_ACCESS_KEY_ID
- *   STORAGE_SECRET_ACCESS_KEY
- *   STORAGE_BUCKET_NAME
- *   STORAGE_PUBLIC_URL      — CDN base URL for public file reads
+ *   R2_ACCOUNT_ID           — Cloudflare account ID (used to build the R2 endpoint)
+ *   R2_ACCESS_KEY_ID        — R2 API token access key
+ *   R2_SECRET_ACCESS_KEY    — R2 API token secret key
+ *   R2_BUCKET               — Bucket name
+ *   R2_PUBLIC_URL           — CDN / R2.dev public base URL for file reads
  *
  * Usage:
  *   // Generate a presigned PUT URL for client-side upload
@@ -40,15 +38,17 @@ import path from "path"
 // ---------------------------------------------------------------------------
 
 function createS3Client(): S3Client {
-  const region   = process.env.STORAGE_REGION    ?? "auto"
-  const endpoint = process.env.STORAGE_ENDPOINT  // undefined = use AWS default
+  const accountId = process.env.R2_ACCOUNT_ID
+  const endpoint  = accountId
+    ? `https://${accountId}.r2.cloudflarestorage.com`
+    : undefined
 
   return new S3Client({
-    region,
+    region: "auto",
     ...(endpoint ? { endpoint, forcePathStyle: false } : {}),
     credentials: {
-      accessKeyId:     process.env.STORAGE_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.STORAGE_SECRET_ACCESS_KEY!,
+      accessKeyId:     process.env.R2_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
     },
   })
 }
@@ -58,7 +58,7 @@ const globalForS3 = global as unknown as { s3: S3Client }
 export const s3 = globalForS3.s3 ?? createS3Client()
 if (process.env.NODE_ENV !== "production") globalForS3.s3 = s3
 
-const BUCKET = process.env.STORAGE_BUCKET_NAME ?? ""
+const BUCKET = process.env.R2_BUCKET ?? ""
 
 // ---------------------------------------------------------------------------
 // Types
@@ -121,7 +121,7 @@ export async function getPresignedUploadUrl(
  * Uses STORAGE_PUBLIC_URL as the base (set to your R2 custom domain or CloudFront URL).
  */
 export function getPublicUrl(fileKey: string): string {
-  const base = process.env.STORAGE_PUBLIC_URL?.replace(/\/$/, "") ?? ""
+  const base = process.env.R2_PUBLIC_URL?.replace(/\/$/, "") ?? ""
   return `${base}/${fileKey}`
 }
 

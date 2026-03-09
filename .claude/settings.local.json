@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc --noEmit)",
+      "Bash(node -e \":*)",
+      "Bash(npx prisma migrate dev --name add_logo_key)",
+      "Bash(npx prisma:*)",
+      "Bash(1:*)",
+      "Bash(npm install openid)",
+      "Bash(npm install --save-dev @types/openid)"
+    ]
+  }
+}

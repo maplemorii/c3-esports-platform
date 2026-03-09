@@ -49,11 +49,13 @@ export const config = {
   matcher: [
     // Protected page routes
     "/dashboard/:path*",
+    "/profile/:path*",
     "/team/:path*",
     "/staff/:path*",
     "/admin/:path*",
     // Protected API routes
     "/api/teams/:path*",
+    "/api/players/:path*",
     "/api/staff/:path*",
     "/api/admin/:path*",
   ],

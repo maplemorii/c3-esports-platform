@@ -80,11 +80,9 @@ export function Sidebar() {
 export function MobileSidebarTrigger() {
   return (
     <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Open navigation</span>
-        </Button>
+      <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden" />}>
+        <Menu className="h-5 w-5" />
+        <span className="sr-only">Open navigation</span>
       </SheetTrigger>
       <SheetContent side="left" className="w-56 p-0 bg-sidebar border-sidebar-border">
         <SheetTitle className="flex h-14 items-center px-4 border-b border-sidebar-border font-display text-sm font-semibold uppercase tracking-wider text-sidebar-foreground/60">
