@@ -40,6 +40,7 @@
  */
 
 import { prisma } from "@/lib/prisma"
+import { applyMatchToStandings, reverseMatchFromStandings } from "@/lib/services/standings.service"
 import type { MatchStatus } from "@prisma/client"
 
 // ---------------------------------------------------------------------------
@@ -96,12 +97,33 @@ export async function transitionTo(
   actorId: string,
   notes?: string
 ): Promise<void> {
-  // TODO:
-  // 1. Fetch current match status
-  // 2. Validate via isValidTransition(); throw MatchTransitionError if invalid
-  // 3. prisma.match.update({ status: to, ...(to === "COMPLETED" ? { completedAt: new Date() } : {}) })
-  // 4. prisma.auditLog.create({ actorId, action: `MATCH_${to}`, entityType: "Match", entityId: matchId, after: { status: to, notes } })
-  throw new Error("Not implemented: transitionTo")
+  const match = await prisma.match.findUniqueOrThrow({
+    where: { id: matchId },
+    select: { status: true },
+  })
+
+  if (!isValidTransition(match.status, to)) {
+    throw new MatchTransitionError(matchId, match.status, to)
+  }
+
+  await prisma.$transaction([
+    prisma.match.update({
+      where: { id: matchId },
+      data: {
+        status: to,
+        ...(to === "COMPLETED" ? { completedAt: new Date() } : {}),
+      },
+    }),
+    prisma.auditLog.create({
+      data: {
+        actorId,
+        action: `MATCH_${to}`,
+        entityType: "Match",
+        entityId: matchId,
+        after: { status: to, ...(notes ? { notes } : {}) },
+      },
+    }),
+  ])
 }
 
 /**
@@ -113,12 +135,36 @@ export async function staffOverrideComplete(
   staffId: string,
   reason: string
 ): Promise<void> {
-  // TODO:
-  // 1. If current status is COMPLETED, call reverseMatchFromStandings(matchId)
-  // 2. Update match: status=COMPLETED, enteredByStaffId=staffId, completedAt=now()
-  // 3. Call applyMatchToStandings(matchId)
-  // 4. Write AuditLog: action="STAFF_RESULT_OVERRIDE"
-  throw new Error("Not implemented: staffOverrideComplete")
+  const match = await prisma.match.findUniqueOrThrow({
+    where: { id: matchId },
+    select: { status: true },
+  })
+
+  if (match.status === "COMPLETED") {
+    await reverseMatchFromStandings(matchId)
+  }
+
+  await prisma.$transaction([
+    prisma.match.update({
+      where: { id: matchId },
+      data: {
+        status: "COMPLETED",
+        enteredByStaffId: staffId,
+        completedAt: new Date(),
+      },
+    }),
+    prisma.auditLog.create({
+      data: {
+        actorId: staffId,
+        action: "STAFF_RESULT_OVERRIDE",
+        entityType: "Match",
+        entityId: matchId,
+        after: { status: "COMPLETED", reason },
+      },
+    }),
+  ])
+
+  await applyMatchToStandings(matchId)
 }
 
 // ---------------------------------------------------------------------------

@@ -217,7 +217,7 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 ### Match Services
 
 - [x] `src/lib/services/match.service.ts` — match lifecycle (create, reschedule)
-- [ ] `src/lib/services/matchStatus.service.ts` — all status transitions + guards
+- [x] `src/lib/services/matchStatus.service.ts` — all status transitions + guards
 - [x] `src/lib/services/checkin.service.ts` — check-in logic + deadline resolution
 
 ### Standings API
@@ -227,7 +227,7 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [ ] `POST /api/divisions/:divisionId/standings/recalculate` — force recalculation (staff)
 - [ ] `PATCH /api/divisions/:divisionId/standings/:entryId` — manual override (staff)
 - [ ] Auto standings update on `COMPLETED` / `FORFEITED`
-- [ ] `src/lib/services/standings.service.ts` — recalculate standings
+- [x] `src/lib/services/standings.service.ts` — recalculate standings
 
 ### Disputes API
 

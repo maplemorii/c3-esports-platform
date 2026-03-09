@@ -212,7 +212,7 @@ export async function checkFastPath(matchId: string): Promise<void> {
  * Polls ballchasing.com for the status of all PROCESSING replays.
  * Fallback for when webhooks are not delivered.
  */
-export async function pollProcessingReplays(): Promise<void> {
+export async function pollProcessingReplays(): Promise<number> {
   // TODO:
   // 1. Fetch all ReplayUpload WHERE parseStatus=PROCESSING
   // 2. For each: GET ballchasing.com /api/v3/replays/:ballchasingId
