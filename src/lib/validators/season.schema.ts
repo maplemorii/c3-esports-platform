@@ -83,7 +83,9 @@ export const CreateSeasonSchema = z
 
 export type CreateSeasonInput = z.infer<typeof CreateSeasonSchema>
 
-export const UpdateSeasonSchema = CreateSeasonSchema.partial()
+export const UpdateSeasonSchema = CreateSeasonSchema.partial().extend({
+  status: z.enum(["DRAFT", "REGISTRATION", "ACTIVE", "PLAYOFFS", "COMPLETED", "CANCELLED"]).optional(),
+})
 
 export type UpdateSeasonInput = z.infer<typeof UpdateSeasonSchema>
 
