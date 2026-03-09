@@ -108,9 +108,10 @@ export function formatDuration(seconds: number | null | undefined): string {
  * Omits the year on the start date if both dates share the same year.
  */
 export function formatDateRange(
-  start: Date | string,
-  end: Date | string
+  start: Date | string | null | undefined,
+  end: Date | string | null | undefined
 ): string {
+  if (!start || !end) return "—"
   const s = new Date(start)
   const e = new Date(end)
   const sameYear = s.getFullYear() === e.getFullYear()
