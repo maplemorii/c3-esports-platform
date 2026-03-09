@@ -181,12 +181,12 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 ### Check-in API
 
-- [ ] `GET /api/matches/:matchId/checkin` — check-in status for both teams
-- [ ] `POST /api/matches/:matchId/checkin` — team checks in
-- [ ] `POST /api/matches/:matchId/checkin/override` — staff force check-in a team
-- [ ] Cron: `SCHEDULED → CHECKING_IN` when `checkInOpenAt` reached
-- [ ] Cron: resolve check-in deadline → `IN_PROGRESS` / `FORFEITED` / `NO_SHOW`
-- [ ] Check-in flow UI: "Check In" button on team dashboard
+- [x] `GET /api/matches/:matchId/checkin` — check-in status for both teams
+- [x] `POST /api/matches/:matchId/checkin` — team checks in
+- [x] `POST /api/matches/:matchId/checkin/override` — staff force check-in a team
+- [x] Cron: `SCHEDULED → CHECKING_IN` when `checkInOpenAt` reached
+- [x] Cron: resolve check-in deadline → `IN_PROGRESS` / `FORFEITED` / `NO_SHOW`
+- [x] Check-in flow UI: "Check In" button on team dashboard
 
 ### Replay System
 
@@ -218,7 +218,7 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 - [x] `src/lib/services/match.service.ts` — match lifecycle (create, reschedule)
 - [ ] `src/lib/services/matchStatus.service.ts` — all status transitions + guards
-- [ ] `src/lib/services/checkin.service.ts` — check-in logic + deadline resolution
+- [x] `src/lib/services/checkin.service.ts` — check-in logic + deadline resolution
 
 ### Standings API
 

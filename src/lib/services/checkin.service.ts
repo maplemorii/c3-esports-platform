@@ -17,6 +17,10 @@
 
 import { prisma } from "@/lib/prisma"
 import type { MatchCheckIn } from "@prisma/client"
+import { NotFoundError, DomainError } from "@/lib/utils/errors"
+import { transitionTo } from "@/lib/services/matchStatus.service"
+import { gamesExpectedForFormat } from "@/lib/services/match.service"
+import { applyMatchToStandings } from "@/lib/services/standings.service"
 
 // ---------------------------------------------------------------------------
 // Public API
@@ -29,11 +33,22 @@ import type { MatchCheckIn } from "@prisma/client"
  * Creates two MatchCheckIn rows (one per team) with status=PENDING.
  */
 export async function openCheckIn(matchId: string): Promise<void> {
-  // TODO:
-  // 1. Fetch match; guard: status must be SCHEDULED
-  // 2. Use transitionTo(matchId, "CHECKING_IN", "system")
-  // 3. Upsert MatchCheckIn rows for homeTeamId and awayTeamId
-  throw new Error("Not implemented: openCheckIn")
+  const match = await prisma.match.findUnique({
+    where:  { id: matchId, deletedAt: null },
+    select: { status: true, homeTeamId: true, awayTeamId: true },
+  })
+  if (!match) throw new NotFoundError("Match", matchId)
+  if (match.status !== "SCHEDULED") throw new DomainError("Match is not in SCHEDULED state")
+
+  await transitionTo(matchId, "CHECKING_IN", "system")
+
+  await prisma.matchCheckIn.createMany({
+    data: [
+      { matchId, teamId: match.homeTeamId },
+      { matchId, teamId: match.awayTeamId },
+    ],
+    skipDuplicates: true,
+  })
 }
 
 /**
@@ -47,15 +62,34 @@ export async function checkIn(
   teamId: string,
   userId: string
 ): Promise<MatchCheckIn> {
-  // TODO:
-  // 1. Fetch match; guard: status must be CHECKING_IN
-  // 2. Validate teamId is homeTeamId or awayTeamId
-  // 3. Update MatchCheckIn: status=CHECKED_IN, checkedInAt=now(), checkedInBy=userId
-  // 4. If both MatchCheckIn rows are now CHECKED_IN:
-  //    transitionTo(matchId, "IN_PROGRESS", userId)
-  //    Set match.gamesExpected = gamesExpectedForFormat(match.format)
-  // 5. Return the updated MatchCheckIn
-  throw new Error("Not implemented: checkIn")
+  const match = await prisma.match.findUnique({
+    where:  { id: matchId, deletedAt: null },
+    select: { status: true, homeTeamId: true, awayTeamId: true, format: true },
+  })
+  if (!match) throw new NotFoundError("Match", matchId)
+  if (match.status !== "CHECKING_IN") throw new DomainError("Match is not currently in check-in phase")
+  if (teamId !== match.homeTeamId && teamId !== match.awayTeamId) {
+    throw new DomainError("Team is not part of this match")
+  }
+
+  const record = await prisma.matchCheckIn.update({
+    where: { matchId_teamId: { matchId, teamId } },
+    data:  { status: "CHECKED_IN", checkedInAt: new Date(), checkedInBy: userId },
+  })
+
+  const all = await prisma.matchCheckIn.findMany({
+    where:  { matchId },
+    select: { status: true },
+  })
+  if (all.length === 2 && all.every((c) => c.status === "CHECKED_IN")) {
+    await prisma.match.update({
+      where: { id: matchId },
+      data:  { gamesExpected: gamesExpectedForFormat(match.format) },
+    })
+    await transitionTo(matchId, "IN_PROGRESS", userId)
+  }
+
+  return record
 }
 
 /**
@@ -67,12 +101,42 @@ export async function forceCheckIn(
   teamId: string,
   staffId: string
 ): Promise<void> {
-  // TODO:
-  // 1. Fetch match; guard: status must be CHECKING_IN
-  // 2. Update MatchCheckIn: status=CHECKED_IN, checkedInBy=staffId
-  // 3. Check if both sides now CHECKED_IN → transitionTo IN_PROGRESS
-  // 4. Write AuditLog: action="MATCH_CHECKIN_FORCED"
-  throw new Error("Not implemented: forceCheckIn")
+  const match = await prisma.match.findUnique({
+    where:  { id: matchId, deletedAt: null },
+    select: { status: true, homeTeamId: true, awayTeamId: true, format: true },
+  })
+  if (!match) throw new NotFoundError("Match", matchId)
+  if (match.status !== "CHECKING_IN") throw new DomainError("Match is not currently in check-in phase")
+  if (teamId !== match.homeTeamId && teamId !== match.awayTeamId) {
+    throw new DomainError("Team is not part of this match")
+  }
+
+  await prisma.matchCheckIn.update({
+    where: { matchId_teamId: { matchId, teamId } },
+    data:  { status: "CHECKED_IN", checkedInAt: new Date(), checkedInBy: staffId },
+  })
+
+  const all = await prisma.matchCheckIn.findMany({
+    where:  { matchId },
+    select: { status: true },
+  })
+  if (all.length === 2 && all.every((c) => c.status === "CHECKED_IN")) {
+    await prisma.match.update({
+      where: { id: matchId },
+      data:  { gamesExpected: gamesExpectedForFormat(match.format) },
+    })
+    await transitionTo(matchId, "IN_PROGRESS", staffId)
+  }
+
+  await prisma.auditLog.create({
+    data: {
+      actorId:    staffId,
+      action:     "MATCH_CHECKIN_FORCED",
+      entityType: "Match",
+      entityId:   matchId,
+      after:      { teamId },
+    },
+  })
 }
 
 /**
@@ -84,14 +148,30 @@ export async function forceCheckIn(
  *  - Both missed      → NO_SHOW
  */
 export async function resolveCheckInDeadline(matchId: string): Promise<void> {
-  // TODO:
-  // 1. Fetch match + both MatchCheckIn rows
-  // 2. Guard: only act if status is CHECKING_IN
-  // 3. Count how many teams have status=MISSED (i.e., still PENDING at deadline)
-  // 4. Mark overdue MatchCheckIn rows as MISSED
-  // 5. transitionTo FORFEITED or NO_SHOW accordingly
-  // 6. If FORFEITED: call applyMatchToStandings() with forfeit rules
-  throw new Error("Not implemented: resolveCheckInDeadline")
+  const match = await prisma.match.findUnique({
+    where:  { id: matchId, deletedAt: null },
+    select: {
+      status:   true,
+      checkIns: { select: { teamId: true, status: true } },
+    },
+  })
+  if (!match) throw new NotFoundError("Match", matchId)
+  if (match.status !== "CHECKING_IN") return // already resolved
+
+  const pending = match.checkIns.filter((c) => c.status === "PENDING")
+  if (pending.length === 0) return // both already CHECKED_IN → IN_PROGRESS, no-op
+
+  await prisma.matchCheckIn.updateMany({
+    where: { matchId, status: "PENDING" },
+    data:  { status: "MISSED" },
+  })
+
+  if (pending.length >= 2) {
+    await transitionTo(matchId, "NO_SHOW", "system")
+  } else {
+    await transitionTo(matchId, "FORFEITED", "system")
+    await applyMatchToStandings(matchId)
+  }
 }
 
 /**
@@ -100,10 +180,20 @@ export async function resolveCheckInDeadline(matchId: string): Promise<void> {
  * and calls resolveCheckInDeadline() for each.
  */
 export async function processOverdueCheckIns(): Promise<number> {
-  // TODO:
-  // 1. Query: matches WHERE status=CHECKING_IN AND checkInDeadlineAt <= now()
-  // 2. For each: resolveCheckInDeadline(match.id)
-  throw new Error("Not implemented: processOverdueCheckIns")
+  const matches = await prisma.match.findMany({
+    where:  { status: "CHECKING_IN", checkInDeadlineAt: { lte: new Date() }, deletedAt: null },
+    select: { id: true },
+  })
+  let count = 0
+  for (const { id } of matches) {
+    try {
+      await resolveCheckInDeadline(id)
+      count++
+    } catch (err) {
+      console.error(`[processOverdueCheckIns] Failed for match ${id}:`, err)
+    }
+  }
+  return count
 }
 
 /**
@@ -112,10 +202,20 @@ export async function processOverdueCheckIns(): Promise<number> {
  * and calls openCheckIn() for each.
  */
 export async function processScheduledMatchesForCheckIn(): Promise<number> {
-  // TODO:
-  // 1. Query: matches WHERE status=SCHEDULED AND checkInOpenAt <= now()
-  // 2. For each: openCheckIn(match.id)
-  throw new Error("Not implemented: processScheduledMatchesForCheckIn")
+  const matches = await prisma.match.findMany({
+    where:  { status: "SCHEDULED", checkInOpenAt: { lte: new Date() }, deletedAt: null },
+    select: { id: true },
+  })
+  let count = 0
+  for (const { id } of matches) {
+    try {
+      await openCheckIn(id)
+      count++
+    } catch (err) {
+      console.error(`[processScheduledMatchesForCheckIn] Failed for match ${id}:`, err)
+    }
+  }
+  return count
 }
 
 // ---------------------------------------------------------------------------
@@ -128,8 +228,20 @@ export async function processScheduledMatchesForCheckIn(): Promise<number> {
 export async function getCheckInStatus(
   matchId: string
 ): Promise<{ home: MatchCheckIn | null; away: MatchCheckIn | null }> {
-  // TODO:
-  // 1. Fetch match.homeTeamId, match.awayTeamId
-  // 2. Fetch both MatchCheckIn rows
-  throw new Error("Not implemented: getCheckInStatus")
+  const match = await prisma.match.findUnique({
+    where:  { id: matchId },
+    select: { homeTeamId: true, awayTeamId: true },
+  })
+  if (!match) throw new NotFoundError("Match", matchId)
+
+  const [home, away] = await Promise.all([
+    prisma.matchCheckIn.findUnique({
+      where: { matchId_teamId: { matchId, teamId: match.homeTeamId } },
+    }),
+    prisma.matchCheckIn.findUnique({
+      where: { matchId_teamId: { matchId, teamId: match.awayTeamId } },
+    }),
+  ])
+
+  return { home, away }
 }

@@ -43,6 +43,7 @@ export async function GET(
       select: {
         id:           true,
         status:       true,
+        notes:        true,
         registeredAt: true,
         updatedAt:    true,
         team: {
@@ -107,6 +108,26 @@ export async function POST(
     })
     if (!division) return apiNotFound("Division")
 
+    // Eligibility: at least 3 active players, all with Epic + Discord linked
+    const memberships = await prisma.teamMembership.findMany({
+      where:  { teamId, leftAt: null },
+      select: { player: { select: { displayName: true, epicUsername: true, discordUsername: true } } },
+    })
+    if (memberships.length < 3) {
+      return apiBadRequest(
+        `Your team needs at least 3 players to register (currently ${memberships.length}).`
+      )
+    }
+    const incomplete = memberships
+      .filter((m) => !m.player?.epicUsername || !m.player?.discordUsername)
+      .map((m) => m.player?.displayName ?? "Unknown")
+    if (incomplete.length > 0) {
+      return apiBadRequest(
+        `The following players are missing required accounts: ${incomplete.join(", ")}. ` +
+        `Each player needs an Epic Games username and a Discord username linked to their profile.`
+      )
+    }
+
     // Check division capacity
     if (division.maxTeams !== null) {
       const approved = await prisma.seasonRegistration.count({
@@ -123,7 +144,7 @@ export async function POST(
       select: { id: true, status: true },
     })
     if (existing) {
-      if (existing.status === "WITHDRAWN") {
+      if (existing.status === "WITHDRAWN" || existing.status === "REJECTED") {
         // Re-register: update the existing record
         const reg = await prisma.seasonRegistration.update({
           where: { id: existing.id },

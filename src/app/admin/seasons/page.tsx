@@ -10,7 +10,7 @@ import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { cn } from "@/lib/utils"
 import { formatDate } from "@/lib/utils/dates"
-import { Plus, Calendar, ChevronRight, ClipboardList } from "lucide-react"
+import { Plus, Calendar, ChevronRight, ClipboardList, Settings } from "lucide-react"
 import type { SeasonStatus, DivisionTier } from "@prisma/client"
 
 export const metadata: Metadata = {
@@ -160,6 +160,13 @@ function SeasonRow({ season }: { season: Season }) {
               {pendingCount}
             </span>
           )}
+        </Link>
+        <Link
+          href={`/admin/seasons/${season.id}/settings`}
+          className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:border-brand/40 hover:text-foreground transition-colors"
+        >
+          <Settings className="h-3.5 w-3.5" />
+          Settings
         </Link>
         <Link
           href={`/seasons/${season.slug}`}

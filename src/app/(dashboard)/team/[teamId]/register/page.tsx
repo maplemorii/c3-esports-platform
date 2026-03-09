@@ -28,6 +28,7 @@ interface TeamInfo {
 interface RawRegistration {
   id:           string
   status:       RegistrationStatus
+  notes:        string | null
   registeredAt: string
   division:     { id: string; name: string; tier: DivisionTier } | null
 }

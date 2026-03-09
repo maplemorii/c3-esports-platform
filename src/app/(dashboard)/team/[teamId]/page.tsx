@@ -19,6 +19,8 @@ import { hasMinRole } from "@/lib/roles"
 import { cn } from "@/lib/utils"
 import { formatDate } from "@/lib/utils/dates"
 import { buttonVariants } from "@/components/ui/button-variants"
+import { CheckInButton } from "@/components/team/CheckInButton"
+import { formatDateTime } from "@/lib/utils/dates"
 import type { RegistrationStatus, MembershipRole } from "@prisma/client"
 
 // ---------------------------------------------------------------------------
@@ -81,6 +83,25 @@ async function getTeam(teamId: string) {
   })
 }
 
+async function getCheckInMatches(teamId: string) {
+  return prisma.match.findMany({
+    where: {
+      status:    "CHECKING_IN",
+      deletedAt: null,
+      OR: [{ homeTeamId: teamId }, { awayTeamId: teamId }],
+    },
+    select: {
+      id:          true,
+      scheduledAt: true,
+      checkInDeadlineAt: true,
+      homeTeam:    { select: { id: true, name: true } },
+      awayTeam:    { select: { id: true, name: true } },
+      checkIns:    { select: { teamId: true, status: true } },
+    },
+    orderBy: { scheduledAt: "asc" },
+  })
+}
+
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
@@ -91,7 +112,11 @@ export default async function TeamHubPage({
   params: Promise<{ teamId: string }>
 }) {
   const { teamId } = await params
-  const [session, team] = await Promise.all([getSession(), getTeam(teamId)])
+  const [session, team, checkInMatches] = await Promise.all([
+    getSession(),
+    getTeam(teamId),
+    getCheckInMatches(teamId),
+  ])
 
   if (!team) notFound()
 
@@ -259,6 +284,41 @@ export default async function TeamHubPage({
           />
         )}
       </div>
+
+      {/* ── Check-in required ────────────────────────────────────── */}
+      {isManager && checkInMatches.length > 0 && (
+        <section className="rounded-xl border border-sky-500/30 bg-sky-500/5">
+          <div className="px-6 py-4 border-b border-sky-500/20">
+            <h2 className="flex items-center gap-2 font-display text-sm font-semibold uppercase tracking-widest text-sky-400">
+              <ShieldCheck className="h-4 w-4" />
+              Check-In Required
+            </h2>
+          </div>
+          <ul className="divide-y divide-sky-500/10">
+            {checkInMatches.map((match) => {
+              const myCheckIn = match.checkIns.find((c) => c.teamId === teamId)
+              const alreadyDone = myCheckIn?.status === "CHECKED_IN"
+              const opponent = match.homeTeam.id === teamId ? match.awayTeam : match.homeTeam
+              return (
+                <li key={match.id} className="flex items-center justify-between gap-4 px-6 py-4">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium">vs {opponent.name}</p>
+                    {match.scheduledAt && (
+                      <p className="text-xs text-muted-foreground">
+                        {formatDateTime(match.scheduledAt)}
+                        {match.checkInDeadlineAt && (
+                          <> · Deadline {formatDateTime(match.checkInDeadlineAt)}</>
+                        )}
+                      </p>
+                    )}
+                  </div>
+                  <CheckInButton matchId={match.id} alreadyDone={alreadyDone} />
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      )}
 
       {/* ── Roster ───────────────────────────────────────────────── */}
       <section className="rounded-xl border border-border bg-card">

@@ -50,6 +50,7 @@ export interface RegistrationSeason {
 export interface ExistingRegistration {
   id:           string
   status:       RegistrationStatus
+  notes:        string | null
   registeredAt: string
   division:     { id: string; name: string; tier: DivisionTier } | null
 }
@@ -131,8 +132,14 @@ export function TeamRegistrationForm({
   const [submitting,    setSubmitting]    = useState(false)
   const [withdrawing,   setWithdrawing]   = useState(false)
   const [error,         setError]         = useState<string | null>(null)
+  const [reregistering, setReregistering] = useState(false)
 
-  const existingReg = registration?.status !== "WITHDRAWN" ? registration : null
+  // Treat WITHDRAWN and REJECTED (when user clicks re-register) as "no active reg"
+  const existingReg =
+    registration?.status === "WITHDRAWN" ||
+    (registration?.status === "REJECTED" && reregistering)
+      ? null
+      : registration
 
   // ── Register ──────────────────────────────────────────────────────────────
 
@@ -210,11 +217,12 @@ export function TeamRegistrationForm({
         )}
 
         {existingReg ? (
-          /* Already registered — show status + optional withdraw */
+          /* Already registered — show status + optional withdraw/re-register */
           <ExistingRegistrationView
             reg={existingReg}
             onWithdraw={handleWithdraw}
             withdrawing={withdrawing}
+            onReregister={() => setReregistering(true)}
           />
         ) : (
           /* Division selector + submit */
@@ -333,21 +341,24 @@ function ExistingRegistrationView({
   reg,
   onWithdraw,
   withdrawing,
+  onReregister,
 }: {
-  reg:        ExistingRegistration
-  onWithdraw: () => void
-  withdrawing: boolean
+  reg:          ExistingRegistration
+  onWithdraw:   () => void
+  withdrawing:  boolean
+  onReregister: () => void
 }) {
   const meta    = STATUS_META[reg.status]
   const Icon    = meta.icon
   const divMeta = reg.division ? TIER_META[reg.division.tier] : null
-  const canWithdraw = reg.status === "PENDING" || reg.status === "WAITLISTED"
+  const canWithdraw    = reg.status === "PENDING" || reg.status === "WAITLISTED"
+  const canReregister  = reg.status === "REJECTED"
 
   return (
     <div className="space-y-4">
       {/* Status banner */}
-      <div className={cn("flex items-center gap-3 rounded-lg border px-4 py-3", meta.className)}>
-        <Icon className="h-4 w-4 shrink-0" />
+      <div className={cn("flex items-start gap-3 rounded-lg border px-4 py-3", meta.className)}>
+        <Icon className="h-4 w-4 shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium">{meta.label}</p>
           {reg.status === "PENDING" && (
@@ -357,7 +368,11 @@ function ExistingRegistrationView({
             <p className="text-xs opacity-70 mt-0.5">Your team has been approved and is set to compete.</p>
           )}
           {reg.status === "REJECTED" && (
-            <p className="text-xs opacity-70 mt-0.5">Your registration was not accepted. Contact staff for details.</p>
+            <p className="text-xs opacity-70 mt-0.5">
+              {reg.notes
+                ? <>Staff note: <span className="font-medium">{reg.notes}</span></>
+                : "Your registration was not accepted."}
+            </p>
           )}
           {reg.status === "WAITLISTED" && (
             <p className="text-xs opacity-70 mt-0.5">You are on the waitlist. You may be added if spots open up.</p>
@@ -390,6 +405,21 @@ function ExistingRegistrationView({
           year: "numeric",
         })}
       </p>
+
+      {canReregister && (
+        <div className="flex items-center justify-between gap-4 pt-2 border-t border-border">
+          <p className="text-xs text-muted-foreground">
+            You can update your application and re-submit while registration is open.
+          </p>
+          <button
+            type="button"
+            onClick={onReregister}
+            className={cn(buttonVariants({ size: "sm" }), "shrink-0 gap-1.5")}
+          >
+            Re-register
+          </button>
+        </div>
+      )}
 
       {canWithdraw && (
         <div className="flex items-center justify-between gap-4 pt-2 border-t border-border">
