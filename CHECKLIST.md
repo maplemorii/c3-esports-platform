@@ -173,11 +173,11 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 ### Match API
 
-- [ ] `GET /api/matches` — list matches (with `?divisionId=&weekId=&status=&teamId=&upcoming=` filters)
-- [ ] `GET /api/matches/:matchId` — full match detail (status, timing, checkIns, gameResults, replays)
-- [ ] `POST /api/matches` — create/schedule match (staff); derives and stores timing timestamps
-- [ ] `PATCH /api/matches/:matchId` — reschedule match; recalculates derived timestamps
-- [ ] `DELETE /api/matches/:matchId` — cancel match (status → CANCELLED)
+- [x] `GET /api/matches` — list matches (with `?divisionId=&weekId=&status=&teamId=&upcoming=` filters)
+- [x] `GET /api/matches/:matchId` — full match detail (status, timing, checkIns, gameResults, replays)
+- [x] `POST /api/matches` — create/schedule match (staff); derives and stores timing timestamps
+- [x] `PATCH /api/matches/:matchId` — reschedule match; recalculates derived timestamps
+- [x] `DELETE /api/matches/:matchId` — cancel match (status → CANCELLED)
 
 ### Check-in API
 
@@ -216,7 +216,7 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 ### Match Services
 
-- [ ] `src/lib/services/match.service.ts` — match lifecycle (create, reschedule)
+- [x] `src/lib/services/match.service.ts` — match lifecycle (create, reschedule)
 - [ ] `src/lib/services/matchStatus.service.ts` — all status transitions + guards
 - [ ] `src/lib/services/checkin.service.ts` — check-in logic + deadline resolution
 
@@ -280,15 +280,15 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 ### Admin API
 
-- [ ] `GET /api/admin/stats` — platform-wide stats dashboard (staff)
-- [ ] `GET /api/admin/audit` — paginated audit log (admin)
+- [x] `GET /api/admin/stats` — platform-wide stats dashboard (staff)
+- [x] `GET /api/admin/audit` — paginated audit log (admin)
 - [~] `GET/PATCH /api/admin/users` — user management (`src/app/api/admin/users/route.ts`)
 - [ ] `PATCH /api/users/:userId/role` — assign role to user (admin)
 
 ### Admin Pages
 
-- [ ] Admin overview dashboard (`/admin`) — stats + recent activity
-- [ ] Admin seasons list + create (`/admin/seasons`, `/admin/seasons/create`)
+- [x] Admin overview dashboard (`/admin`) — stats + recent activity
+- [x] Admin seasons list + create (`/admin/seasons`, `/admin/seasons/create`)
 - [ ] Admin season detail + divisions (`/admin/seasons/[seasonId]`)
 - [ ] Admin teams list + detail (`/admin/teams`, `/admin/teams/[teamId]`)
 - [ ] Admin match scheduler + create (`/admin/matches`, `/admin/matches/create`)
@@ -312,8 +312,8 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [ ] Rate limiting on sensitive endpoints (Zod + middleware)
 - [ ] Request logging with Pino
 - [ ] Email notifications (result submitted, dispute opened, parse failed)
-- [ ] CI/CD pipeline (GitHub Actions → Vercel)
-- [ ] Monitoring: Sentry + Vercel Analytics
+- [ ] CI/CD pipeline (GitHub Actions → Railway)
+- [ ] Monitoring: Sentry + Railway Analytics(?)
 - [ ] Redis cache layer: standings cache, rate limit counters
 
 ---

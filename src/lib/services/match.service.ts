@@ -46,13 +46,66 @@ export interface DerivedTimestamps {
  * is provided. Returns the created match.
  */
 export async function createMatch(input: CreateMatchInput): Promise<Match> {
-  // TODO:
-  // 1. Validate homeTeamId !== awayTeamId
-  // 2. Validate both teams are approved in the division
-  // 3. If scheduledAt provided, derive timing timestamps via deriveTimestamps()
-  // 4. Determine gamesExpected from format (BO3=3, BO5=5, BO7=7, BO1=1)
-  // 5. prisma.match.create(...)
-  throw new Error("Not implemented: createMatch")
+  const {
+    divisionId,
+    leagueWeekId,
+    homeTeamId,
+    awayTeamId,
+    format = "BO3",
+    matchType = "REGULAR_SEASON",
+    scheduledAt,
+    notes,
+  } = input
+
+  // Validate both teams are approved in the division
+  const [homeReg, awayReg] = await Promise.all([
+    prisma.seasonRegistration.findFirst({
+      where: { divisionId, teamId: homeTeamId, status: "APPROVED" },
+      select: { id: true },
+    }),
+    prisma.seasonRegistration.findFirst({
+      where: { divisionId, teamId: awayTeamId, status: "APPROVED" },
+      select: { id: true },
+    }),
+  ])
+
+  if (!homeReg) throw new Error("Home team is not an approved participant in this division")
+  if (!awayReg) throw new Error("Away team is not an approved participant in this division")
+
+  // Get timing config from the division's season
+  const division = await prisma.division.findUniqueOrThrow({
+    where: { id: divisionId },
+    select: {
+      season: {
+        select: {
+          checkInWindowMinutes: true,
+          checkInGraceMinutes:  true,
+          resultWindowHours:    true,
+        },
+      },
+    },
+  })
+
+  const timestamps = scheduledAt
+    ? deriveTimestamps(scheduledAt, division.season)
+    : null
+
+  return prisma.match.create({
+    data: {
+      divisionId,
+      leagueWeekId:      leagueWeekId ?? null,
+      homeTeamId,
+      awayTeamId,
+      format,
+      matchType,
+      scheduledAt:       scheduledAt ?? null,
+      checkInOpenAt:     timestamps?.checkInOpenAt     ?? null,
+      checkInDeadlineAt: timestamps?.checkInDeadlineAt ?? null,
+      resultDeadlineAt:  timestamps?.resultDeadlineAt  ?? null,
+      gamesExpected:     gamesExpectedForFormat(format),
+      notes:             notes ?? null,
+    },
+  })
 }
 
 /**
@@ -64,13 +117,72 @@ export async function rescheduleMatch(
   input: ScheduleMatchInput,
   staffId: string
 ): Promise<Match> {
-  // TODO:
-  // 1. Fetch match + division.season for timing config
-  // 2. Guard: cannot reschedule COMPLETED / FORFEITED matches
-  // 3. Recalculate timestamps via deriveTimestamps()
-  // 4. If match is CHECKING_IN, reset MatchCheckIn rows to PENDING
-  // 5. Update match + write AuditLog entry
-  throw new Error("Not implemented: rescheduleMatch")
+  const match = await prisma.match.findUniqueOrThrow({
+    where: { id: matchId },
+    select: {
+      id:     true,
+      status: true,
+      division: {
+        select: {
+          season: {
+            select: {
+              checkInWindowMinutes: true,
+              checkInGraceMinutes:  true,
+              resultWindowHours:    true,
+            },
+          },
+        },
+      },
+    },
+  })
+
+  const terminal = ["COMPLETED", "FORFEITED", "NO_SHOW", "CANCELLED"]
+  if (terminal.includes(match.status)) {
+    throw new Error(`Cannot reschedule a match with status ${match.status}`)
+  }
+
+  const timestamps = deriveTimestamps(input.scheduledAt, match.division.season)
+
+  // If currently in check-in window, reset the check-in rows
+  const resetCheckIn = match.status === "CHECKING_IN"
+
+  const [updated] = await prisma.$transaction([
+    prisma.match.update({
+      where: { id: matchId },
+      data: {
+        scheduledAt:       input.scheduledAt,
+        checkInOpenAt:     timestamps.checkInOpenAt,
+        checkInDeadlineAt: timestamps.checkInDeadlineAt,
+        resultDeadlineAt:  timestamps.resultDeadlineAt,
+        // Drop back to SCHEDULED if we were in check-in
+        ...(resetCheckIn ? { status: "SCHEDULED" } : {}),
+      },
+    }),
+    prisma.auditLog.create({
+      data: {
+        actorId:    staffId,
+        action:     "MATCH_RESCHEDULED",
+        entityType: "Match",
+        entityId:   matchId,
+        after: {
+          scheduledAt:       input.scheduledAt.toISOString(),
+          checkInOpenAt:     timestamps.checkInOpenAt.toISOString(),
+          checkInDeadlineAt: timestamps.checkInDeadlineAt.toISOString(),
+          resultDeadlineAt:  timestamps.resultDeadlineAt.toISOString(),
+        },
+      },
+    }),
+    ...(resetCheckIn
+      ? [
+          prisma.matchCheckIn.updateMany({
+            where: { matchId },
+            data:  { status: "PENDING", checkedInAt: null },
+          }),
+        ]
+      : []),
+  ])
+
+  return updated
 }
 
 /**
@@ -82,11 +194,39 @@ export async function cancelMatch(
   reason: string,
   staffId: string
 ): Promise<Match> {
-  // TODO:
-  // 1. Guard: cannot cancel an already-COMPLETED match without override
-  // 2. prisma.match.update({ status: "CANCELLED", notes: reason })
-  // 3. Write AuditLog entry: action="MATCH_CANCELLED"
-  throw new Error("Not implemented: cancelMatch")
+  const match = await prisma.match.findUniqueOrThrow({
+    where: { id: matchId },
+    select: { id: true, status: true },
+  })
+
+  if (match.status === "COMPLETED") {
+    throw new Error("Cannot cancel a completed match. Use a staff result override instead.")
+  }
+  if (match.status === "CANCELLED") {
+    throw new Error("Match is already cancelled.")
+  }
+
+  const [updated] = await prisma.$transaction([
+    prisma.match.update({
+      where: { id: matchId },
+      data: {
+        status:    "CANCELLED",
+        notes:     reason,
+        deletedAt: new Date(),
+      },
+    }),
+    prisma.auditLog.create({
+      data: {
+        actorId:    staffId,
+        action:     "MATCH_CANCELLED",
+        entityType: "Match",
+        entityId:   matchId,
+        after:      { reason },
+      },
+    }),
+  ])
+
+  return updated
 }
 
 /**
@@ -128,8 +268,6 @@ export function deriveTimestamps(
  * Fetches a match's season timing config from the DB.
  */
 export async function getTimingConfig(matchId: string): Promise<SeasonTimingConfig> {
-  // TODO:
-  // 1. Fetch match.division.season with timing fields
   const match = await prisma.match.findUniqueOrThrow({
     where: { id: matchId },
     select: {

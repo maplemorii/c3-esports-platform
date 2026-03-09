@@ -18,6 +18,9 @@ export function Footer() {
           <Link href="/rules" className="hover:text-foreground transition-colors">
             Rules
           </Link>
+          <Link href="/credits" className="hover:text-foreground transition-colors">
+            Credits
+          </Link>
         </nav>
       </div>
     </footer>

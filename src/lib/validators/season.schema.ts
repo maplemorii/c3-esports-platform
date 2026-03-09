@@ -50,28 +50,29 @@ const PointsConfigSchema = z
 // Season CRUD
 // ---------------------------------------------------------------------------
 
-export const CreateSeasonSchema = z
-  .object({
-    name:              z.string().min(2, "Season name must be at least 2 characters").max(80).trim(),
-    slug:              slug,
-    description:       z.string().max(2000).optional(),
+const BaseSeasonSchema = z.object({
+  name:              z.string().min(2, "Season name must be at least 2 characters").max(80).trim(),
+  slug:              slug,
+  description:       z.string().max(2000).optional(),
 
-    // Dates
-    startDate:         isoDatetime.optional(),
-    endDate:           isoDatetime.optional(),
-    registrationStart: isoDatetime.optional(),
-    registrationEnd:   isoDatetime.optional(),
+  // Dates
+  startDate:         isoDatetime.optional(),
+  endDate:           isoDatetime.optional(),
+  registrationStart: isoDatetime.optional(),
+  registrationEnd:   isoDatetime.optional(),
 
-    // League play config
-    leagueWeeks:            z.number().int().min(1).max(52).default(8),
-    checkInWindowMinutes:   z.number().int().min(1).max(60).default(15),
-    checkInGraceMinutes:    z.number().int().min(0).max(60).default(5),
-    resultWindowHours:      z.number().int().min(1).max(168).default(24),
+  // League play config
+  leagueWeeks:            z.number().int().min(1).max(52).default(8),
+  checkInWindowMinutes:   z.number().int().min(1).max(60).default(15),
+  checkInGraceMinutes:    z.number().int().min(0).max(60).default(5),
+  resultWindowHours:      z.number().int().min(1).max(168).default(24),
 
-    pointsConfig:      PointsConfigSchema,
-    maxTeamsTotal:     z.number().int().min(1).max(512).optional(),
-    isVisible:         z.boolean().default(false),
-  })
+  pointsConfig:      PointsConfigSchema,
+  maxTeamsTotal:     z.number().int().min(1).max(512).optional(),
+  isVisible:         z.boolean().default(false),
+})
+
+export const CreateSeasonSchema = BaseSeasonSchema
   .refine(
     (d) => !d.startDate || !d.endDate || d.startDate < d.endDate,
     { message: "startDate must be before endDate", path: ["endDate"] }
@@ -83,7 +84,7 @@ export const CreateSeasonSchema = z
 
 export type CreateSeasonInput = z.infer<typeof CreateSeasonSchema>
 
-export const UpdateSeasonSchema = CreateSeasonSchema.partial().extend({
+export const UpdateSeasonSchema = BaseSeasonSchema.partial().extend({
   status: z.enum(["DRAFT", "REGISTRATION", "ACTIVE", "PLAYOFFS", "COMPLETED", "CANCELLED"]).optional(),
 })
 
