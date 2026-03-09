@@ -36,6 +36,7 @@ const MEMBERSHIP_SELECT = {
       avatarUrl:       true,
       epicUsername:    true,
       discordUsername: true,
+      user: { select: { image: true } },
     },
   },
 } as const

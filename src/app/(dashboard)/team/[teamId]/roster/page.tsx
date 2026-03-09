@@ -26,6 +26,7 @@ interface Player {
   avatarUrl:       string | null
   epicUsername:    string | null
   discordUsername: string | null
+  user?:           { image: string | null } | null
 }
 
 interface Member {
@@ -391,9 +392,9 @@ export default function RosterPage() {
               <li key={m.id} className="flex items-center gap-3 px-5 py-3">
                 {/* Avatar */}
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-muted">
-                  {m.player?.avatarUrl ? (
+                  {(m.player?.avatarUrl ?? m.player?.user?.image) ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={m.player.avatarUrl} alt="" className="h-full w-full rounded-full object-cover" />
+                    <img src={(m.player!.avatarUrl ?? m.player!.user?.image)!} alt="" className="h-full w-full rounded-full object-cover" />
                   ) : (
                     <UserRound className="h-4 w-4 text-muted-foreground" />
                   )}

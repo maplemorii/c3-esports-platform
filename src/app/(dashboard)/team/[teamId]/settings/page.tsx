@@ -192,7 +192,7 @@ export default function TeamSettingsPage() {
         </Link>
         <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Team Settings</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          Slug: <span className="font-mono text-xs text-muted-foreground/70">{team.slug}</span>
+          Manage your team profile, branding, and links.
         </p>
       </div>
 
