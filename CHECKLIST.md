@@ -88,28 +88,28 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [x] Roster management page (`/(dashboard)/team/[teamId]/roster`)
 - [x] Team settings page (`/(dashboard)/team/[teamId]/settings`)
 - [x] Team season registration page (`/(dashboard)/team/[teamId]/register`)
-- [ ] Public team profile pages (`/(public)/teams/[teamSlug]`)
-- [ ] Public teams list page (`/(public)/teams`)
+- [x] Public team profile pages (`/(public)/teams/[teamSlug]`)
+- [x] Public teams list page (`/(public)/teams`)
 
 ### Team Components
 
-- [ ] `TeamCard.tsx`, `TeamLogo.tsx`
-- [ ] `RosterTable.tsx`
-- [ ] `TeamRegistrationForm.tsx`, `TeamCreateForm.tsx`
+- [x] `TeamCard.tsx`, `TeamLogo.tsx`
+- [x] `RosterTable.tsx`
+- [x] `TeamRegistrationForm.tsx`, `TeamCreateForm.tsx`
 
 ### Dashboard Pages - Comprehensive, detailed, responsive, eye-candy
 
 - [x] Dashboard landing page (`/(dashboard)/dashboard`) — greeting, team summary card, next scheduled match, season registration status
-- [ ] My Teams list page (`/(dashboard)/team`) — all teams user owns or is an active member of; links to each hub + Create Team CTA
-- [ ] Player profile page (`/(dashboard)/profile`) — view own player profile + linked accounts status (Epic, Steam, Discord)
-- [ ] Player profile setup page (`/(dashboard)/profile/setup`) — first-time onboarding flow: create player profile if none exists
-- [ ] Player profile edit page (`/(dashboard)/profile/edit`) — edit display name, epic/steam/discord usernames, country, bio
+- [x] My Teams list page (`/(dashboard)/team`) — all teams user owns or is an active member of; links to each hub + Create Team CTA
+- [x] Player profile page (`/(dashboard)/profile`) — view own player profile + linked accounts status (Epic, Steam, Discord)
+- [x] Player profile setup page (`/(dashboard)/profile/setup`) — first-time onboarding flow: create player profile if none exists
+- [x] Player profile edit page (`/(dashboard)/profile/edit`) — edit display name, epic/steam/discord usernames, bio
 
 ### Dashboard Components
 
-- [ ] `PlayerProfileForm.tsx` — create/edit player profile fields (used by setup + edit pages)
-- [ ] `DashboardTeamCard.tsx` — compact team summary widget (logo, name, division badge, record)
-- [ ] `OnboardingChecklist.tsx` — progress checklist for new users (no player profile → no team → not registered)
+- [x] `PlayerProfileForm.tsx` — create/edit player profile fields (used by setup + edit pages)
+- [x] `DashboardTeamCard.tsx` — compact team summary widget (logo, name, division badge, record)
+- [x] `OnboardingChecklist.tsx` — progress checklist for new users (no player profile → no team → not registered)
 
 ---
 

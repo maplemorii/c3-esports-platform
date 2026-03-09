@@ -162,16 +162,29 @@ export default async function Home() {
 
           {/* CTAs */}
           <div className="flex flex-wrap justify-center gap-3 pt-1">
-            <Link
-              href="/auth/register"
-              className={cn(
-                buttonVariants({ size: "lg" }),
-                "px-8 gap-2 shadow-[0_0_24px_oklch(0.50_0.20_15/30%)] hover:shadow-[0_0_32px_oklch(0.50_0.20_15/50%)] transition-shadow"
-              )}
-            >
-              Register Your Team
-              <ChevronRight className="h-4 w-4" />
-            </Link>
+            {session ? (
+              <Link
+                href="/dashboard"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "px-8 gap-2 shadow-[0_0_24px_oklch(0.50_0.20_15/30%)] hover:shadow-[0_0_32px_oklch(0.50_0.20_15/50%)] transition-shadow"
+                )}
+              >
+                Go to Dashboard
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            ) : (
+              <Link
+                href="/auth/register"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "px-8 gap-2 shadow-[0_0_24px_oklch(0.50_0.20_15/30%)] hover:shadow-[0_0_32px_oklch(0.50_0.20_15/50%)] transition-shadow"
+                )}
+              >
+                Register Your Team
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            )}
             <Link
               href="/seasons"
               className={cn(buttonVariants({ variant: "outline", size: "lg" }), "px-8")}
