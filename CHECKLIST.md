@@ -323,6 +323,4 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [ ] Live match score ticker (WebSocket / Server-Sent Events)
 - [ ] Discord bot integration (post results to server)
 - [ ] Player stats aggregation across seasons
-- [ ] Season-end awards (MVP, Top Scorer)
-- [ ] Multi-region support
 - [ ] Public API (read-only) for community tools
