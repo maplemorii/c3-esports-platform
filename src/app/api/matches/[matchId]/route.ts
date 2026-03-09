@@ -76,7 +76,7 @@ export async function GET(_req: Request, { params }: Params) {
           homeGoals:    true,
           awayGoals:    true,
           overtime:     true,
-          resultSource: true,
+          source:       true,
           createdAt:    true,
         },
       },
