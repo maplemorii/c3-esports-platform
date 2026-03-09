@@ -70,14 +70,82 @@ export interface ParseResult {
  * Replaces any existing upload for the same (matchId, gameNumber) slot.
  */
 export async function createReplayUpload(
-  input: CreateReplayUploadInput
+  input: CreateReplayUploadInput & { homeTeamColor?: string }
 ): Promise<ReplayUpload> {
-  // TODO:
-  // 1. Guard: match status must be IN_PROGRESS
-  // 2. prisma.replayUpload.upsert({ where: { matchId_gameNumber } })
-  // 3. Call submitToBallchasing(replayUpload.id) — can be fire-and-forget
-  // 4. Return the created record
-  throw new Error("Not implemented: createReplayUpload")
+  const { matchId, gameNumber, fileKey, uploadedById, uploadedByTeamId, homeTeamColor } = input
+
+  // Guard: match must exist and be in a state that accepts uploads
+  const match = await prisma.match.findUnique({
+    where: { id: matchId, deletedAt: null },
+    select: { status: true, gamesExpected: true },
+  })
+
+  if (!match) {
+    throw new Error("Match not found")
+  }
+
+  const uploadableStatuses = ["IN_PROGRESS", "MATCH_FINISHED"]
+  if (!uploadableStatuses.includes(match.status)) {
+    throw new Error(
+      `Replays can only be uploaded when the match is IN_PROGRESS or MATCH_FINISHED (current: ${match.status})`
+    )
+  }
+
+  if (match.gamesExpected !== null && (gameNumber < 1 || gameNumber > match.gamesExpected)) {
+    throw new Error(
+      `gameNumber must be between 1 and ${match.gamesExpected} for this match`
+    )
+  }
+
+  // If a previous upload exists for this slot, clean up any REPLAY_AUTO game result
+  const existing = await prisma.replayUpload.findUnique({
+    where: { matchId_gameNumber: { matchId, gameNumber } },
+    select: { id: true, gameResult: { select: { id: true, source: true } } },
+  })
+
+  if (existing?.gameResult?.source === "REPLAY_AUTO") {
+    await prisma.matchGame.delete({ where: { id: existing.gameResult.id } })
+  }
+
+  // Upsert the slot — always resets to PENDING so the parse pipeline restarts
+  const upload = await prisma.replayUpload.upsert({
+    where: { matchId_gameNumber: { matchId, gameNumber } },
+    create: {
+      matchId,
+      gameNumber,
+      fileKey,
+      uploadedById,
+      uploadedByTeamId,
+      homeTeamColor: homeTeamColor ?? null,
+      parseStatus: "PENDING",
+    },
+    update: {
+      fileKey,
+      uploadedById,
+      uploadedByTeamId,
+      homeTeamColor: homeTeamColor ?? null,
+      parseStatus:      "PENDING",
+      parseStartedAt:   null,
+      parseCompletedAt: null,
+      parseError:       null,
+      ballchasingId:    null,
+      ballchasingUrl:   null,
+      parsedData:       null,
+      parsedHomeGoals:  null,
+      parsedAwayGoals:  null,
+      parsedDuration:   null,
+      parsedOvertime:   null,
+      scoresAccepted:   false,
+    },
+  })
+
+  // Fire-and-forget: submit to ballchasing.com for parsing
+  // Intentionally not awaited — parse failure is handled async via webhook/poll
+  submitToBallchasing(upload.id).catch((err) => {
+    console.error(`[replay] submitToBallchasing failed for upload ${upload.id}:`, err)
+  })
+
+  return upload
 }
 
 /**
@@ -88,13 +156,38 @@ export async function deleteReplayUpload(
   matchId: string,
   gameNumber: number
 ): Promise<void> {
-  // TODO:
-  // 1. Fetch the ReplayUpload; guard: match not COMPLETED
-  // 2. Delete ReplayPlayerStat rows (cascade handles this if schema is set)
-  // 3. Delete the linked MatchGame if source=REPLAY_AUTO
-  // 4. Decrement Match.replaysVerified if the slot was SUCCESS
-  // 5. prisma.replayUpload.delete(...)
-  throw new Error("Not implemented: deleteReplayUpload")
+  const upload = await prisma.replayUpload.findUnique({
+    where: { matchId_gameNumber: { matchId, gameNumber } },
+    select: {
+      id:          true,
+      parseStatus: true,
+      gameResult:  { select: { id: true, source: true } },
+      match:       { select: { status: true } },
+    },
+  })
+
+  if (!upload) throw new Error("Replay upload not found")
+
+  const terminalStatuses = ["COMPLETED", "CANCELLED", "FORFEITED", "NO_SHOW"]
+  if (terminalStatuses.includes(upload.match.status)) {
+    throw new Error(`Cannot remove a replay from a match in ${upload.match.status} status`)
+  }
+
+  // Delete the auto-generated MatchGame if one exists (player stats cascade via DB)
+  if (upload.gameResult?.source === "REPLAY_AUTO") {
+    await prisma.matchGame.delete({ where: { id: upload.gameResult.id } })
+  }
+
+  // Decrement replaysVerified if this slot was previously successful
+  if (upload.parseStatus === "SUCCESS") {
+    await prisma.match.update({
+      where: { id: matchId },
+      data:  { replaysVerified: { decrement: 1 } },
+    })
+  }
+
+  // Delete upload (ReplayPlayerStat rows cascade via schema)
+  await prisma.replayUpload.delete({ where: { id: upload.id } })
 }
 
 // ---------------------------------------------------------------------------
@@ -106,13 +199,24 @@ export async function deleteReplayUpload(
  * Updates parseStatus to PROCESSING and stores the ballchasingId.
  */
 export async function submitToBallchasing(replayUploadId: string): Promise<void> {
-  // TODO:
-  // 1. Fetch ReplayUpload (fileKey, matchId, gameNumber)
-  // 2. Stream file from S3/R2 using fileKey
-  // 3. POST to ballchasing.com /api/v3/upload → receive ballchasingId
-  // 4. prisma.replayUpload.update({ parseStatus: "PROCESSING", ballchasingId, ballchasingUrl, parseStartedAt: now() })
-  // See ballchasing.service.ts for the API client wrapper
-  throw new Error("Not implemented: submitToBallchasing")
+  const upload = await prisma.replayUpload.findUnique({
+    where:  { id: replayUploadId },
+    select: { id: true, fileKey: true },
+  })
+  if (!upload) throw new Error(`ReplayUpload ${replayUploadId} not found`)
+
+  const { uploadReplay } = await import("@/lib/services/ballchasing.service")
+  const { id: ballchasingId, location: ballchasingUrl } = await uploadReplay(upload.fileKey)
+
+  await prisma.replayUpload.update({
+    where: { id: replayUploadId },
+    data: {
+      parseStatus:    "PROCESSING",
+      ballchasingId,
+      ballchasingUrl,
+      parseStartedAt: new Date(),
+    },
+  })
 }
 
 /**
@@ -123,19 +227,116 @@ export async function handleParseResult(
   replayUploadId: string,
   result: ParseResult
 ): Promise<void> {
-  // TODO:
-  // 1. Fetch ReplayUpload
-  // 2. If FAILED:
-  //    a. Update parseStatus=FAILED, parseError, parseCompletedAt
-  //    b. (future) Notify team
-  //    c. Return
-  // 3. If SUCCESS:
-  //    a. Update ReplayUpload with parsed fields, parseStatus=SUCCESS, scoresAccepted=true
-  //    b. createMatchGameFromReplay(replayUpload, result)
-  //    c. createPlayerStats(replayUploadId, result.players)
-  //    d. Increment Match.replaysVerified (atomic: $executeRaw or update + select)
-  //    e. checkFastPath(replayUpload.matchId)
-  throw new Error("Not implemented: handleParseResult")
+  const upload = await prisma.replayUpload.findUnique({
+    where: { id: replayUploadId },
+    select: {
+      id:               true,
+      matchId:          true,
+      gameNumber:       true,
+      uploadedById:     true,
+      uploadedByTeamId: true,
+    },
+  })
+  if (!upload) throw new Error(`ReplayUpload ${replayUploadId} not found`)
+
+  const now = new Date()
+
+  if (result.status === "FAILED") {
+    await prisma.replayUpload.update({
+      where: { id: replayUploadId },
+      data: {
+        parseStatus:      "FAILED",
+        parseError:       result.errorMessage ?? "Unknown parse error",
+        parseCompletedAt: now,
+      },
+    })
+    // Future: notify team via email/Discord
+    return
+  }
+
+  // MISMATCH check — if a manual MatchGame already exists for this slot with
+  // different scores, flag the slot and auto-dispute rather than overwriting.
+  const existingGame = await prisma.matchGame.findUnique({
+    where:  { matchId_gameNumber: { matchId: upload.matchId, gameNumber: upload.gameNumber } },
+    select: { source: true, homeGoals: true, awayGoals: true },
+  })
+
+  const hasManualEntry = existingGame?.source === "MANUAL"
+  const scoresConflict =
+    hasManualEntry &&
+    (existingGame!.homeGoals !== result.homeGoals ||
+      existingGame!.awayGoals !== result.awayGoals)
+
+  if (scoresConflict) {
+    await prisma.replayUpload.update({
+      where: { id: replayUploadId },
+      data: {
+        parseStatus:      "MISMATCH",
+        parseCompletedAt: now,
+        parseError:       null,
+        parsedHomeGoals:  result.homeGoals  ?? null,
+        parsedAwayGoals:  result.awayGoals  ?? null,
+        parsedDuration:   result.duration   ?? null,
+        parsedOvertime:   result.overtime   ?? null,
+        parsedData:       (result.rawJson ?? null) as object | null,
+        scoresAccepted:   false,
+      },
+    })
+
+    const reason =
+      `Score mismatch on game ${upload.gameNumber}: ` +
+      `replay shows ${result.homeGoals}–${result.awayGoals}, ` +
+      `manual entry shows ${existingGame!.homeGoals}–${existingGame!.awayGoals}.`
+
+    // Upsert dispute (matchId is unique on Dispute)
+    await prisma.dispute.upsert({
+      where:  { matchId: upload.matchId },
+      create: {
+        matchId:       upload.matchId,
+        filedByUserId: upload.uploadedById,
+        filedByTeamId: upload.uploadedByTeamId,
+        reason,
+        status:        "OPEN",
+      },
+      update: { reason },
+    })
+
+    await prisma.match.update({
+      where: { id: upload.matchId },
+      data:  { status: "DISPUTED" },
+    })
+
+    return
+  }
+
+  // SUCCESS path — store parsed fields, create GameResult + player stats
+  await prisma.replayUpload.update({
+    where: { id: replayUploadId },
+    data: {
+      parseStatus:      "SUCCESS",
+      parseCompletedAt: now,
+      parseError:       null,
+      parsedHomeGoals:  result.homeGoals ?? null,
+      parsedAwayGoals:  result.awayGoals ?? null,
+      parsedDuration:   result.duration  ?? null,
+      parsedOvertime:   result.overtime  ?? null,
+      parsedData:       (result.rawJson ?? null) as object | null,
+      scoresAccepted:   true,
+    },
+  })
+
+  await createMatchGameFromReplay(replayUploadId, result)
+
+  if (result.players?.length) {
+    await createPlayerStats(replayUploadId, result.players)
+  }
+
+  await prisma.match.update({
+    where: { id: upload.matchId },
+    data:  { replaysVerified: { increment: 1 } },
+  })
+
+  await checkFastPath(upload.matchId)
 }
 
 /**
@@ -145,11 +346,40 @@ export async function retriggerParse(
   replayUploadId: string,
   staffId: string
 ): Promise<void> {
-  // TODO:
-  // 1. Reset parseStatus=PENDING, clear parseError
-  // 2. Write AuditLog: action="REPLAY_REPARSE_TRIGGERED"
-  // 3. Call submitToBallchasing(replayUploadId)
-  throw new Error("Not implemented: retriggerParse")
+  const upload = await prisma.replayUpload.findUnique({
+    where: { id: replayUploadId },
+    select: { id: true, matchId: true, parseStatus: true },
+  })
+  if (!upload) throw new Error("Replay upload not found")
+  if (upload.parseStatus !== "FAILED") {
+    throw new Error(`Only FAILED replays can be re-parsed (current: ${upload.parseStatus})`)
+  }
+
+  await prisma.$transaction([
+    prisma.replayUpload.update({
+      where: { id: replayUploadId },
+      data: {
+        parseStatus:    "PENDING",
+        parseError:     null,
+        parseStartedAt: null,
+        parseCompletedAt: null,
+      },
+    }),
+    prisma.auditLog.create({
+      data: {
+        actorId:    staffId,
+        action:     "REPLAY_REPARSE_TRIGGERED",
+        entityType: "ReplayUpload",
+        entityId:   replayUploadId,
+        after:      { matchId: upload.matchId },
+      },
+    }),
+  ])
+
+  // Fire-and-forget — errors are logged and surfaced via poll/webhook later
+  submitToBallchasing(replayUploadId).catch((err) => {
+    console.error(`[replay] retrigger submitToBallchasing failed for ${replayUploadId}:`, err)
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -163,10 +393,33 @@ export async function createMatchGameFromReplay(
   replayUploadId: string,
   result: ParseResult
 ): Promise<void> {
-  // TODO:
-  // 1. Fetch ReplayUpload (matchId, gameNumber)
-  // 2. prisma.matchGame.upsert({ where: { matchId_gameNumber }, source: "REPLAY_AUTO", replayUploadId })
-  throw new Error("Not implemented: createMatchGameFromReplay")
+  const upload = await prisma.replayUpload.findUnique({
+    where:  { id: replayUploadId },
+    select: { matchId: true, gameNumber: true },
+  })
+  if (!upload) throw new Error(`ReplayUpload ${replayUploadId} not found`)
+
+  await prisma.matchGame.upsert({
+    where: { matchId_gameNumber: { matchId: upload.matchId, gameNumber: upload.gameNumber } },
+    create: {
+      matchId:       upload.matchId,
+      gameNumber:    upload.gameNumber,
+      homeGoals:     result.homeGoals!,
+      awayGoals:     result.awayGoals!,
+      overtime:      result.overtime ?? false,
+      duration:      result.duration ?? null,
+      source:        "REPLAY_AUTO",
+      replayUploadId,
+    },
+    update: {
+      homeGoals:     result.homeGoals!,
+      awayGoals:     result.awayGoals!,
+      overtime:      result.overtime ?? false,
+      duration:      result.duration ?? null,
+      source:        "REPLAY_AUTO",
+      replayUploadId,
+    },
+  })
 }
 
 /**
@@ -176,10 +429,37 @@ export async function createPlayerStats(
   replayUploadId: string,
   players: ParsedPlayerStat[]
 ): Promise<void> {
-  // TODO:
-  // 1. For each player: try to match epicUsername to a Player.id
-  // 2. prisma.replayPlayerStat.createMany(...)
-  throw new Error("Not implemented: createPlayerStats")
+  // Bulk-delete any prior stats for this upload (re-parse scenario)
+  await prisma.replayPlayerStat.deleteMany({ where: { replayUploadId } })
+
+  // Try to match each player's epicUsername to a platform Player record
+  const usernames = [...new Set(players.map((p) => p.epicUsername))]
+  const playerRecords = await prisma.player.findMany({
+    where:  { epicUsername: { in: usernames } },
+    select: { id: true, epicUsername: true },
+  })
+  const epicToPlayerId = new Map(playerRecords.map((p) => [p.epicUsername!, p.id]))
+
+  await prisma.replayPlayerStat.createMany({
+    data: players.map((p) => ({
+      replayUploadId,
+      epicUsername:     p.epicUsername,
+      playerId:         epicToPlayerId.get(p.epicUsername) ?? null,
+      teamSide:         p.teamSide,
+      score:            p.score,
+      goals:            p.goals,
+      assists:          p.assists,
+      saves:            p.saves,
+      shots:            p.shots,
+      demos:            p.demos,
+      boostUsed:        p.boostUsed        ?? null,
+      avgBoostAmount:   p.avgBoostAmount   ?? null,
+      timeSupersonic:   p.timeSupersonic   ?? null,
+      distanceTraveled: p.distanceTraveled ?? null,
+      timeInAir:        p.timeInAir        ?? null,
+      boostCollected:   p.boostCollected   ?? null,
+    })),
+  })
 }
 
 /**
@@ -195,13 +475,46 @@ export async function createPlayerStats(
  *   → do nothing yet
  */
 export async function checkFastPath(matchId: string): Promise<void> {
-  // TODO:
-  // 1. Fetch match: gamesExpected, replaysVerified, homeTeamId, awayTeamId
-  // 2. If replaysVerified < gamesExpected: return (not all done yet)
-  // 3. Fetch all ReplayUpload rows for matchId where parseStatus=SUCCESS
-  // 4. Check if both teams have uploaded → fast path → COMPLETED
-  // 5. Otherwise → VERIFYING
-  throw new Error("Not implemented: checkFastPath")
+  const match = await prisma.match.findUnique({
+    where:  { id: matchId },
+    select: {
+      status:        true,
+      gamesExpected: true,
+      homeTeamId:    true,
+      awayTeamId:    true,
+    },
+  })
+  if (!match?.gamesExpected) return
+
+  // Only act when the match is in a state that allows advancement
+  const eligible = ["IN_PROGRESS", "MATCH_FINISHED"]
+  if (!eligible.includes(match.status)) return
+
+  const successReplays = await prisma.replayUpload.findMany({
+    where:  { matchId, parseStatus: "SUCCESS" },
+    select: { uploadedByTeamId: true },
+  })
+
+  if (successReplays.length < match.gamesExpected) return
+
+  const uploadingTeams = new Set(successReplays.map((r) => r.uploadedByTeamId))
+  const bothTeams =
+    uploadingTeams.has(match.homeTeamId) && uploadingTeams.has(match.awayTeamId)
+
+  const target = bothTeams ? "COMPLETED" : "VERIFYING"
+
+  // Advance through MATCH_FINISHED if still IN_PROGRESS
+  if (match.status === "IN_PROGRESS") {
+    await prisma.match.update({ where: { id: matchId }, data: { status: "MATCH_FINISHED" } })
+  }
+
+  await prisma.match.update({
+    where: { id: matchId },
+    data: {
+      status: target,
+      ...(target === "COMPLETED" ? { completedAt: new Date() } : {}),
+    },
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -211,12 +524,62 @@ export async function checkFastPath(matchId: string): Promise<void> {
 /**
  * Polls ballchasing.com for the status of all PROCESSING replays.
  * Fallback for when webhooks are not delivered.
+ *
+ * For each PROCESSING upload:
+ *  - If stale (parseStartedAt older than REPLAY_STALE_AFTER_MS): mark FAILED
+ *  - Otherwise: fetch status from ballchasing.com
+ *    - "pending" → still working, skip
+ *    - "ok"      → parse SUCCESS, hand off to handleParseResult
+ *    - "failed"  → mark FAILED, hand off to handleParseResult
+ *
+ * @returns Number of uploads whose status changed this tick.
  */
 export async function pollProcessingReplays(): Promise<number> {
-  // TODO:
-  // 1. Fetch all ReplayUpload WHERE parseStatus=PROCESSING
-  // 2. For each: GET ballchasing.com /api/v3/replays/:ballchasingId
-  // 3. If done: handleParseResult(...)
-  // 4. If stale (parseStartedAt > threshold): escalate if match is VERIFYING → DISPUTED
-  throw new Error("Not implemented: pollProcessingReplays")
+  const { getReplayStatus, toParseResult } = await import("@/lib/services/ballchasing.service")
+  const { REPLAY_STALE_AFTER_MS } = await import("@/lib/constants")
+
+  const processing = await prisma.replayUpload.findMany({
+    where:  { parseStatus: "PROCESSING" },
+    select: {
+      id:             true,
+      ballchasingId:  true,
+      parseStartedAt: true,
+      homeTeamColor:  true,
+    },
+  })
+
+  const staleThreshold = new Date(Date.now() - REPLAY_STALE_AFTER_MS)
+  let processed = 0
+
+  for (const upload of processing) {
+    try {
+      // Stale without a response — fail it without another network call
+      if (upload.parseStartedAt && upload.parseStartedAt < staleThreshold) {
+        await handleParseResult(upload.id, {
+          status:       "FAILED",
+          errorMessage: "Parse timed out: no response from ballchasing.com within the expected window",
+        })
+        processed++
+        continue
+      }
+
+      // No ballchasingId means the upload to ballchasing never completed
+      if (!upload.ballchasingId) continue
+
+      const replay = await getReplayStatus(upload.ballchasingId)
+
+      // Still pending on their end — nothing to do yet
+      if (replay.status === "pending") continue
+
+      const homeTeamColor = upload.homeTeamColor === "orange" ? "orange" : "blue"
+      const result = toParseResult(replay, homeTeamColor)
+      await handleParseResult(upload.id, result)
+      processed++
+    } catch (err) {
+      // Log and continue — a single upload failure must not abort the rest
+      console.error(`[pollProcessingReplays] upload ${upload.id} failed:`, err)
+    }
+  }
+
+  return processed
 }
