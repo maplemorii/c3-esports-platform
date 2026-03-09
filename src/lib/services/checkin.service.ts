@@ -99,7 +99,7 @@ export async function resolveCheckInDeadline(matchId: string): Promise<void> {
  * Finds all CHECKING_IN matches whose checkInDeadlineAt has passed
  * and calls resolveCheckInDeadline() for each.
  */
-export async function processOverdueCheckIns(): Promise<void> {
+export async function processOverdueCheckIns(): Promise<number> {
   // TODO:
   // 1. Query: matches WHERE status=CHECKING_IN AND checkInDeadlineAt <= now()
   // 2. For each: resolveCheckInDeadline(match.id)
@@ -111,7 +111,7 @@ export async function processOverdueCheckIns(): Promise<void> {
  * Finds all SCHEDULED matches whose checkInOpenAt has passed
  * and calls openCheckIn() for each.
  */
-export async function processScheduledMatchesForCheckIn(): Promise<void> {
+export async function processScheduledMatchesForCheckIn(): Promise<number> {
   // TODO:
   // 1. Query: matches WHERE status=SCHEDULED AND checkInOpenAt <= now()
   // 2. For each: openCheckIn(match.id)
