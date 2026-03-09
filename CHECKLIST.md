@@ -190,29 +190,29 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 ### Replay System
 
-- [ ] `GET /api/matches/:matchId/replays` — replay upload slots + parse status
-- [ ] `POST /api/matches/:matchId/replays` — upload `.replay` file for one game (fileKey from presigned URL)
-- [ ] `GET /api/matches/:matchId/replays/:gameNumber` — replay detail + parse status
-- [ ] `DELETE /api/matches/:matchId/replays/:gameNumber` — remove replay (resets slot to manual)
-- [ ] `GET /api/matches/:matchId/replays/:gameNumber/reparse` — re-trigger parse for failed replay (staff)
-- [ ] `POST /api/upload/presign` — presigned URL for S3/R2 (`logo | replay | avatar`)
-- [ ] `POST /api/webhooks/ballchasing` — receive parse result callback + signature verification
-- [ ] ballchasing.com API client (`src/lib/services/ballchasing.service.ts`)
-- [ ] Replay service (`src/lib/services/replay.service.ts`): upload → parse → GameResult pipeline
-- [ ] Parse pipeline: SUCCESS → auto-create `GameResult` (source=`REPLAY_AUTO`) + `ReplayPlayerStat` rows
-- [ ] Parse pipeline: FAILED → notify team, enable manual entry for that game slot
-- [ ] MISMATCH detection: parsed scores vs manually entered → auto-DISPUTED
-- [ ] Dual-upload fast path: both teams uploaded all replays → `COMPLETED` automatically
-- [ ] Single-upload path: one team uploaded → `VERIFYING` with pre-filled scores
-- [ ] Cron: poll `PROCESSING` replays; escalate stale `VERIFYING` → `DISPUTED`
+- [x] `GET /api/matches/:matchId/replays` — replay upload slots + parse status
+- [x] `POST /api/matches/:matchId/replays` — upload `.replay` file for one game (fileKey from presigned URL)
+- [x] `GET /api/matches/:matchId/replays/:gameNumber` — replay detail + parse status
+- [x] `DELETE /api/matches/:matchId/replays/:gameNumber` — remove replay (resets slot to manual)
+- [x] `GET /api/matches/:matchId/replays/:gameNumber/reparse` — re-trigger parse for failed replay (staff)
+- [x] `POST /api/upload/presign` — presigned URL for S3/R2 (`logo | replay | avatar`)
+- [x] `POST /api/webhooks/ballchasing` — receive parse result callback + signature verification
+- [x] ballchasing.com API client (`src/lib/services/ballchasing.service.ts`)
+- [x] Replay service (`src/lib/services/replay.service.ts`): upload → parse → GameResult pipeline
+- [x] Parse pipeline: SUCCESS → auto-create `GameResult` (source=`REPLAY_AUTO`) + `ReplayPlayerStat` rows
+- [x] Parse pipeline: FAILED → notify team, enable manual entry for that game slot
+- [x] MISMATCH detection: parsed scores vs manually entered → auto-DISPUTED
+- [x] Dual-upload fast path: both teams uploaded all replays → `COMPLETED` automatically
+- [x] Single-upload path: one team uploaded → `VERIFYING` with pre-filled scores
+- [x] Cron: poll `PROCESSING` replays; escalate stale `VERIFYING` → `DISPUTED`
 
 ### Score Entry API
 
-- [ ] `POST /api/matches/:matchId/result` — manual score submission (manager); only for slots without valid replay
-- [ ] `POST /api/matches/:matchId/confirm` — opposing team confirms scores (`VERIFYING → COMPLETED` or `DISPUTED`)
-- [ ] `PATCH /api/matches/:matchId/result` — staff override at any stage; `AuditLog` entry
-- [ ] `POST /api/matches/:matchId/forfeit` — record forfeit (staff)
-- [ ] `GET /api/matches/:matchId/timeline` — status history from AuditLog
+- [x] `POST /api/matches/:matchId/result` — manual score submission (manager); only for slots without valid replay
+- [x] `POST /api/matches/:matchId/confirm` — opposing team confirms scores (`VERIFYING → COMPLETED` or `DISPUTED`)
+- [x] `PATCH /api/matches/:matchId/result` — staff override at any stage; `AuditLog` entry
+- [x] `POST /api/matches/:matchId/forfeit` — record forfeit (staff)
+- [x] `GET /api/matches/:matchId/timeline` — status history from AuditLog
 
 ### Match Services
 
@@ -252,29 +252,7 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 ---
 
-## PHASE 5 — BRACKETS
-
-### Bracket API
-
-- [ ] `GET /api/divisions/:divisionId/bracket` — bracket structure + results
-- [ ] `POST /api/divisions/:divisionId/bracket/generate` — generate bracket (staff)
-- [ ] `DELETE /api/divisions/:divisionId/bracket` — reset bracket (admin)
-
-### Bracket Services
-
-- [ ] `src/lib/services/bracket.service.ts` — bracket generation orchestration
-- [ ] `src/lib/services/swiss.service.ts` — Swiss pairing algorithm + round advancement
-- [ ] `src/lib/services/gsl.service.ts` — GSL group stage logic
-- [ ] `src/lib/services/elimination.service.ts` — Double Elimination seeding + advancement
-
-### Bracket Pages & Components
-
-- [ ] Public bracket page (`/(public)/seasons/[seasonSlug]/brackets`)
-- [ ] `BracketViewer.tsx` — visual bracket tree
-- [ ] `DoubleElimBracket.tsx`, `SwissBracket.tsx`, `GSLBracket.tsx`
-- [ ] Auto match creation on bracket advancement
-
----
+## PHASE 5 — STAFF PANEL
 
 ## PHASE 6 — ADMIN PANEL
 
