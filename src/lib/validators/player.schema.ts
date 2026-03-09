@@ -25,17 +25,19 @@ const displayName = z
   .trim()
 
 /**
- * Epic Games / Rocket League username.
- * 3–16 characters: letters, numbers, underscores, hyphens.
+ * Epic Games / Rocket League display name.
+ * 3–16 characters: letters, numbers, underscores, hyphens, periods, spaces.
+ * No leading/trailing spaces.
  */
 const epicUsername = z
   .string()
   .min(3, "Epic username must be at least 3 characters")
   .max(16, "Epic username must be 16 characters or less")
   .regex(
-    /^[A-Za-z0-9_\-]+$/,
-    "Epic username can only contain letters, numbers, underscores, and hyphens"
+    /^[A-Za-z0-9_.\ \-]+$/,
+    "Epic username can only contain letters, numbers, spaces, underscores, hyphens, and periods"
   )
+  .regex(/^[^\s].*[^\s]$|^[^\s]{1}$/, "Epic username cannot start or end with a space")
   .optional()
 
 /**
