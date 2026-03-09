@@ -47,7 +47,6 @@ const twitterHandle = z
 
 export const CreateTeamSchema = z.object({
   name:           teamName,
-  region:         z.string().min(1).max(10).optional(),
   primaryColor:   hexColor,
   secondaryColor: hexColor,
   website:        httpUrl,

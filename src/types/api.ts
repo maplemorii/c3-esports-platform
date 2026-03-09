@@ -75,7 +75,6 @@ export interface PlayerResponse {
   epicUsername:   string | null
   steamId:        string | null
   discordUsername:string | null
-  country:        string | null
   bio:            string | null
   createdAt:      string
 }
@@ -90,7 +89,6 @@ export interface TeamSummary {
   name:         string
   logoUrl:      string | null
   primaryColor: string | null
-  region:       string | null
 }
 
 export interface RosterMember {
@@ -104,7 +102,6 @@ export interface RosterMember {
     displayName:  string
     avatarUrl:    string | null
     epicUsername: string | null
-    country:      string | null
   }
 }
 
@@ -307,7 +304,6 @@ export interface MatchQueryParams {
 
 export interface TeamQueryParams {
   search?:   string
-  region?:   string
   seasonId?: string
   page?:     number
   pageSize?: number

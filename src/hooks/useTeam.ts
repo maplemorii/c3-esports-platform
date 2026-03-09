@@ -5,7 +5,7 @@
  *
  * Usage:
  *   const { team, isLoading, error } = useTeam("team-id-abc")
- *   const { teams, isLoading } = useTeams({ region: "NA", pageSize: 20 })
+ *   const { teams, isLoading } = useTeams({ pageSize: 20 })
  */
 
 "use client"
@@ -68,7 +68,6 @@ export interface UseTeamsResult {
 function buildTeamsUrl(params: TeamQueryParams): string {
   const q = new URLSearchParams()
   if (params.search)   q.set("search",   params.search)
-  if (params.region)   q.set("region",   params.region)
   if (params.seasonId) q.set("seasonId", params.seasonId)
   if (params.page)     q.set("page",     String(params.page))
   if (params.pageSize) q.set("pageSize", String(params.pageSize))

@@ -220,7 +220,6 @@ model Player {
   epicUsername    String?   @unique  // Rocket League / Epic Games username
   steamId         String?   @unique
   discordUsername String?
-  country         String?   // ISO 3166-1 alpha-2 e.g. "US"
   bio             String?   @db.Text
 
   // Soft delete
@@ -250,7 +249,6 @@ model Team {
   logoKey       String?             // S3/R2 object key
   primaryColor  String?             // Hex e.g. "#C0273A"
   secondaryColor String?
-  region        String?             // e.g. "NA", "EU", "OCE"
   ownerId       String
   website       String?
   twitterHandle String?

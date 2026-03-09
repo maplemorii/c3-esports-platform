@@ -59,15 +59,6 @@ const discordUsername = z
   )
   .optional()
 
-/**
- * ISO 3166-1 alpha-2 country code (e.g. "US", "GB", "DE").
- */
-const countryCode = z
-  .string()
-  .length(2, "Country must be a 2-letter ISO code (e.g. US, GB)")
-  .toUpperCase()
-  .optional()
-
 // ---------------------------------------------------------------------------
 // Player profile
 // ---------------------------------------------------------------------------
@@ -77,7 +68,6 @@ export const CreatePlayerSchema = z.object({
   epicUsername:    epicUsername,
   steamId:         steamId,
   discordUsername: discordUsername,
-  country:         countryCode,
   bio:             z.string().max(500).optional(),
 })
 

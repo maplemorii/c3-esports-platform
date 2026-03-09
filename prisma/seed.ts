@@ -88,7 +88,6 @@ async function main() {
     create: {
       slug: "team-alpha",
       name: "Team Alpha",
-      region: "NA",
       ownerId: admin.id,
       primaryColor: "#C0273A",
       secondaryColor: "#1A2744",
@@ -101,7 +100,6 @@ async function main() {
     create: {
       slug: "team-beta",
       name: "Team Beta",
-      region: "NA",
       ownerId: admin.id,
       primaryColor: "#1A2744",
       secondaryColor: "#C0273A",

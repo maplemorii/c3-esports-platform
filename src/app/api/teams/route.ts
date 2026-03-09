@@ -2,7 +2,7 @@
  * /api/teams
  *
  * GET  — public; paginated list of active teams
- *         Query params: search, region, seasonId, page, pageSize
+ *         Query params: search, seasonId, page, pageSize
  *
  * POST — authenticated (any USER+); creates a new team
  *         Promotes the creator to TEAM_MANAGER if they are still USER.
@@ -33,7 +33,6 @@ export async function GET(req: NextRequest) {
 
     // Filters
     const search   = searchParams.get("search")?.trim()
-    const region   = searchParams.get("region")?.trim()
     const seasonId = searchParams.get("seasonId")?.trim()
 
     const where: Prisma.TeamWhereInput = {
@@ -44,7 +43,6 @@ export async function GET(req: NextRequest) {
           { slug:   { contains: search, mode: "insensitive" } },
         ],
       }),
-      ...(region && { region }),
       ...(seasonId && {
         registrations: {
           some: { seasonId, status: { in: ["APPROVED", "PENDING"] } },
@@ -61,7 +59,6 @@ export async function GET(req: NextRequest) {
           name:         true,
           logoUrl:      true,
           primaryColor: true,
-          region:       true,
         },
         orderBy: { name: "asc" },
         skip,
@@ -117,7 +114,6 @@ export async function POST(req: NextRequest) {
         data: {
           slug,
           name:           data.name,
-          region:         data.region,
           primaryColor:   data.primaryColor,
           secondaryColor: data.secondaryColor,
           website:        data.website,
@@ -132,7 +128,6 @@ export async function POST(req: NextRequest) {
           logoUrl:        true,
           primaryColor:   true,
           secondaryColor: true,
-          region:         true,
           website:        true,
           twitterHandle:  true,
           discordInvite:  true,
