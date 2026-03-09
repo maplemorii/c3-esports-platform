@@ -11,6 +11,7 @@
  *   BALLCHASING_WEBHOOK_SECRET   — Shared secret for webhook signature verification
  */
 
+import { createHmac, timingSafeEqual } from "crypto"
 import type { ParseResult, ParsedPlayerStat } from "./replay.service"
 
 const BASE_URL = "https://ballchasing.com/api"
@@ -73,13 +74,23 @@ export interface BallchasingPlayer {
  * Returns the ballchasingId and page URL.
  */
 export async function uploadReplay(fileKey: string): Promise<BallchasingUploadResult> {
-  // TODO:
-  // 1. Stream file from S3/R2 using fileKey (via storage.ts)
-  // 2. POST https://ballchasing.com/api/v3/upload
-  //    Headers: Authorization: Token ${BALLCHASING_API_KEY}
-  //    Body: multipart/form-data with the .replay file
-  // 3. Return { id, location } from the response
-  throw new Error("Not implemented: uploadReplay")
+  const { getObject } = await import("@/lib/upload/storage")
+
+  const obj = await getObject(fileKey)
+  if (!obj.Body) throw new Error(`S3 object not found: ${fileKey}`)
+
+  // Collect the stream into a byte array, then wrap in a Blob for FormData
+  const bytes = await obj.Body.transformToByteArray()
+  const blob  = new Blob([bytes], { type: "application/octet-stream" })
+
+  const filename = fileKey.split("/").pop() ?? "replay.replay"
+  const form = new FormData()
+  form.append("file", blob, filename)
+
+  const res  = await ballchasingFetch("/v3/upload", { method: "POST", body: form })
+  const json = (await res.json()) as { id: string; location: string }
+
+  return { id: json.id, location: json.location }
 }
 
 // ---------------------------------------------------------------------------
@@ -90,11 +101,8 @@ export async function uploadReplay(fileKey: string): Promise<BallchasingUploadRe
  * Fetches the current parse status of a replay from ballchasing.com.
  */
 export async function getReplayStatus(ballchasingId: string): Promise<BallchasingReplay> {
-  // TODO:
-  // 1. GET https://ballchasing.com/api/v3/replays/:ballchasingId
-  //    Headers: Authorization: Token ${BALLCHASING_API_KEY}
-  // 2. Return parsed JSON
-  throw new Error("Not implemented: getReplayStatus")
+  const res = await ballchasingFetch(`/v3/replays/${ballchasingId}`)
+  return res.json() as Promise<BallchasingReplay>
 }
 
 // ---------------------------------------------------------------------------
@@ -106,17 +114,27 @@ export async function getReplayStatus(ballchasingId: string): Promise<Ballchasin
  * Returns true if the signature is valid.
  *
  * @param rawBody   — Raw request body (Buffer or string)
- * @param signature — Value of the X-Ballchasing-Signature header
+ * @param signature — Value of the X-Ballchasing-Signature header (hex or "sha256=<hex>")
  */
 export function verifyWebhookSignature(
   rawBody: string | Buffer,
   signature: string
 ): boolean {
-  // TODO:
-  // 1. HMAC-SHA256(rawBody, BALLCHASING_WEBHOOK_SECRET)
-  // 2. Compare with signature using timingSafeEqual to prevent timing attacks
-  // import { createHmac, timingSafeEqual } from "crypto"
-  throw new Error("Not implemented: verifyWebhookSignature")
+  const secret = process.env.BALLCHASING_WEBHOOK_SECRET
+  if (!secret) {
+    console.warn("[ballchasing] BALLCHASING_WEBHOOK_SECRET is not set — skipping verification")
+    return false
+  }
+
+  const body = typeof rawBody === "string" ? rawBody : rawBody.toString("utf8")
+  const expected = createHmac("sha256", secret).update(body).digest("hex")
+  const received = signature.replace(/^sha256=/, "")
+
+  try {
+    return timingSafeEqual(Buffer.from(expected, "hex"), Buffer.from(received, "hex"))
+  } catch {
+    return false
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -134,12 +152,49 @@ export function toParseResult(
   replay: BallchasingReplay,
   homeTeamColor: "blue" | "orange" = "blue"
 ): ParseResult {
-  // TODO:
-  // 1. Map homeTeamColor to replay.blue / replay.orange
-  // 2. Extract homeGoals, awayGoals, duration, overtime
-  // 3. Map each player's stats to ParsedPlayerStat
-  // 4. Return ParseResult
-  throw new Error("Not implemented: toParseResult")
+  if (replay.status === "pending") {
+    return { status: "FAILED", errorMessage: "Replay is still pending on ballchasing.com" }
+  }
+  if (replay.status === "failed") {
+    return { status: "FAILED", errorMessage: "ballchasing.com failed to parse the replay file" }
+  }
+
+  const awayColor = homeTeamColor === "blue" ? "orange" : "blue"
+  const homeTeam  = replay[homeTeamColor]
+  const awayTeam  = replay[awayColor]
+
+  const players: ParsedPlayerStat[] = [
+    ...homeTeam.players.map((p) => mapPlayer(p, "home")),
+    ...awayTeam.players.map((p) => mapPlayer(p, "away")),
+  ]
+
+  return {
+    status:    "SUCCESS",
+    homeGoals: homeTeam.goals,
+    awayGoals: awayTeam.goals,
+    duration:  replay.duration,
+    overtime:  replay.overtime,
+    players,
+    rawJson:   replay,
+  }
+}
+
+function mapPlayer(p: BallchasingPlayer, teamSide: "home" | "away"): ParsedPlayerStat {
+  return {
+    epicUsername:     p.name,
+    teamSide,
+    score:            p.stats.core.score,
+    goals:            p.stats.core.goals,
+    assists:          p.stats.core.assists,
+    saves:            p.stats.core.saves,
+    shots:            p.stats.core.shots,
+    demos:            p.stats.core.demos_inflicted,
+    boostUsed:        p.stats.boost?.amount_used_while_supersonic,
+    avgBoostAmount:   p.stats.boost?.average_amount,
+    timeSupersonic:   p.stats.movement?.time_supersonic_speed,
+    distanceTraveled: p.stats.movement?.total_distance,
+    timeInAir:        p.stats.movement?.time_air_time,
+  }
 }
 
 // ---------------------------------------------------------------------------
