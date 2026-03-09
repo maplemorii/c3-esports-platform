@@ -66,28 +66,28 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 - [x] `POST /api/teams` — create team (`src/app/api/teams/route.ts`)
 - [x] `GET /api/teams` — list teams (with `?search=&region=&seasonId=` query params)
-- [ ] `GET /api/teams/:teamId` — team profile + roster
-- [ ] `PATCH /api/teams/:teamId` — update team info (manager)
-- [ ] `DELETE /api/teams/:teamId` — delete team (admin)
-- [ ] `GET /api/teams/:teamId/roster` — get roster
-- [ ] `POST /api/teams/:teamId/roster` — add player to roster
-- [ ] `DELETE /api/teams/:teamId/roster/:entryId` — remove player from roster
-- [ ] `POST /api/teams/:teamId/logo` — presigned S3/R2 logo upload
+- [x] `GET /api/teams/:teamId` — team profile + roster
+- [x] `PATCH /api/teams/:teamId` — update team info (manager)
+- [x] `DELETE /api/teams/:teamId` — delete team (admin)
+- [x] `GET /api/teams/:teamId/roster` — get roster
+- [x] `POST /api/teams/:teamId/roster` — add player to roster
+- [x] `DELETE /api/teams/:teamId/roster/:entryId` — remove player from roster
+- [x] `POST /api/teams/:teamId/logo` — presigned S3/R2 logo upload
 
 ### Player API
 
-- [ ] `GET /api/players` — list/search players
-- [ ] `GET /api/players/:playerId` — player profile + history
-- [ ] `POST /api/players` — create player profile (one per user)
-- [ ] `PATCH /api/players/:playerId` — update own player profile
+- [x] `GET /api/players` — list/search players
+- [x] `GET /api/players/:playerId` — player profile + history
+- [x] `POST /api/players` — create player profile (one per user)
+- [x] `PATCH /api/players/:playerId` — update own player profile
 
 ### Team Pages
 
-- [ ] Team creation page (`/(dashboard)/team/create`)
-- [ ] Team management hub (`/(dashboard)/team/[teamId]`)
-- [ ] Roster management page (`/(dashboard)/team/[teamId]/roster`)
-- [ ] Team settings page (`/(dashboard)/team/[teamId]/settings`)
-- [ ] Team season registration page (`/(dashboard)/team/[teamId]/register`)
+- [x] Team creation page (`/(dashboard)/team/create`)
+- [x] Team management hub (`/(dashboard)/team/[teamId]`)
+- [x] Roster management page (`/(dashboard)/team/[teamId]/roster`)
+- [x] Team settings page (`/(dashboard)/team/[teamId]/settings`)
+- [x] Team season registration page (`/(dashboard)/team/[teamId]/register`)
 - [ ] Public team profile pages (`/(public)/teams/[teamSlug]`)
 - [ ] Public teams list page (`/(public)/teams`)
 
@@ -96,6 +96,20 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [ ] `TeamCard.tsx`, `TeamLogo.tsx`
 - [ ] `RosterTable.tsx`
 - [ ] `TeamRegistrationForm.tsx`, `TeamCreateForm.tsx`
+
+### Dashboard Pages - Comprehensive, detailed, responsive, eye-candy
+
+- [x] Dashboard landing page (`/(dashboard)/dashboard`) — greeting, team summary card, next scheduled match, season registration status
+- [ ] My Teams list page (`/(dashboard)/team`) — all teams user owns or is an active member of; links to each hub + Create Team CTA
+- [ ] Player profile page (`/(dashboard)/profile`) — view own player profile + linked accounts status (Epic, Steam, Discord)
+- [ ] Player profile setup page (`/(dashboard)/profile/setup`) — first-time onboarding flow: create player profile if none exists
+- [ ] Player profile edit page (`/(dashboard)/profile/edit`) — edit display name, epic/steam/discord usernames, country, bio
+
+### Dashboard Components
+
+- [ ] `PlayerProfileForm.tsx` — create/edit player profile fields (used by setup + edit pages)
+- [ ] `DashboardTeamCard.tsx` — compact team summary widget (logo, name, division badge, record)
+- [ ] `OnboardingChecklist.tsx` — progress checklist for new users (no player profile → no team → not registered)
 
 ---
 
@@ -106,7 +120,7 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 ### Season API
 
-- [~] `GET /api/seasons` — list seasons (`src/app/api/staff/seasons/route.ts` — needs migration to `/api/seasons`)
+- [x] `GET /api/seasons` — list seasons (`src/app/api/seasons/route.ts` — public, filterable by status, includes divisions)
 - [~] `POST /api/seasons` — create season
 - [ ] `GET /api/seasons/:seasonId` — season detail
 - [ ] `PATCH /api/seasons/:seasonId` — update season (staff)
@@ -124,11 +138,11 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 ### Registration API
 
-- [ ] `GET /api/seasons/:seasonId/registrations` — list registrations (staff)
-- [ ] `POST /api/seasons/:seasonId/registrations` — register team for season (manager)
-- [ ] `PATCH /api/seasons/:seasonId/registrations/:id` — approve/reject/assign division (staff)
-- [ ] `DELETE /api/seasons/:seasonId/registrations/:id` — withdraw registration (manager)
-- [ ] Registration approval queue UI (staff dashboard — assign team to division)
+- [x] `GET /api/seasons/:seasonId/registrations` — list registrations (filtered by teamId)
+- [x] `POST /api/seasons/:seasonId/registrations` — register team for season (manager picks division)
+- [ ] `PATCH /api/seasons/:seasonId/registrations/:id` — approve/reject (staff; division already set by manager)
+- [x] `DELETE /api/seasons/:seasonId/registrations/:id` — withdraw registration (manager)
+- [ ] Registration approval queue UI (staff dashboard — approve/reject only)
 
 ### League Week API
 
@@ -143,6 +157,7 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [ ] Public season overview (`/(public)/seasons/[seasonSlug]`)
 - [ ] Public standings page per division (`/(public)/seasons/[seasonSlug]/standings`)
 - [ ] Public match schedule page (`/(public)/seasons/[seasonSlug]/matches`)
+- [ ] Dashboard standings page (`/(dashboard)/standings`) — standings for the user's active division with link to full public standings
 
 ### Season Components
 
@@ -224,7 +239,9 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 ### Match Pages & UI
 
-- [ ] Match report page (`/(dashboard)/matches/[matchId]/report`)
+- [ ] Dashboard matches page (`/(dashboard)/matches`) — upcoming + recent matches across all of user's teams; check-in CTAs surface here
+- [ ] Dashboard match detail page (`/(dashboard)/matches/[matchId]`) — status banner, check-in panel, per-game grid, replay upload slots, score entry form
+- [ ] Match report page (`/(dashboard)/matches/[matchId]/report`) — manual score submission form
 - [ ] Public match list page (`/(public)/matches`)
 - [ ] Public match detail page (`/(public)/matches/[matchId]`)
 - [ ] Match page UX: per-game grid with replay status indicators
