@@ -81,7 +81,7 @@ export async function uploadReplay(fileKey: string): Promise<BallchasingUploadRe
 
   // Collect the stream into a byte array, then wrap in a Blob for FormData
   const bytes = await obj.Body.transformToByteArray()
-  const blob  = new Blob([bytes], { type: "application/octet-stream" })
+  const blob  = new Blob([bytes.buffer as ArrayBuffer], { type: "application/octet-stream" })
 
   const filename = fileKey.split("/").pop() ?? "replay.replay"
   const form = new FormData()
