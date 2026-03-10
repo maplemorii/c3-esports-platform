@@ -43,10 +43,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Prisma schema + migrations needed for `prisma migrate deploy` at startup
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
-# Prisma CLI + engines needed for `prisma migrate deploy` at startup
-COPY --from=deps /app/node_modules/.bin/prisma       ./node_modules/.bin/prisma
-COPY --from=deps /app/node_modules/prisma            ./node_modules/prisma
-COPY --from=deps /app/node_modules/@prisma/engines   ./node_modules/@prisma/engines
+# Prisma CLI + all @prisma/* packages needed for `prisma migrate deploy` at startup
+COPY --from=deps /app/node_modules/.bin/prisma  ./node_modules/.bin/prisma
+COPY --from=deps /app/node_modules/prisma       ./node_modules/prisma
+COPY --from=deps /app/node_modules/@prisma      ./node_modules/@prisma
 
 USER nextjs
 
