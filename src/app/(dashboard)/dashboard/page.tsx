@@ -164,43 +164,52 @@ export default async function DashboardPage() {
     hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening"
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
+    <div className="mx-auto max-w-5xl space-y-6">
 
       {/* ── Hero greeting ───────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-2xl border border-border bg-card">
-        {/* Glow accents */}
+      <div
+        className="relative overflow-hidden rounded-2xl p-8"
+        style={{
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.07)",
+        }}
+      >
+        {/* Ambient violet glow */}
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-brand/20 blur-3xl"
+          className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full opacity-30"
+          style={{ background: "radial-gradient(circle, rgba(124,58,237,0.4), transparent 70%)", filter: "blur(40px)" }}
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute -bottom-10 -left-10 h-48 w-48 rounded-full bg-brand/10 blur-2xl"
+          className="pointer-events-none absolute -bottom-10 -left-10 h-40 w-40 rounded-full opacity-20"
+          style={{ background: "radial-gradient(circle, rgba(220,38,38,0.3), transparent 70%)", filter: "blur(30px)" }}
         />
 
-        <div className="relative flex flex-col gap-6 p-8 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            {/* Avatar */}
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-border bg-muted text-lg font-bold text-muted-foreground overflow-hidden">
+            <div
+              className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl overflow-hidden"
+              style={{ border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.04)" }}
+            >
               {session.user.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={session.user.image}
-                  alt={userName}
-                  className="h-full w-full object-cover"
-                />
+                <img src={session.user.image} alt={userName} className="h-full w-full object-cover" />
               ) : (
-                <UserRound className="h-7 w-7" />
+                <UserRound className="h-7 w-7" style={{ color: "rgba(255,255,255,0.3)" }} />
               )}
             </div>
 
             <div>
-              <p className="text-sm text-muted-foreground">{greeting},</p>
-              <h1 className="font-display text-2xl font-bold uppercase tracking-wide leading-tight">
+              <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>{greeting},</p>
+              <h1
+                className="font-sans text-2xl font-black uppercase leading-tight"
+                style={{ color: "rgba(255,255,255,0.9)", letterSpacing: "0.02em" }}
+              >
                 {userName}
               </h1>
               {player?.epicUsername && (
-                <p className="text-xs text-muted-foreground font-mono mt-0.5">
+                <p className="text-xs font-mono mt-0.5" style={{ color: "rgba(255,255,255,0.28)" }}>
                   {player.epicUsername}
                 </p>
               )}
@@ -209,76 +218,67 @@ export default async function DashboardPage() {
 
           <div className="flex flex-wrap gap-2">
             {!hasTeams && (
-              <Link
-                href="/team/create"
-                className={cn(buttonVariants({ size: "sm" }), "gap-1.5")}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Create Team
-              </Link>
+              <DarkButton href="/team/create" icon={Plus} label="Create Team" accent />
             )}
             {hasTeams && activeSeason && !hasActiveReg && (
-              <Link
-                href={`/team/${allTeams[0].id}/register`}
-                className={cn(buttonVariants({ size: "sm" }), "gap-1.5")}
-              >
-                <ClipboardList className="h-3.5 w-3.5" />
-                Register for {activeSeason.name}
-              </Link>
+              <DarkButton href={`/team/${allTeams[0].id}/register`} icon={ClipboardList} label={`Register for ${activeSeason.name}`} accent />
             )}
-            <Link
-              href="/profile"
-              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}
-            >
-              <Settings className="h-3.5 w-3.5" />
-              Profile
-            </Link>
+            <DarkButton href="/profile" icon={Settings} label="Profile" />
           </div>
         </div>
       </div>
 
-      {/* ── Onboarding checklist (hidden when all done) ──────────────── */}
+      {/* ── Onboarding checklist ──────────────────────────────────── */}
       {!allDone && (
-        <section className="rounded-xl border border-brand/20 bg-brand/5 p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Rocket className="h-4 w-4 text-brand" />
-            <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-brand">
+        <section
+          className="rounded-2xl p-6"
+          style={{ background: "rgba(124,58,237,0.06)", border: "1px solid rgba(124,58,237,0.15)" }}
+        >
+          <div className="flex items-center gap-2 mb-5">
+            <Rocket className="h-4 w-4" style={{ color: "rgba(167,139,250,0.8)" }} />
+            <h2
+              className="font-sans text-[11px] font-semibold uppercase tracking-[0.28em]"
+              style={{ color: "rgba(167,139,250,0.8)" }}
+            >
               Getting Started
             </h2>
           </div>
-          <ol className="flex flex-col gap-3">
+          <ol className="flex flex-col gap-2.5">
             {steps.map((step, i) => (
               <li
                 key={i}
-                className={cn(
-                  "flex items-start gap-3 rounded-lg border p-4 transition-colors",
-                  step.done
-                    ? "border-emerald-500/20 bg-emerald-500/5 opacity-60"
-                    : "border-border bg-card"
-                )}
+                className="flex items-start gap-3 rounded-xl p-4"
+                style={{
+                  background: step.done ? "rgba(52,211,153,0.04)" : "rgba(255,255,255,0.03)",
+                  border: `1px solid ${step.done ? "rgba(52,211,153,0.12)" : "rgba(255,255,255,0.06)"}`,
+                  opacity: step.done ? 0.55 : 1,
+                }}
               >
                 <div className="mt-0.5 shrink-0">
-                  {step.done ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                  ) : (
-                    <Circle className="h-4 w-4 text-muted-foreground/40" />
-                  )}
+                  {step.done
+                    ? <CheckCircle2 className="h-4 w-4" style={{ color: "rgba(52,211,153,0.8)" }} />
+                    : <Circle className="h-4 w-4" style={{ color: "rgba(255,255,255,0.2)" }} />
+                  }
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={cn("text-sm font-medium", step.done && "line-through text-muted-foreground")}>
+                  <p
+                    className="text-sm font-medium"
+                    style={{ color: step.done ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.75)", textDecoration: step.done ? "line-through" : "none" }}
+                  >
                     {step.label}
                   </p>
                   {!step.done && (
-                    <p className="text-xs text-muted-foreground mt-0.5">{step.desc}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>{step.desc}</p>
                   )}
                 </div>
                 {!step.done && (
                   <Link
                     href={step.href}
-                    className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0 text-xs")}
+                    className="shrink-0 flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-150"
+                    style={{ background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.25)", color: "rgba(196,181,253,0.85)" }}
                   >
                     {step.cta}
-                    <ChevronRight className="h-3 w-3 ml-0.5" />
+                    <ChevronRight className="h-3 w-3" />
                   </Link>
                 )}
               </li>
@@ -290,84 +290,89 @@ export default async function DashboardPage() {
       {/* ── My Teams ─────────────────────────────────────────────────── */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+          <h2
+            className="font-sans text-[11px] font-semibold uppercase tracking-[0.28em]"
+            style={{ color: "rgba(255,255,255,0.25)" }}
+          >
             My Teams
           </h2>
           <Link
             href="/team/create"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "gap-1 text-xs")}
+            className="flex items-center gap-1 text-xs font-medium transition-colors duration-150"
+            style={{ color: "rgba(167,139,250,0.6)" }}
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-3 w-3" />
             New Team
           </Link>
         </div>
 
         {allTeams.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border bg-card flex flex-col items-center gap-3 py-14 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-muted">
-              <Users className="h-6 w-6 text-muted-foreground/40" />
+          <div
+            className="rounded-2xl flex flex-col items-center gap-3 py-14 text-center"
+            style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(255,255,255,0.07)" }}
+          >
+            <div
+              className="flex h-12 w-12 items-center justify-center rounded-xl"
+              style={{ border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.03)" }}
+            >
+              <Users className="h-6 w-6" style={{ color: "rgba(255,255,255,0.18)" }} />
             </div>
-            <p className="text-sm text-muted-foreground">You&apos;re not on any teams yet.</p>
+            <p className="text-sm" style={{ color: "rgba(255,255,255,0.28)" }}>You&apos;re not on any teams yet.</p>
             <Link
               href="/team/create"
-              className={cn(buttonVariants({ size: "sm" }), "gap-1.5 mt-1")}
+              className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-150"
+              style={{ background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.25)", color: "rgba(196,181,253,0.85)" }}
             >
               <Plus className="h-3.5 w-3.5" />
               Create your first team
             </Link>
           </div>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-2.5 sm:grid-cols-2">
             {allTeams.map((team) => {
               const reg = team.registrations[0]
               return (
                 <Link
                   key={team.id}
                   href={`/team/${team.id}`}
-                  className="group relative overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-brand/40"
+                  className="group relative overflow-hidden rounded-xl transition-all duration-150 border border-white/[0.07] hover:bg-white/5 hover:border-violet-500/30"
+                  style={{ background: "rgba(255,255,255,0.03)" }}
                 >
                   {/* Color strip */}
-                  <div
-                    className="h-1 w-full"
-                    style={{ backgroundColor: team.primaryColor ?? "oklch(0.50 0.20 15)" }}
-                  />
+                  <div className="h-0.5 w-full" style={{ backgroundColor: team.primaryColor ?? "rgba(124,58,237,0.8)" }} />
 
-                  <div className="flex items-center gap-4 p-4">
-                    {/* Logo / initials */}
+                  <div className="flex items-center gap-3.5 p-4">
                     <div
-                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border text-sm font-bold text-white overflow-hidden"
-                      style={{ backgroundColor: team.primaryColor ?? "oklch(0.50 0.20 15)" }}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white overflow-hidden"
+                      style={{ backgroundColor: team.primaryColor ?? "rgba(124,58,237,0.6)" }}
                     >
-                      {team.logoUrl ? (
+                      {team.logoUrl
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={team.logoUrl} alt={team.name} className="h-full w-full object-cover" />
-                      ) : (
-                        team.name.slice(0, 2).toUpperCase()
-                      )}
+                        ? <img src={team.logoUrl} alt={team.name} className="h-full w-full object-cover" />
+                        : team.name.slice(0, 2).toUpperCase()
+                      }
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="font-display text-sm font-bold uppercase tracking-wide truncate">
+                        <span
+                          className="font-sans text-sm font-bold uppercase tracking-wide truncate"
+                          style={{ color: "rgba(255,255,255,0.85)", letterSpacing: "0.05em" }}
+                        >
                           {team.name}
                         </span>
-                        {team.isOwner && (
-                          <Crown className="h-3 w-3 text-yellow-500 shrink-0" aria-label="Owner" />
-                        )}
-                        {team.isCaptain && !team.isOwner && (
-                          <Crown className="h-3 w-3 text-sky-400 shrink-0" aria-label="Captain" />
-                        )}
+                        {team.isOwner && <Crown className="h-3 w-3 shrink-0" style={{ color: "rgba(251,191,36,0.8)" }} />}
+                        {team.isCaptain && !team.isOwner && <Crown className="h-3 w-3 shrink-0" style={{ color: "rgba(56,189,248,0.8)" }} />}
                       </div>
-
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
                           {team.memberships.length} member{team.memberships.length !== 1 ? "s" : ""}
                         </span>
                         {reg && (
                           <>
-                            <span className="text-muted-foreground/30">·</span>
+                            <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
                             <RegistrationPip status={reg.status} />
-                            <span className="text-xs text-muted-foreground truncate">
+                            <span className="text-xs truncate" style={{ color: "rgba(255,255,255,0.3)" }}>
                               {reg.division?.name ?? reg.season.name}
                             </span>
                           </>
@@ -375,7 +380,7 @@ export default async function DashboardPage() {
                       </div>
                     </div>
 
-                    <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-muted-foreground transition-colors shrink-0" />
+                    <ChevronRight className="h-4 w-4 shrink-0 transition-colors duration-150" style={{ color: "rgba(255,255,255,0.18)" }} />
                   </div>
                 </Link>
               )
@@ -384,32 +389,42 @@ export default async function DashboardPage() {
         )}
       </section>
 
-      {/* ── Season status strip ──────────────────────────────────────── */}
+      {/* ── Season status ──────────────────────────────────────────── */}
       {activeSeason && (
-        <section className="rounded-xl border border-border bg-card p-6">
+        <section
+          className="rounded-2xl p-5"
+          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+        >
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-brand/30 bg-brand/10">
-                <Trophy className="h-4 w-4 text-brand" />
+              <div
+                className="flex h-9 w-9 items-center justify-center rounded-xl"
+                style={{ background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.2)" }}
+              >
+                <Trophy className="h-4 w-4" style={{ color: "rgba(167,139,250,0.85)" }} />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-[0.25em]"
+                  style={{ color: "rgba(255,255,255,0.28)" }}
+                >
                   {activeSeason.status === "REGISTRATION" ? "Registration Open" : "Season Active"}
                 </p>
-                <p className="text-sm font-medium">{activeSeason.name}</p>
+                <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.75)" }}>{activeSeason.name}</p>
               </div>
             </div>
             {activeSeason.status === "REGISTRATION" && hasTeams && !hasActiveReg && (
               <Link
                 href={`/team/${allTeams[0].id}/register`}
-                className={cn(buttonVariants({ size: "sm" }), "gap-1.5")}
+                className="flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all duration-150"
+                style={{ background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.25)", color: "rgba(196,181,253,0.85)" }}
               >
                 <ClipboardList className="h-3.5 w-3.5" />
                 Register your team
               </Link>
             )}
             {hasActiveReg && (
-              <span className="inline-flex items-center gap-1.5 text-sm text-emerald-400 font-medium">
+              <span className="inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: "rgba(52,211,153,0.85)" }}>
                 <CheckCircle2 className="h-4 w-4" />
                 Registered
               </span>
@@ -418,21 +433,27 @@ export default async function DashboardPage() {
         </section>
       )}
 
-      {/* ── Upcoming Matches (empty state for now) ──────────────────── */}
+      {/* ── Upcoming Matches ─────────────────────────────────────────── */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-            Upcoming Matches
-          </h2>
-        </div>
-
-        <div className="rounded-xl border border-dashed border-border bg-card flex flex-col items-center gap-3 py-12 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-muted">
-            <Swords className="h-5 w-5 text-muted-foreground/40" />
+        <h2
+          className="font-sans text-[11px] font-semibold uppercase tracking-[0.28em] mb-4"
+          style={{ color: "rgba(255,255,255,0.25)" }}
+        >
+          Upcoming Matches
+        </h2>
+        <div
+          className="rounded-2xl flex flex-col items-center gap-3 py-12 text-center"
+          style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(255,255,255,0.06)" }}
+        >
+          <div
+            className="flex h-12 w-12 items-center justify-center rounded-xl"
+            style={{ border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}
+          >
+            <Swords className="h-5 w-5" style={{ color: "rgba(255,255,255,0.15)" }} />
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">No matches scheduled yet.</p>
-            <p className="text-xs text-muted-foreground/60 mt-0.5">
+            <p className="text-sm" style={{ color: "rgba(255,255,255,0.28)" }}>No matches scheduled yet.</p>
+            <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.15)" }}>
               Matches will appear here once the season begins.
             </p>
           </div>
@@ -441,28 +462,16 @@ export default async function DashboardPage() {
 
       {/* ── Quick actions ────────────────────────────────────────────── */}
       <section>
-        <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-4">
+        <h2
+          className="font-sans text-[11px] font-semibold uppercase tracking-[0.28em] mb-4"
+          style={{ color: "rgba(255,255,255,0.25)" }}
+        >
           Quick Actions
         </h2>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <QuickLink
-            href="/profile"
-            icon={UserRound}
-            label="My Profile"
-            desc="Edit your player info"
-          />
-          <QuickLink
-            href="/team/create"
-            icon={Plus}
-            label="Create Team"
-            desc="Start a new roster"
-          />
-          <QuickLink
-            href="/seasons"
-            icon={CalendarClock}
-            label="Seasons"
-            desc="Browse season history"
-          />
+        <div className="grid gap-2.5 sm:grid-cols-3">
+          <QuickLink href="/profile"      icon={UserRound}   label="My Profile"    desc="Edit your player info"  />
+          <QuickLink href="/team/create"  icon={Plus}        label="Create Team"   desc="Start a new roster"    />
+          <QuickLink href="/seasons"      icon={CalendarClock} label="Seasons"     desc="Browse season history"  />
         </div>
       </section>
 
@@ -476,44 +485,56 @@ export default async function DashboardPage() {
 
 function RegistrationPip({ status }: { status: RegistrationStatus }) {
   const map: Record<RegistrationStatus, string> = {
-    PENDING:    "bg-yellow-400",
-    APPROVED:   "bg-emerald-400",
-    REJECTED:   "bg-destructive",
-    WAITLISTED: "bg-orange-400",
-    WITHDRAWN:  "bg-muted-foreground/40",
+    PENDING:    "rgba(251,191,36,0.8)",
+    APPROVED:   "rgba(52,211,153,0.8)",
+    REJECTED:   "rgba(248,113,113,0.8)",
+    WAITLISTED: "rgba(251,146,60,0.8)",
+    WITHDRAWN:  "rgba(255,255,255,0.2)",
   }
   return (
     <span
-      className={cn("h-1.5 w-1.5 rounded-full shrink-0", map[status])}
+      className="h-1.5 w-1.5 rounded-full shrink-0 inline-block"
+      style={{ backgroundColor: map[status] }}
       title={status}
     />
   )
 }
 
-function QuickLink({
-  href,
-  icon: Icon,
-  label,
-  desc,
-}: {
-  href: string
-  icon: React.ElementType
-  label: string
-  desc: string
-}) {
+function QuickLink({ href, icon: Icon, label, desc }: { href: string; icon: React.ElementType; label: string; desc: string }) {
   return (
     <Link
       href={href}
-      className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-brand/40"
+      className="group flex items-center gap-3 rounded-xl p-4 transition-all duration-150 border border-white/[0.07] hover:bg-white/5 hover:border-violet-500/25"
+      style={{ background: "rgba(255,255,255,0.03)" }}
     >
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-brand/30 bg-brand/10">
-        <Icon className="h-4 w-4 text-brand" />
+      <div
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+        style={{ background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.18)" }}
+      >
+        <Icon className="h-4 w-4" style={{ color: "rgba(167,139,250,0.8)" }} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium">{label}</p>
-        <p className="text-xs text-muted-foreground">{desc}</p>
+        <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.75)" }}>{label}</p>
+        <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>{desc}</p>
       </div>
-      <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-muted-foreground transition-colors shrink-0" />
+      <ChevronRight className="h-4 w-4 shrink-0 transition-colors duration-150" style={{ color: "rgba(255,255,255,0.18)" }} />
+    </Link>
+  )
+}
+
+function DarkButton({ href, icon: Icon, label, accent }: { href: string; icon: React.ElementType; label: string; accent?: boolean }) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all duration-150"
+      style={{
+        background: accent ? "rgba(124,58,237,0.15)" : "rgba(255,255,255,0.05)",
+        border: `1px solid ${accent ? "rgba(124,58,237,0.3)" : "rgba(255,255,255,0.1)"}`,
+        color: accent ? "rgba(196,181,253,0.85)" : "rgba(255,255,255,0.55)",
+      }}
+    >
+      <Icon className="h-3.5 w-3.5" />
+      {label}
     </Link>
   )
 }

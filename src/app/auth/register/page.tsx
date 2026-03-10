@@ -4,8 +4,9 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button-variants"
+import Image from "next/image"
+import { motion } from "framer-motion"
+import { CheckCircle2, Circle } from "lucide-react"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -19,157 +20,177 @@ export default function RegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
-
-    if (password !== confirm) {
-      setError("Passwords do not match.")
-      return
-    }
-
+    if (password !== confirm) { setError("Passwords do not match."); return }
     setLoading(true)
-
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
     })
-
     if (!res.ok) {
       const data = await res.json().catch(() => ({}))
       setError(data.error ?? "Registration failed. Please try again.")
       setLoading(false)
       return
     }
-
-    // Auto sign-in after successful registration
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    })
-
+    const result = await signIn("credentials", { email, password, redirect: false })
     setLoading(false)
-
-    if (result?.error) {
-      // Registration succeeded but auto sign-in failed — send to sign-in page
-      router.push("/auth/signin")
-    } else {
-      router.push("/")
-      router.refresh()
-    }
+    if (result?.error) { router.push("/auth/signin") } else { router.push("/"); router.refresh() }
   }
 
   return (
-    <div className="flex min-h-[75vh] flex-col items-center justify-center gap-8 px-4">
-      <div className="flex flex-col items-center gap-1 text-center">
-        <h1 className="font-display text-3xl font-bold uppercase tracking-wide">
-          <span className="text-brand">C3</span> Esports
-        </h1>
-        <p className="text-sm text-muted-foreground">Create your account to get started.</p>
-      </div>
+    <div
+      className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-16 overflow-hidden"
+      style={{ background: "oklch(0.04 0 0)" }}
+    >
+      {/* Ambient orb */}
+      <div
+        className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full opacity-20"
+        style={{ background: "radial-gradient(circle, rgba(124,58,237,0.4) 0%, rgba(220,38,38,0.15) 40%, transparent 70%)", filter: "blur(80px)" }}
+        aria-hidden
+      />
 
-      <div className="flex w-full max-w-sm flex-col gap-4 rounded-lg border border-border bg-card p-6">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="name" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Display Name
-            </label>
-            <input
-              id="name"
-              type="text"
-              autoComplete="name"
-              required
-              minLength={2}
-              maxLength={64}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
+      <motion.div
+        className="relative z-10 flex flex-col items-center gap-7 w-full max-w-sm"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {/* Logo */}
+        <Link href="/" aria-label="C3 Esports — home">
+          <Image src="/logo.png" alt="C3 Esports" width={200} height={48} style={{ height: "42px", width: "auto" }} />
+        </Link>
+
+        {/* Card */}
+        <div
+          className="w-full flex flex-col gap-5 rounded-2xl p-6"
+          style={{
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            boxShadow: "0 32px 64px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
+          }}
+        >
+          <div className="text-center">
+            <h1 className="font-sans text-lg font-semibold" style={{ color: "rgba(255,255,255,0.9)" }}>
+              Create your account
+            </h1>
+            <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>
+              Join C3 Esports and start competing.
+            </p>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+            <Field label="Display Name">
+              <input id="name" type="text" autoComplete="name" required minLength={2} maxLength={64}
+                value={name} onChange={(e) => setName(e.target.value)}
+                className="w-full rounded-xl px-3.5 py-2.5 text-sm font-sans outline-none transition-all duration-150"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.85)" }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(124,58,237,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.12)" }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none" }}
+              />
+            </Field>
+            <Field label="Email">
+              <input id="email" type="email" autoComplete="email" required
+                value={email} onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-xl px-3.5 py-2.5 text-sm font-sans outline-none transition-all duration-150"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.85)" }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(124,58,237,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.12)" }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none" }}
+              />
+            </Field>
+            <Field label="Password">
+              <input id="password" type="password" autoComplete="new-password" required minLength={8}
+                value={password} onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-xl px-3.5 py-2.5 text-sm font-sans outline-none transition-all duration-150"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.85)" }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(124,58,237,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.12)" }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none" }}
+              />
+            </Field>
+            <Field label="Confirm Password">
+              <input id="confirm" type="password" autoComplete="new-password" required
+                value={confirm} onChange={(e) => setConfirm(e.target.value)}
+                className="w-full rounded-xl px-3.5 py-2.5 text-sm font-sans outline-none transition-all duration-150"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.85)" }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(124,58,237,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.12)" }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none" }}
+              />
+            </Field>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="password" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
-          </div>
+            {error && (
+              <p
+                className="text-xs rounded-lg px-3 py-2"
+                style={{ background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.2)", color: "rgba(252,165,165,0.9)" }}
+              >
+                {error}
+              </p>
+            )}
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="confirm" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Confirm Password
-            </label>
-            <input
-              id="confirm"
-              type="password"
-              autoComplete="new-password"
-              required
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
-          </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-xl px-4 py-2.5 font-sans text-sm font-semibold transition-all duration-150 disabled:opacity-50"
+              style={{ background: "rgba(124,58,237,0.18)", border: "1px solid rgba(124,58,237,0.3)", color: "rgba(196,181,253,0.9)" }}
+              onMouseEnter={(e) => { if (!loading) { e.currentTarget.style.background = "rgba(124,58,237,0.28)"; e.currentTarget.style.borderColor = "rgba(124,58,237,0.5)" } }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(124,58,237,0.18)"; e.currentTarget.style.borderColor = "rgba(124,58,237,0.3)" }}
+            >
+              {loading ? "Creating account…" : "Create Account"}
+            </button>
+          </form>
 
-          {error && (
-            <p className="text-xs text-destructive">{error}</p>
-          )}
+          <p className="text-center text-xs" style={{ color: "rgba(255,255,255,0.28)" }}>
+            Already have an account?{" "}
+            <Link
+              href="/auth/signin"
+              className="font-medium transition-colors duration-150"
+              style={{ color: "rgba(167,139,250,0.8)" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(196,181,253,1)" }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(167,139,250,0.8)" }}
+            >
+              Sign In
+            </Link>
+          </p>
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={cn(buttonVariants({ size: "lg" }), "w-full mt-1")}
-          >
-            {loading ? "Creating account…" : "Create Account"}
-          </button>
-        </form>
+        {/* Requirements checklist */}
+        <div
+          className="w-full rounded-xl p-4"
+          style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
+        >
+          <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.22)" }}>
+            To compete, you&apos;ll also need to link:
+          </p>
+          <ul className="flex flex-col gap-2">
+            {[
+              { done: true,  label: "Email & password",   note: "set here" },
+              { done: false, label: "Discord account",    note: "link in profile" },
+              { done: false, label: "Epic Games username", note: "link in profile" },
+            ].map(({ done, label, note }) => (
+              <li key={label} className="flex items-center gap-2.5">
+                {done
+                  ? <CheckCircle2 className="h-3.5 w-3.5 shrink-0" style={{ color: "rgba(52,211,153,0.7)" }} />
+                  : <Circle className="h-3.5 w-3.5 shrink-0" style={{ color: "rgba(255,255,255,0.18)" }} />
+                }
+                <span className="text-xs flex-1" style={{ color: done ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.28)" }}>
+                  {label}
+                </span>
+                <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.16)" }}>{note}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
 
-        <p className="text-center text-xs text-muted-foreground">
-          Already have an account?{" "}
-          <Link href="/auth/signin" className="text-brand hover:underline font-medium">
-            Sign In
-          </Link>
-        </p>
-      </div>
-
-      {/* What you'll need to complete */}
-      <div className="w-full max-w-sm rounded-lg border border-border bg-card/50 p-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-          To register for a season you will also need to link:
-        </p>
-        <ul className="flex flex-col gap-2 text-sm">
-          <li className="flex items-center gap-2">
-            <span className="text-brand">✓</span> Email &amp; password <span className="ml-auto text-xs text-muted-foreground">(set here)</span>
-          </li>
-          <li className="flex items-center gap-2 text-muted-foreground">
-            <span>○</span> Discord account <span className="ml-auto text-xs">(link in profile)</span>
-          </li>
-          <li className="flex items-center gap-2 text-muted-foreground">
-            <span>○</span> Epic Games username <span className="ml-auto text-xs">(link in profile)</span>
-          </li>
-        </ul>
-      </div>
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.28)" }}>
+        {label}
+      </label>
+      {children}
     </div>
   )
 }

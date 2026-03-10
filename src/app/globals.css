@@ -8,9 +8,10 @@
   /* Fonts */
   --font-sans: var(--font-inter), ui-sans-serif, sans-serif;
   --font-display: var(--font-rajdhani), ui-sans-serif, sans-serif;
+  --font-serif: var(--font-playfair), Georgia, ui-serif, serif;
   --font-mono: ui-monospace, monospace;
 
-  /* Brand colour — C3 crimson red */
+  /* Brand colour — C3 crimson red (kept for buttons/UI) */
   --color-brand: oklch(0.50 0.20 15);
   --color-brand-muted: oklch(0.50 0.20 15 / 15%);
 
@@ -91,38 +92,38 @@
   --sidebar-ring: oklch(0.50 0.20 15);
 }
 
-/* ─── Dark theme — navy + crimson ─────────────────────────── */
+/* ─── Dark theme — pure black + violet/cyan accents ──────── */
 .dark {
-  --background: oklch(0.11 0.035 264);
-  --foreground: oklch(0.95 0.005 264);
-  --card: oklch(0.14 0.04 264);
-  --card-foreground: oklch(0.95 0.005 264);
-  --popover: oklch(0.14 0.04 264);
-  --popover-foreground: oklch(0.95 0.005 264);
+  --background: oklch(0.04 0 0);
+  --foreground: oklch(0.97 0 0);
+  --card: oklch(0.08 0 0);
+  --card-foreground: oklch(0.97 0 0);
+  --popover: oklch(0.08 0 0);
+  --popover-foreground: oklch(0.97 0 0);
   --primary: oklch(0.50 0.20 15);
   --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.18 0.04 264);
-  --secondary-foreground: oklch(0.92 0.005 264);
-  --muted: oklch(0.18 0.04 264);
-  --muted-foreground: oklch(0.60 0.02 264);
-  --accent: oklch(0.21 0.045 264);
-  --accent-foreground: oklch(0.92 0.005 264);
+  --secondary: oklch(0.11 0 0);
+  --secondary-foreground: oklch(0.92 0 0);
+  --muted: oklch(0.11 0 0);
+  --muted-foreground: oklch(0.48 0 0);
+  --accent: oklch(0.13 0 0);
+  --accent-foreground: oklch(0.92 0 0);
   --destructive: oklch(0.62 0.22 22);
-  --border: oklch(0.23 0.04 264);
-  --input: oklch(0.23 0.04 264);
+  --border: oklch(0.16 0 0);
+  --input: oklch(0.16 0 0);
   --ring: oklch(0.50 0.20 15);
   --chart-1: oklch(0.50 0.20 15);
   --chart-2: oklch(0.60 0.15 200);
   --chart-3: oklch(0.70 0.12 160);
   --chart-4: oklch(0.65 0.18 50);
   --chart-5: oklch(0.55 0.18 280);
-  --sidebar: oklch(0.13 0.04 264);
-  --sidebar-foreground: oklch(0.92 0.005 264);
+  --sidebar: oklch(0.06 0 0);
+  --sidebar-foreground: oklch(0.92 0 0);
   --sidebar-primary: oklch(0.50 0.20 15);
   --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.18 0.04 264);
-  --sidebar-accent-foreground: oklch(0.92 0.005 264);
-  --sidebar-border: oklch(0.23 0.04 264);
+  --sidebar-accent: oklch(0.11 0 0);
+  --sidebar-accent-foreground: oklch(0.92 0 0);
+  --sidebar-border: oklch(0.14 0 0);
   --sidebar-ring: oklch(0.50 0.20 15);
 }
 
@@ -142,15 +143,28 @@
   }
 }
 
-/* ─── Hero diagonal stripe (mirrors the C3 logo texture) ──── */
-.hero-stripes {
-  background-image: repeating-linear-gradient(
-    -45deg,
-    oklch(0.50 0.20 15 / 18%) 0px,
-    oklch(0.50 0.20 15 / 18%) 1px,
-    transparent 1px,
-    transparent 22px
-  );
+/* ─── Grid overlay (Vercel-style) ─────────────────────────── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.032) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.032) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+/* ─── Marquee ticker ──────────────────────────────────────── */
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-left 30s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
 }
 
 /* ─── Smooth scroll ────────────────────────────────────────── */
@@ -158,7 +172,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ─── Reduced motion — respect user preference ─────────────── */
+/* ─── Reduced motion ───────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

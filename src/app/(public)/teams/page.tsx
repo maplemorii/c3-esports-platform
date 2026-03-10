@@ -82,36 +82,49 @@ export default async function TeamsPage({
   const teams = await getTeams(search.trim())
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-5xl px-4 py-14">
 
       {/* ── Header ───────────────────────────────────────────────── */}
-      <div className="mb-8">
-        <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-brand">
+      <div className="mb-12">
+        <p
+          className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em]"
+          style={{ color: "rgba(167,139,250,0.6)" }}
+        >
           Carolina Collegiate Clash
         </p>
-        <h1 className="font-display text-4xl font-bold uppercase tracking-wide sm:text-5xl">
+        <h1
+          className="font-sans text-5xl font-black uppercase sm:text-6xl"
+          style={{ color: "rgba(255,255,255,0.92)", letterSpacing: "-0.01em" }}
+        >
           Teams
         </h1>
-        <p className="mt-2 text-muted-foreground text-sm">
+        <p className="mt-3 text-sm" style={{ color: "rgba(255,255,255,0.28)" }}>
           {teams.length} team{teams.length !== 1 ? "s" : ""} competing in C3
         </p>
+        <div
+          className="mt-6 h-px w-20"
+          style={{ background: "linear-gradient(90deg, rgba(124,58,237,0.6), rgba(6,182,212,0.3), transparent)" }}
+        />
       </div>
 
       {/* ── Search ───────────────────────────────────────────────── */}
       <form method="GET" className="mb-8">
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search
+            className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2"
+            style={{ color: "rgba(255,255,255,0.25)" }}
+          />
           <input
             type="text"
             name="search"
             defaultValue={search}
             placeholder="Search teams…"
-            className={cn(
-              "w-full rounded-lg border border-border bg-card pl-9 pr-4 py-2.5 text-sm",
-              "placeholder:text-muted-foreground",
-              "focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand/60",
-              "transition-colors"
-            )}
+            className="w-full rounded-xl pl-10 pr-4 py-2.5 text-sm font-sans outline-none transition-all duration-150"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              color: "rgba(255,255,255,0.85)",
+            }}
           />
         </div>
       </form>
@@ -119,18 +132,22 @@ export default async function TeamsPage({
       {/* ── Grid ─────────────────────────────────────────────────── */}
       {teams.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-20 text-center">
-          <Users className="h-10 w-10 text-muted-foreground/30" />
-          <p className="text-muted-foreground">
+          <Users className="h-10 w-10" style={{ color: "rgba(255,255,255,0.1)" }} />
+          <p style={{ color: "rgba(255,255,255,0.28)" }}>
             {search ? `No teams found matching "${search}".` : "No teams yet."}
           </p>
           {search && (
-            <Link href="/teams" className="text-xs text-brand hover:underline">
+            <Link
+              href="/teams"
+              className="text-xs transition-colors duration-150"
+              style={{ color: "rgba(167,139,250,0.7)" }}
+            >
               Clear search
             </Link>
           )}
         </div>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {teams.map((team) => (
             <li key={team.id}>
               <TeamCard team={team} />

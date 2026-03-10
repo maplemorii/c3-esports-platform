@@ -4,11 +4,11 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button-variants"
+import Image from "next/image"
+import { motion } from "framer-motion"
 
 const DiscordIcon = () => (
-  <svg viewBox="0 0 24 24" className="size-5 fill-current shrink-0">
+  <svg viewBox="0 0 24 24" className="size-4 fill-current shrink-0">
     <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.08.11 18.1.127 18.115a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" />
   </svg>
 )
@@ -24,15 +24,8 @@ export default function SignInPage() {
     e.preventDefault()
     setError(null)
     setLoading(true)
-
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    })
-
+    const result = await signIn("credentials", { email, password, redirect: false })
     setLoading(false)
-
     if (result?.error) {
       setError("Invalid email or password.")
     } else {
@@ -42,91 +35,179 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex min-h-[75vh] flex-col items-center justify-center gap-8 px-4">
-      <div className="flex flex-col items-center gap-1 text-center">
-        <h1 className="font-display text-3xl font-bold uppercase tracking-wide">
-          <span className="text-brand">C3</span> Esports
-        </h1>
-        <p className="text-sm text-muted-foreground">Sign in to manage your team and view matches.</p>
-      </div>
+    <div
+      className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-16 overflow-hidden"
+      style={{ background: "oklch(0.04 0 0)" }}
+    >
+      {/* Ambient orbs */}
+      <div
+        className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full opacity-20"
+        style={{ background: "radial-gradient(circle, rgba(124,58,237,0.4) 0%, rgba(220,38,38,0.15) 40%, transparent 70%)", filter: "blur(80px)" }}
+        aria-hidden
+      />
 
-      <div className="flex w-full max-w-sm flex-col gap-4 rounded-lg border border-border bg-card p-6">
-        {/* Discord */}
-        <button
-          onClick={() => signIn("discord", { callbackUrl: "/" })}
-          className={cn(buttonVariants({ size: "lg" }), "w-full gap-2")}
+      <motion.div
+        className="relative z-10 flex flex-col items-center gap-8 w-full max-w-sm"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {/* Logo */}
+        <Link href="/" aria-label="C3 Esports — home">
+          <Image src="/logo.png" alt="C3 Esports" width={200} height={48} style={{ height: "42px", width: "auto" }} />
+        </Link>
+
+        {/* Card */}
+        <div
+          className="w-full flex flex-col gap-5 rounded-2xl p-6"
+          style={{
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            boxShadow: "0 32px 64px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
+          }}
         >
-          <DiscordIcon />
-          Continue with Discord
-        </button>
+          <div className="text-center">
+            <h1 className="font-sans text-lg font-semibold" style={{ color: "rgba(255,255,255,0.9)" }}>
+              Welcome back
+            </h1>
+            <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>
+              Sign in to manage your team and view matches.
+            </p>
+          </div>
 
-        {/* Divider */}
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <div className="h-px flex-1 bg-border" />
-          or sign in with email
-          <div className="h-px flex-1 bg-border" />
+          {/* Discord button */}
+          <button
+            onClick={() => signIn("discord", { callbackUrl: "/" })}
+            className="w-full flex items-center justify-center gap-2.5 rounded-xl px-4 py-2.5 font-sans text-sm font-semibold transition-all duration-150"
+            style={{
+              background: "rgba(88,101,242,0.18)",
+              border: "1px solid rgba(88,101,242,0.35)",
+              color: "rgba(180,190,255,0.9)",
+            }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget
+              el.style.background = "rgba(88,101,242,0.28)"
+              el.style.borderColor = "rgba(88,101,242,0.55)"
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget
+              el.style.background = "rgba(88,101,242,0.18)"
+              el.style.borderColor = "rgba(88,101,242,0.35)"
+            }}
+          >
+            <DiscordIcon />
+            Continue with Discord
+          </button>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.06)" }} />
+            <span className="text-xs" style={{ color: "rgba(255,255,255,0.22)" }}>or</span>
+            <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.06)" }} />
+          </div>
+
+          {/* Credentials form */}
+          <form onSubmit={handleCredentials} className="flex flex-col gap-3.5">
+            <Field label="Email">
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-xl px-3.5 py-2.5 text-sm font-sans outline-none transition-all duration-150"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  color: "rgba(255,255,255,0.85)",
+                }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(124,58,237,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.12)" }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none" }}
+              />
+            </Field>
+            <Field label="Password">
+              <input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-xl px-3.5 py-2.5 text-sm font-sans outline-none transition-all duration-150"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  color: "rgba(255,255,255,0.85)",
+                }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(124,58,237,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.12)" }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none" }}
+              />
+            </Field>
+
+            {error && (
+              <p
+                className="text-xs rounded-lg px-3 py-2"
+                style={{ background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.2)", color: "rgba(252,165,165,0.9)" }}
+              >
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-xl px-4 py-2.5 font-sans text-sm font-semibold transition-all duration-150 disabled:opacity-50"
+              style={{
+                background: "rgba(124,58,237,0.18)",
+                border: "1px solid rgba(124,58,237,0.3)",
+                color: "rgba(196,181,253,0.9)",
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.background = "rgba(124,58,237,0.28)"
+                  e.currentTarget.style.borderColor = "rgba(124,58,237,0.5)"
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(124,58,237,0.18)"
+                e.currentTarget.style.borderColor = "rgba(124,58,237,0.3)"
+              }}
+            >
+              {loading ? "Signing in…" : "Sign In"}
+            </button>
+          </form>
+
+          <p className="text-center text-xs" style={{ color: "rgba(255,255,255,0.28)" }}>
+            No account?{" "}
+            <Link
+              href="/auth/register"
+              className="font-medium transition-colors duration-150"
+              style={{ color: "rgba(167,139,250,0.8)" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(196,181,253,1)" }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(167,139,250,0.8)" }}
+            >
+              Register
+            </Link>
+          </p>
         </div>
 
-        {/* Credentials form */}
-        <form onSubmit={handleCredentials} className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="password" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
-          </div>
-
-          {error && (
-            <p className="text-xs text-destructive">{error}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full mt-1")}
-          >
-            {loading ? "Signing in…" : "Sign In"}
-          </button>
-        </form>
-
-        <p className="text-center text-xs text-muted-foreground">
-          No account?{" "}
-          <Link href="/auth/register" className="text-brand hover:underline font-medium">
-            Register
-          </Link>
+        {/* Footer note */}
+        <p className="text-center text-xs leading-relaxed max-w-[30ch]" style={{ color: "rgba(255,255,255,0.18)" }}>
+          To compete you&apos;ll need to link Discord, email, and an Epic Games username.
         </p>
-      </div>
+      </motion.div>
+    </div>
+  )
+}
 
-      {/* Account requirements notice */}
-      <p className="max-w-sm text-center text-xs text-muted-foreground leading-relaxed">
-        To register for a season you must link a{" "}
-        <span className="text-foreground">Discord account</span>,{" "}
-        <span className="text-foreground">email &amp; password</span>, and an{" "}
-        <span className="text-foreground">Epic Games username</span> to your profile.
-      </p>
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.28)" }}>
+        {label}
+      </label>
+      {children}
     </div>
   )
 }

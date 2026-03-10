@@ -1,30 +1,50 @@
 "use client"
 
-import { motion, type Variants } from "framer-motion"
+import { useRef } from "react"
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  useSpring,
+} from "framer-motion"
 import Link from "next/link"
-import { ChevronRight } from "lucide-react"
-import { buttonVariants } from "@/components/ui/button-variants"
-import { cn } from "@/lib/utils"
+import { ArrowRight } from "lucide-react"
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
+const SPRING = { stiffness: 55, damping: 22 }
 
-const container: Variants = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.15,
-    },
-  },
-}
-
-const item: Variants = {
-  hidden: { opacity: 0, y: 28 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: EASE },
-  },
+/* ── Letter-by-letter stagger for white text ── */
+function LetterReveal({
+  text,
+  delay = 0,
+  className,
+  style,
+}: {
+  text: string
+  delay?: number
+  className?: string
+  style?: React.CSSProperties
+}) {
+  return (
+    <span className={className} style={style} aria-label={text}>
+      {text.split("").map((char, i) => (
+        <motion.span
+          key={i}
+          className="inline-block"
+          initial={{ opacity: 0, y: 52, rotateX: 20 }}
+          animate={{ opacity: 1, y: 0, rotateX: 0 }}
+          transition={{
+            duration: 0.55,
+            delay: delay + i * 0.038,
+            ease: EASE,
+          }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </span>
+  )
 }
 
 interface HeroSectionProps {
@@ -32,190 +52,451 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ isSignedIn }: HeroSectionProps) {
+  const containerRef = useRef<HTMLElement>(null)
+
+  /* ── Scroll parallax ── */
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  })
+  const orbY   = useTransform(scrollYProgress, [0, 1], [0, -100])
+  const textY  = useTransform(scrollYProgress, [0, 1], [0,  60])
+  const fadeOut = useTransform(scrollYProgress, [0, 0.5], [1,  0])
+
+  /* ── Cursor glow ── */
+  const rawX = useMotionValue(0)
+  const rawY = useMotionValue(0)
+  const cursorX = useSpring(rawX, SPRING)
+  const cursorY = useSpring(rawY, SPRING)
+
+  function handleMouseMove(e: React.MouseEvent<HTMLElement>) {
+    const rect = containerRef.current?.getBoundingClientRect()
+    if (!rect) return
+    rawX.set(e.clientX - rect.left)
+    rawY.set(e.clientY - rect.top)
+  }
+
   return (
-    <section className="relative overflow-hidden px-4 pt-28 pb-40 text-center">
-      {/* Background texture */}
-      <div className="hero-stripes absolute inset-0 opacity-60" />
-      <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-background" />
+    <section
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-4 pt-20 pb-28"
+    >
+      {/* ── GRID ── */}
+      <div className="grid-bg absolute inset-0 pointer-events-none" aria-hidden />
 
-      {/* Animated glow orbs */}
+      {/* ── CURSOR GLOW ── */}
       <motion.div
-        className="absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[500px] rounded-full bg-brand/20 blur-[140px] pointer-events-none"
-        animate={{ scale: [1, 1.18, 1], opacity: [0.18, 0.28, 0.18] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute top-1/2 -left-40 h-[320px] w-[320px] rounded-full bg-brand/10 blur-[100px] pointer-events-none"
-        animate={{ scale: [1, 1.15, 1], opacity: [0.1, 0.18, 0.1], x: [0, 24, 0] }}
-        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-      />
-      <motion.div
-        className="absolute top-1/3 -right-40 h-[280px] w-[280px] rounded-full bg-sky-500/10 blur-[100px] pointer-events-none"
-        animate={{ scale: [1, 1.12, 1], opacity: [0.08, 0.16, 0.08], x: [0, -20, 0] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background: useTransform(
+            [cursorX, cursorY],
+            ([x, y]: number[]) =>
+              `radial-gradient(480px circle at ${x}px ${y}px, rgba(124,58,237,0.065), transparent 65%)`
+          ),
+        }}
+        aria-hidden
       />
 
-      {/* Main content */}
+      {/* ── TOP VIGNETTE — protects text readability ── */}
+      <div
+        className="absolute inset-x-0 top-0 h-[55%] pointer-events-none z-0"
+        style={{
+          background:
+            "linear-gradient(to bottom, oklch(0.04 0 0) 0%, transparent 100%)",
+        }}
+        aria-hidden
+      />
+
+      {/* ── BOTTOM ORB — glowing abyss beneath text ── */}
       <motion.div
-        className="relative flex flex-col items-center gap-7 max-w-5xl mx-auto"
-        variants={container}
-        initial="hidden"
-        animate="show"
+        style={{ y: orbY }}
+        className="absolute bottom-[-8%] left-1/2 -translate-x-1/2 pointer-events-none z-0"
+        aria-hidden
       >
-        {/* Live badge */}
-        <motion.div variants={item}>
-          <div className="inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand">
-            <motion.span
-              className="h-2 w-2 rounded-full bg-brand"
-              animate={{ opacity: [1, 0.25, 1] }}
-              transition={{ duration: 1.6, repeat: Infinity }}
-            />
-            Season Registration Open
-          </div>
-        </motion.div>
+        {/* Wide upward diffusion */}
+        <div
+          style={{
+            width: "960px",
+            height: "620px",
+            transform: "translateX(-50%)",
+            background:
+              "radial-gradient(ellipse at 50% 88%, rgba(124,58,237,0.32) 0%, rgba(6,182,212,0.13) 46%, transparent 70%)",
+            filter: "blur(90px)",
+          }}
+        />
 
-        {/* Headline */}
-        <motion.h1
-          variants={item}
-          className="font-display text-6xl font-bold uppercase tracking-tight sm:text-7xl lg:text-8xl leading-none"
+        {/* Animated orb core */}
+        <motion.div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: "50%",
+            width: "320px",
+            height: "320px",
+            transform: "translateX(-50%)",
+          }}
+          animate={{ scale: [1, 1.08, 1], rotate: [0, 10, 0] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
         >
-          Carolina
-          <br />
-          <span className="text-brand [text-shadow:0_0_80px_oklch(0.50_0.20_15/50%)]">
-            Collegiate
-          </span>
-          <br />
-          Clash
-        </motion.h1>
-
-        {/* Description */}
-        <motion.p
-          variants={item}
-          className="max-w-xl text-base text-muted-foreground sm:text-lg leading-relaxed"
-        >
-          The premier Rocket League league for college students across North &amp; South
-          Carolina. Compete in structured seasons, climb the divisions, and prove your
-          team belongs at the top.
-        </motion.p>
-
-        {/* CTAs */}
-        <motion.div variants={item} className="flex flex-wrap justify-center gap-3 pt-1">
-          {isSignedIn ? (
-            <Link
-              href="/dashboard"
-              className={cn(
-                buttonVariants({ size: "lg" }),
-                "px-8 gap-2 shadow-[0_0_24px_oklch(0.50_0.20_15/30%)] hover:shadow-[0_0_44px_oklch(0.50_0.20_15/55%)] transition-all duration-300"
-              )}
-            >
-              Go to Dashboard
-              <ChevronRight className="h-4 w-4" />
-            </Link>
-          ) : (
-            <Link
-              href="/auth/register"
-              className={cn(
-                buttonVariants({ size: "lg" }),
-                "px-8 gap-2 shadow-[0_0_24px_oklch(0.50_0.20_15/30%)] hover:shadow-[0_0_44px_oklch(0.50_0.20_15/55%)] transition-all duration-300"
-              )}
-            >
-              Register Your Team
-              <ChevronRight className="h-4 w-4" />
-            </Link>
-          )}
-          <Link
-            href="/seasons"
-            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "px-8")}
-          >
-            View Seasons
-          </Link>
-        </motion.div>
-
-        {/* Scroll indicator */}
-        <motion.div variants={item} className="pt-4 flex flex-col items-center">
-          <motion.div
-            className="h-12 w-px bg-linear-to-b from-transparent to-muted-foreground/30"
-            initial={{ scaleY: 0, originY: 0 }}
-            animate={{ scaleY: 1 }}
-            transition={{ duration: 1, delay: 1.2, ease: EASE }}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              borderRadius: "50%",
+              background:
+                "conic-gradient(from 200deg at 40% 42%, #7c3aed 0deg, #06b6d4 80deg, #a855f7 160deg, #0ea5e9 240deg, #7c3aed 360deg)",
+              filter: "blur(44px)",
+              opacity: 0.50,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: "30%",
+              borderRadius: "50%",
+              background:
+                "radial-gradient(circle at 32% 28%, rgba(232,121,249,0.9), rgba(14,165,233,0.75) 52%, rgba(124,58,237,0.5) 85%)",
+              filter: "blur(10px)",
+            }}
+          />
+          {/* Specular */}
+          <div
+            style={{
+              position: "absolute",
+              top: "12%",
+              left: "16%",
+              width: "28%",
+              height: "22%",
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(255,255,255,0.7), transparent)",
+              filter: "blur(5px)",
+            }}
           />
         </motion.div>
       </motion.div>
 
-      {/* Floating card — live match (desktop only) */}
+      {/* ── BOTTOM EDGE FADE ── */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-32 pointer-events-none z-0"
+        style={{
+          background: "linear-gradient(to top, oklch(0.04 0 0), transparent)",
+        }}
+        aria-hidden
+      />
+
+      {/* ── MAIN CONTENT ── */}
       <motion.div
-        className="absolute right-6 top-1/3 hidden xl:block"
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.9, delay: 1.0, ease: EASE }}
+        style={{ y: textY, opacity: fadeOut }}
+        className="relative z-10 flex flex-col items-center text-center max-w-6xl mx-auto select-none"
+      >
+        {/* Season label */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.2, delay: 0.1 }}
+          className="mb-10 flex items-center gap-4"
+        >
+          <motion.div
+            className="h-px w-10"
+            style={{ background: "rgba(255,255,255,0.12)" }}
+            initial={{ scaleX: 0, originX: "right" }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          />
+          <span
+            className="font-sans text-[10px] font-medium uppercase tracking-[0.28em]"
+            style={{ color: "rgba(255,255,255,0.28)" }}
+          >
+            Carolina Collegiate Clash · Season 4
+          </span>
+          <motion.div
+            className="h-px w-10"
+            style={{ background: "rgba(255,255,255,0.12)" }}
+            initial={{ scaleX: 0, originX: "left" }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          />
+        </motion.div>
+
+        {/* ── EDITORIAL HEADLINE ── */}
+        <div className="flex flex-col items-center" style={{ perspective: "800px" }}>
+
+          {/* Serif italic — refined & aspirational */}
+          <motion.p
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.18, ease: EASE }}
+            className="font-serif italic leading-tight mb-2"
+            style={{
+              fontSize: "clamp(1.9rem, 5vw, 4.5rem)",
+              color: "rgba(255,255,255,0.82)",
+              textShadow: "0 0 60px rgba(255,255,255,0.08)",
+            }}
+          >
+            Compete at the
+          </motion.p>
+
+          {/* MASSIVE word — letter-by-letter stagger */}
+          <LetterReveal
+            text="HIGHEST"
+            delay={0.30}
+            className="font-display font-bold text-white leading-none tracking-tight block"
+            style={{
+              fontSize: "clamp(4.5rem, 17vw, 12rem)",
+              textShadow: "0 2px 40px rgba(0,0,0,0.6)",
+            }}
+          />
+
+          {/* MASSIVE gradient word — clip-path wipe reveal */}
+          <div
+            className="font-display font-bold leading-none tracking-tight block overflow-hidden"
+            style={{ fontSize: "clamp(4.5rem, 17vw, 12rem)" }}
+          >
+            <motion.span
+              className="block"
+              initial={{ clipPath: "inset(0 100% 0 0)" }}
+              animate={{ clipPath: "inset(0 0% 0 0)" }}
+              transition={{ duration: 0.85, delay: 0.60, ease: EASE }}
+              style={{
+                background: "linear-gradient(120deg, #a855f7 0%, #06b6d4 55%, #7c3aed 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                display: "block",
+              }}
+            >
+              LEVEL.
+            </motion.span>
+          </div>
+        </div>
+
+        {/* Subtitle */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.85, delay: 0.80, ease: EASE }}
+          className="mt-8 max-w-sm font-sans text-sm leading-relaxed"
+          style={{ color: "rgba(255,255,255,0.30)" }}
+        >
+          The premier Rocket League league for college students across North &amp; South
+          Carolina. Structured seasons. Ranked divisions. Real competition.
+        </motion.p>
+
+        {/* CTAs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.85, delay: 0.92, ease: EASE }}
+          className="mt-10 flex flex-wrap items-center justify-center gap-3"
+        >
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <Link
+              href={isSignedIn ? "/dashboard" : "/auth/register"}
+              className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-black transition-colors duration-200 hover:bg-white/90"
+            >
+              {isSignedIn ? "Go to Dashboard" : "Register Your Team"}
+              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+            </Link>
+          </motion.div>
+
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <Link
+              href="/seasons"
+              className="inline-flex items-center gap-2 rounded-full border px-7 py-3.5 text-sm font-medium backdrop-blur-sm transition-all duration-200"
+              style={{
+                borderColor: "rgba(255,255,255,0.11)",
+                background: "rgba(255,255,255,0.04)",
+                color: "rgba(255,255,255,0.50)",
+              }}
+            >
+              View Seasons
+            </Link>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+
+      {/* ── FLOATING CARD — LIVE MATCH (right) ── */}
+      <motion.div
+        className="absolute right-8 top-[36%] hidden xl:block z-20"
+        initial={{ opacity: 0, x: 60, y: 10 }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        transition={{ duration: 1.0, delay: 1.1, ease: EASE }}
       >
         <motion.div
-          animate={{ y: [0, -12, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
+          whileHover={{ scale: 1.04, transition: { duration: 0.2 } }}
         >
-          <div className="w-56 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm p-4 shadow-2xl shadow-black/30">
-            <div className="flex items-center gap-2 mb-3">
-              <motion.div
-                className="h-2 w-2 rounded-full bg-green-400"
-                animate={{ opacity: [1, 0.3, 1] }}
-                transition={{ duration: 1.2, repeat: Infinity }}
-              />
-              <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
-                Live Match
+          <div
+            className="w-64 rounded-2xl p-5 shadow-2xl cursor-default"
+            style={{
+              background: "rgba(255,255,255,0.032)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              backdropFilter: "blur(24px)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+            }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <motion.div
+                  className="h-1.5 w-1.5 rounded-full bg-emerald-400"
+                  animate={{ opacity: [1, 0.2, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                />
+                <span
+                  className="font-sans text-[10px] font-semibold uppercase tracking-widest"
+                  style={{ color: "rgba(255,255,255,0.36)" }}
+                >
+                  Live Match
+                </span>
+              </div>
+              <span className="font-sans text-[10px]" style={{ color: "rgba(255,255,255,0.18)" }}>
+                Game 5
               </span>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-medium">Team Alpha</span>
-                <span className="font-display text-sm font-bold text-brand">3</span>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="h-7 w-7 rounded-lg flex items-center justify-center"
+                    style={{ background: "rgba(124,58,237,0.18)", border: "1px solid rgba(124,58,237,0.30)" }}
+                  >
+                    <span className="font-display text-[8px] font-bold text-violet-400">NC</span>
+                  </div>
+                  <span className="font-sans text-xs font-medium" style={{ color: "rgba(255,255,255,0.80)" }}>
+                    NC State RL
+                  </span>
+                </div>
+                <span className="font-display text-base font-bold text-white">3</span>
               </div>
-              <div className="h-px bg-border" />
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-medium">Team Omega</span>
-                <span className="font-display text-sm font-bold text-muted-foreground">2</span>
+
+              <div className="h-px" style={{ background: "rgba(255,255,255,0.05)" }} />
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="h-7 w-7 rounded-lg flex items-center justify-center"
+                    style={{ background: "rgba(6,182,212,0.14)", border: "1px solid rgba(6,182,212,0.25)" }}
+                  >
+                    <span className="font-display text-[8px] font-bold text-cyan-400">UNC</span>
+                  </div>
+                  <span className="font-sans text-xs font-medium" style={{ color: "rgba(255,255,255,0.40)" }}>
+                    UNC Chapel Hill
+                  </span>
+                </div>
+                <span className="font-display text-base font-bold" style={{ color: "rgba(255,255,255,0.32)" }}>
+                  2
+                </span>
               </div>
             </div>
-            <div className="mt-3 text-[10px] text-muted-foreground/50 uppercase tracking-widest">
-              Game 5 · Premier
+
+            <div className="mt-4 flex items-center gap-2">
+              <div className="h-0.5 flex-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ background: "linear-gradient(90deg, #7c3aed, #06b6d4)", width: "62%" }}
+                  animate={{ width: ["60%", "65%", "60%"] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                />
+              </div>
+              <span className="font-sans text-[9px] uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.16)" }}>
+                Premier
+              </span>
             </div>
           </div>
         </motion.div>
       </motion.div>
 
-      {/* Floating card — standings (desktop only) */}
+      {/* ── FLOATING CARD — STANDINGS (left) ── */}
       <motion.div
-        className="absolute left-6 bottom-1/4 hidden xl:block"
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.9, delay: 1.2, ease: EASE }}
+        className="absolute left-8 bottom-[26%] hidden xl:block z-20"
+        initial={{ opacity: 0, x: -60, y: 10 }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        transition={{ duration: 1.0, delay: 1.25, ease: EASE }}
       >
         <motion.div
-          animate={{ y: [0, 12, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          whileHover={{ scale: 1.04, transition: { duration: 0.2 } }}
         >
-          <div className="w-52 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm p-4 shadow-2xl shadow-black/30">
-            <div className="text-[10px] text-muted-foreground/50 uppercase tracking-widest mb-3">
-              Season 4 Standings
+          <div
+            className="w-60 rounded-2xl p-5 shadow-2xl cursor-default"
+            style={{
+              background: "rgba(255,255,255,0.032)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              backdropFilter: "blur(24px)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+            }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <span
+                className="font-sans text-[10px] font-semibold uppercase tracking-widest"
+                style={{ color: "rgba(255,255,255,0.36)" }}
+              >
+                Standings
+              </span>
+              <span className="font-sans text-[10px]" style={{ color: "rgba(255,255,255,0.18)" }}>
+                Season 4
+              </span>
             </div>
-            <div className="space-y-2">
+
+            <div className="space-y-3">
               {[
-                { name: "NC State RL", w: 8, l: 0 },
-                { name: "UNC Chapel Hill", w: 7, l: 1 },
-                { name: "Duke Gaming", w: 6, l: 2 },
+                { rank: 1, name: "NC State RL",    record: "8–0", accent: "rgba(124,58,237,0.9)" },
+                { rank: 2, name: "UNC Chapel Hill", record: "7–1", accent: "rgba(255,255,255,0.55)" },
+                { rank: 3, name: "Duke Gaming",     record: "6–2", accent: "rgba(255,255,255,0.35)" },
+                { rank: 4, name: "App State RL",    record: "5–3", accent: "rgba(255,255,255,0.22)" },
               ].map((team, i) => (
-                <div key={team.name} className="flex items-center gap-2">
-                  <span className="font-display text-[10px] text-muted-foreground/40 w-3">
-                    {i + 1}
+                <motion.div
+                  key={team.rank}
+                  className="flex items-center gap-3"
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: 1.3 + i * 0.07, ease: EASE }}
+                >
+                  <span
+                    className="font-display text-[10px] font-bold w-3 shrink-0 tabular-nums"
+                    style={{ color: team.accent }}
+                  >
+                    {team.rank}
                   </span>
-                  <span className="text-xs font-medium flex-1 truncate">{team.name}</span>
-                  <span className="font-display text-xs text-brand font-bold">
-                    {team.w}-{team.l}
+                  <span
+                    className="font-sans text-xs flex-1 truncate"
+                    style={{ color: "rgba(255,255,255,0.52)" }}
+                  >
+                    {team.name}
                   </span>
-                </div>
+                  <span
+                    className="font-sans text-[10px] font-semibold tabular-nums"
+                    style={{ color: "rgba(255,255,255,0.30)" }}
+                  >
+                    {team.record}
+                  </span>
+                </motion.div>
               ))}
             </div>
           </div>
         </motion.div>
+      </motion.div>
+
+      {/* ── SCROLL INDICATOR ── */}
+      <motion.div
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 1.8 }}
+        aria-hidden
+      >
+        <motion.div
+          animate={{ y: [0, 7, 0] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+          className="w-px h-12 mx-auto"
+          style={{
+            background: "linear-gradient(to bottom, rgba(255,255,255,0.20), transparent)",
+          }}
+        />
       </motion.div>
     </section>
   )

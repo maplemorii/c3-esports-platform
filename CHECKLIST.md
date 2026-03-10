@@ -291,6 +291,7 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 - [x] Admin overview dashboard (`/admin`) — stats + recent activity
 - [x] Admin seasons list + create (`/admin/seasons`, `/admin/seasons/create`)
+- [ ] Improve readability (change colors so no eye strain, easier on the eyes dashboard for admin)
 - [ ] Admin season detail + divisions (`/admin/seasons/[seasonId]`)
 - [ ] Admin teams list + detail (`/admin/teams`, `/admin/teams/[teamId]`)
 - [ ] Admin match scheduler + create (`/admin/matches`, `/admin/matches/create`)
