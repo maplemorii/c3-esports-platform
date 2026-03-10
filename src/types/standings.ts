@@ -12,6 +12,16 @@ import type { TeamSummary } from "./api"
 // Row-level standing data
 // ---------------------------------------------------------------------------
 
+/** A single team's head-to-head record against one opponent. */
+export interface H2HRecord {
+  opponentId: string
+  wins:       number
+  losses:     number
+  gamesWon:   number
+  gamesLost:  number
+  points:     number
+}
+
 /**
  * A single team's standing within a division.
  * Mirrors StandingEntry + joined team info.
@@ -41,6 +51,9 @@ export interface StandingsRow {
   points:           number
   winPct:           number  // 0.0 – 1.0
   streak:           number  // positive = win streak, negative = loss streak
+
+  // Head-to-head records vs each opponent in this division
+  h2h:              H2HRecord[]
 
   lastUpdated:      string
 }
@@ -88,13 +101,76 @@ export interface StandingsSortConfig {
   direction: SortDirection
 }
 
-/** Default multi-key sort used by the standings service and table UI. */
+/** Default multi-key sort used for DB orderBy (no H2H). */
 export const DEFAULT_STANDINGS_SORT: StandingsSortConfig[] = [
   { field: "points",           direction: "desc" },
   { field: "gameDifferential", direction: "desc" },
   { field: "goalDifferential", direction: "desc" },
   { field: "wins",             direction: "desc" },
 ]
+
+// ---------------------------------------------------------------------------
+// H2H-aware sort (applied in JS after fetching standings with h2h data)
+// Tiebreaker order:
+//   1. Points
+//   2. H2H points among tied teams
+//   3. H2H game differential among tied teams
+//   4. Overall game differential
+//   5. Overall goal differential
+//   6. Wins
+// ---------------------------------------------------------------------------
+
+function h2hPointsAgainst(row: StandingsRow, opponentIds: Set<string>): number {
+  return row.h2h
+    .filter((r) => opponentIds.has(r.opponentId))
+    .reduce((sum, r) => sum + r.points, 0)
+}
+
+function h2hGameDiffAgainst(row: StandingsRow, opponentIds: Set<string>): number {
+  return row.h2h
+    .filter((r) => opponentIds.has(r.opponentId))
+    .reduce((sum, r) => sum + (r.gamesWon - r.gamesLost), 0)
+}
+
+/**
+ * Sorts standings rows with full H2H tiebreaking.
+ * Returns a new sorted array; does not mutate the input.
+ */
+export function sortStandingsWithH2H(rows: StandingsRow[]): StandingsRow[] {
+  // Group rows by points so we can apply H2H only among tied teams
+  const grouped = new Map<number, StandingsRow[]>()
+  for (const row of rows) {
+    const bucket = grouped.get(row.points) ?? []
+    bucket.push(row)
+    grouped.set(row.points, bucket)
+  }
+
+  const sorted: StandingsRow[] = []
+  for (const [, group] of [...grouped.entries()].sort(([a], [b]) => b - a)) {
+    if (group.length === 1) {
+      sorted.push(group[0])
+      continue
+    }
+    const tiedIds = new Set(group.map((r) => r.teamId))
+    group.sort((a, b) => {
+      const h2hPts = h2hPointsAgainst(b, tiedIds) - h2hPointsAgainst(a, tiedIds)
+      if (h2hPts !== 0) return h2hPts
+
+      const h2hGD = h2hGameDiffAgainst(b, tiedIds) - h2hGameDiffAgainst(a, tiedIds)
+      if (h2hGD !== 0) return h2hGD
+
+      const gd = b.gameDifferential - a.gameDifferential
+      if (gd !== 0) return gd
+
+      const gld = b.goalDifferential - a.goalDifferential
+      if (gld !== 0) return gld
+
+      return b.wins - a.wins
+    })
+    sorted.push(...group)
+  }
+  return sorted
+}
 
 // ---------------------------------------------------------------------------
 // Manual override input

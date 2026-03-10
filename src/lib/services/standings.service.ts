@@ -42,10 +42,10 @@ export interface StandingsDelta {
 
 /**
  * Full recalculation for a division — replays every COMPLETED/FORFEITED match
- * from scratch and overwrites all StandingEntry rows.
+ * from scratch and overwrites all StandingEntry and HeadToHeadRecord rows.
  */
 export async function recalculateStandings(divisionId: string): Promise<void> {
-  // Zero out all entries
+  // Zero out standing entries
   await prisma.standingEntry.updateMany({
     where: { divisionId },
     data: {
@@ -56,6 +56,9 @@ export async function recalculateStandings(divisionId: string): Promise<void> {
       points: 0, streak: 0, winPct: 0,
     },
   })
+
+  // Zero out H2H records (simpler to delete and re-create)
+  await prisma.headToHeadRecord.deleteMany({ where: { divisionId } })
 
   const matches = await prisma.match.findMany({
     where: { divisionId, status: { in: ["COMPLETED", "FORFEITED", "NO_SHOW"] } },
@@ -127,6 +130,22 @@ export async function applyMatchToStandings(matchId: string): Promise<void> {
     gamesLost: gamesWonHome,
     points: homeWon ? cfg.loss : cfg.win,
   })
+
+  // Update H2H records in both directions
+  await applyH2HDelta(divisionId, homeTeamId, awayTeamId, {
+    win: homeWon ? 1 : 0,
+    loss: homeWon ? 0 : 1,
+    gamesWon: gamesWonHome,
+    gamesLost: gamesWonAway,
+    points: homeWon ? cfg.win : cfg.loss,
+  })
+  await applyH2HDelta(divisionId, awayTeamId, homeTeamId, {
+    win: homeWon ? 0 : 1,
+    loss: homeWon ? 1 : 0,
+    gamesWon: gamesWonAway,
+    gamesLost: gamesWonHome,
+    points: homeWon ? cfg.loss : cfg.win,
+  })
 }
 
 /**
@@ -182,6 +201,22 @@ export async function reverseMatchFromStandings(matchId: string): Promise<void> 
   })
 
   await applyDelta(divisionId, awayTeamId, {
+    win: homeWon ? 0 : -1,
+    loss: homeWon ? -1 : 0,
+    gamesWon: -gamesWonAway,
+    gamesLost: -gamesWonHome,
+    points: homeWon ? -cfg.loss : -cfg.win,
+  })
+
+  // Reverse H2H records in both directions
+  await applyH2HDelta(divisionId, homeTeamId, awayTeamId, {
+    win: homeWon ? -1 : 0,
+    loss: homeWon ? 0 : -1,
+    gamesWon: -gamesWonHome,
+    gamesLost: -gamesWonAway,
+    points: homeWon ? -cfg.win : -cfg.loss,
+  })
+  await applyH2HDelta(divisionId, awayTeamId, homeTeamId, {
     win: homeWon ? 0 : -1,
     loss: homeWon ? -1 : 0,
     gamesWon: -gamesWonAway,
@@ -288,6 +323,31 @@ interface MatchDelta {
   forfeitWin?: number
   forfeitLoss?: number
   points?: number
+}
+
+async function applyH2HDelta(
+  divisionId: string,
+  teamId: string,
+  opponentId: string,
+  d: Pick<MatchDelta, "win" | "loss" | "gamesWon" | "gamesLost" | "points">
+): Promise<void> {
+  const record = await prisma.headToHeadRecord.upsert({
+    where:  { divisionId_teamId_opponentId: { divisionId, teamId, opponentId } },
+    create: { divisionId, teamId, opponentId },
+    update: {},
+  })
+
+  await prisma.headToHeadRecord.update({
+    where: { id: record.id },
+    data: {
+      wins:       record.wins      + (d.win      ?? 0),
+      losses:     record.losses    + (d.loss     ?? 0),
+      gamesWon:   record.gamesWon  + (d.gamesWon ?? 0),
+      gamesLost:  record.gamesLost + (d.gamesLost ?? 0),
+      points:     record.points    + (d.points   ?? 0),
+      lastUpdated: new Date(),
+    },
+  })
 }
 
 async function applyDelta(divisionId: string, teamId: string, d: MatchDelta): Promise<void> {
