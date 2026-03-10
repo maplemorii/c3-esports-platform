@@ -19,10 +19,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "C3 Esports",
-    template: "%s | C3 Esports",
+    default: "C3 Esports League",
+    template: "%s | C3 Esports League",
   },
-  description: "Competitive Rocket League league management — matches, standings, and brackets.",
+  description: "The premier Rocket League platform in the Carolinas.",
 }
 
 export default function RootLayout({
