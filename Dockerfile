@@ -40,8 +40,10 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Prisma schema + migrations needed for `prisma migrate deploy` at startup
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+# Prisma schema, migrations, and config needed for `prisma migrate deploy` at startup.
+# prisma.config.ts is required by Prisma 7 — it's the only place datasource URL is set.
+COPY --from=builder --chown=nextjs:nodejs /app/prisma        ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.ts
 
 # Install prisma CLI globally so npm resolves all transitive deps correctly.
 # Cherry-picking individual packages from deps stage is fragile (prisma pulls in
