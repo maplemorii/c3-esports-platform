@@ -20,7 +20,7 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 ### Database
 
 - [x] Prisma schema + initial migration (`prisma/migrations/` exists)
-- [x] Seed script (`prisma/seed.ts` — admin user, demo teams, demo season)
+- [x] Seed script (`prisma/seed.ts` — admin user, demo teams, active season, 4 matches in different states, standings + H2H records)
 - [x] Schema: `LeagueWeek` model
 - [x] Schema: `MatchCheckIn` model
 - [x] Schema: `MatchGame` model (GameResult — per-game scores + result source)
@@ -31,6 +31,7 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [x] Schema: `Player` model (displayName, epicUsername, steamId, country, discordUsername)
 - [x] Schema: `Season` timing config (`leagueWeeks`, `checkInWindowMinutes`, `checkInGraceMinutes`, `resultWindowHours`, `pointsConfig`)
 - [x] Schema: `Match` timing fields (`checkInOpenAt`, `checkInDeadlineAt`, `resultDeadlineAt`, `replaysVerified`, `gamesExpected`, result provenance fields)
+- [x] Schema: `HeadToHeadRecord` model (per team-pair per division; both directions stored)
 
 ### Auth & Roles
 
@@ -157,7 +158,7 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [x] Public season overview (`/(public)/seasons/[seasonSlug]`)
 - [x] Public standings page per division (`/(public)/seasons/[seasonSlug]/standings`)
 - [x] Public match schedule page (`/(public)/seasons/[seasonSlug]/matches`)
-- [x] Dashboard standings page (`/(dashboard)/standings`) — standings for the user's active division with link to full public standings
+- [x] Dashboard standings page (`/(dashboard)/standings`) — standings for the user's active division with H2H column and link to full public standings
 
 ### Season Components
 
@@ -224,37 +225,58 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 ### Standings API
 
-- [ ] `GET /api/seasons/:seasonId/standings` — all divisions' standings
-- [ ] `GET /api/divisions/:divisionId/standings` — single division standings
-- [ ] `POST /api/divisions/:divisionId/standings/recalculate` — force recalculation (staff)
-- [ ] `PATCH /api/divisions/:divisionId/standings/:entryId` — manual override (staff)
-- [ ] Auto standings update on `COMPLETED` / `FORFEITED`
+- [x] `GET /api/seasons/:seasonId/standings` — all divisions' standings
+- [x] `GET /api/divisions/:divisionId/standings` — single division standings
+- [x] `POST /api/divisions/:divisionId/standings/recalculate` — force recalculation (staff)
+- [x] `PATCH /api/divisions/:divisionId/standings/:entryId` — manual override (staff)
+- [x] Auto standings update on `COMPLETED` / `FORFEITED`
 - [x] `src/lib/services/standings.service.ts` — recalculate standings
+- [x] Head-to-head records (`HeadToHeadRecord`) — updated on every completed match; used as tiebreaker
+- [x] H2H-aware standings sort (`sortStandingsWithH2H`) — Points → H2H pts → H2H GD → GD → goal diff → wins
 
 ### Disputes API
 
-- [ ] `GET /api/disputes` — list all disputes (staff)
-- [ ] `GET /api/disputes/:disputeId` — dispute detail (staff/manager)
-- [ ] `POST /api/disputes` — file a dispute (manager)
-- [ ] `PATCH /api/disputes/:disputeId` — resolve/dismiss dispute (staff)
-- [ ] Dispute auto-creation on score conflict or MISMATCH
+- [x] `GET /api/disputes` — list all disputes (staff)
+- [x] `GET /api/disputes/:disputeId` — dispute detail (staff/manager)
+- [x] `POST /api/disputes` — file a dispute (manager)
+- [x] `PATCH /api/disputes/:disputeId` — resolve/dismiss dispute (staff)
+- [x] Dispute auto-creation on score conflict or MISMATCH
 
 ### Match Pages & UI
 
-- [ ] Dashboard matches page (`/(dashboard)/matches`) — upcoming + recent matches across all of user's teams; check-in CTAs surface here
-- [ ] Dashboard match detail page (`/(dashboard)/matches/[matchId]`) — status banner, check-in panel, per-game grid, replay upload slots, score entry form
-- [ ] Match report page (`/(dashboard)/matches/[matchId]/report`) — manual score submission form
-- [ ] Public match list page (`/(public)/matches`)
-- [ ] Public match detail page (`/(public)/matches/[matchId]`)
-- [ ] Match page UX: per-game grid with replay status indicators
-- [ ] `ReplayUploader.tsx` component
-- [ ] `ResultSubmitForm.tsx` component
-- [ ] `MatchCard.tsx`, `MatchScheduleTable.tsx`, `MatchStatusBadge.tsx`
-- [ ] Match timeline page (status history from AuditLog)
+- [x] Dashboard matches page (`/(dashboard)/dashboard/matches`) — upcoming + recent matches across all of user's teams; check-in CTAs surface here
+- [x] Dashboard match detail page (`/(dashboard)/matches/[matchId]`) — status banner, check-in panel, per-game grid, replay upload slots, score entry form
+- [x] Match report page (`/(dashboard)/matches/[matchId]/report`) — manual score submission form
+- [x] `ReplayUploader.tsx` component — drag-and-drop, progress bar, inline status for all parse states
+- [x] `ScoreForm.tsx` (`ResultSubmitForm`) component — per-game score entry with locked replay slots, series preview, staff override
+- [x] `CheckInButton.tsx`, `ConfirmButton.tsx` — client-side action components
+- [x] Public match list page (`/(public)/matches`)
+- [x] Public match detail page (`/matches/[matchId]`) — unified page, works for both auth and public (no redirect)
+- [x] `MatchCard.tsx`, `MatchScheduleTable.tsx`, `MatchStatusBadge.tsx`
+- [x] Match timeline page (status history from AuditLog — embedded in match detail)
 
 ---
 
 ## PHASE 5 — STAFF PANEL
+
+> Staff panel lives under `/admin` (accessible to STAFF+). Sidebar says "Staff Panel" for STAFF role.
+
+### Staff Pages
+
+- [x] Staff dashboard (`/admin`) — open disputes + pending registrations + recent match activity
+- [x] Disputes queue (`/admin/disputes`) — paginated list of all disputes by status with match context
+- [x] Dispute detail (`/admin/disputes/[disputeId]`) — view both teams' submissions, resolve or dismiss
+- [ ] Match list (`/admin/matches`) — all matches with status/division/week filters
+- [ ] Match detail/override (`/admin/matches/[matchId]`) — force check-in, score override, forfeit, cancel
+- [ ] Registrations queue (`/admin/registrations`) — approve or reject pending team registrations (all seasons)
+- [ ] Standings management (`/admin/standings`) — pick division, recalculate or manually override entries
+
+### Staff Components
+
+- [ ] `DisputeCard.tsx` — dispute summary card with match context and inline resolve/dismiss action
+- [ ] `StaffMatchActions.tsx` — force check-in, override score, forfeit, cancel with confirmation dialogs
+
+---
 
 ## PHASE 6 — ADMIN PANEL
 
@@ -273,14 +295,12 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [ ] Admin teams list + detail (`/admin/teams`, `/admin/teams/[teamId]`)
 - [ ] Admin match scheduler + create (`/admin/matches`, `/admin/matches/create`)
 - [ ] Admin match detail/override (`/admin/matches/[matchId]`)
-- [ ] Admin bracket manager (`/admin/brackets/[seasonId]`)
 - [ ] Admin standings override (`/admin/standings/[seasonId]`)
-- [ ] Admin disputes queue + resolve (`/admin/disputes`, `/admin/disputes/[disputeId]`)
 - [ ] User management UI (`/admin/users` — role assignment)
 
 ### Admin Components
 
-- [ ] `DisputeCard.tsx`, `StandingsOverrideForm.tsx`, `MatchScheduleForm.tsx`
+- [ ] `StandingsOverrideForm.tsx`, `MatchScheduleForm.tsx`
 
 ---
 
