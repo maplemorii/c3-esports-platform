@@ -13,7 +13,8 @@
       "Bash(npm install -D tsx)",
       "Bash(find \"c:/Users/benit/c3-esports-platform/src/app/\\(dashboard\\)/matches\" -type f -name \"*.tsx\")",
       "Bash(ls -la \"c:/Users/benit/c3-esports-platform/src/app/\\(public\\)/\")",
-      "Bash(ls c:/Users/benit/c3-esports-platform/src/app/\\\\\\(public\\\\\\)/)"
+      "Bash(ls c:/Users/benit/c3-esports-platform/src/app/\\\\\\(public\\\\\\)/)",
+      "Bash(grep -r \"font-rajdhani\\\\|font-inter\\\\|@import\\\\|--font\" /c/Users/benit/c3-esports-platform/src/app --include=*.tsx --include=*.ts -l)"
     ]
   }
 }
