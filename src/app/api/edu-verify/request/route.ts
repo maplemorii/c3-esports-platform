@@ -3,9 +3,11 @@
  * Authenticated. Submits a .edu email and sends a verification link.
  * Can be called again to re-send (generates a new token, invalidates the old one).
  */
+export const dynamic = "force-dynamic"
+
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import crypto from "crypto"
+import crypto from "node:crypto"
 import { prisma } from "@/lib/prisma"
 import { requireAuth } from "@/lib/session"
 import { sendEduVerificationEmail } from "@/lib/email"

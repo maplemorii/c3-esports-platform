@@ -125,7 +125,7 @@ export function UserMenu({ session }: { session: Session }) {
             <MenuItem
               icon={ShieldCheck}
               label="Staff Panel"
-              onClick={() => { setOpen(false); router.push("/staff") }}
+              onClick={() => { setOpen(false); router.push("/admin") }}
               accent="violet"
             />
           )}

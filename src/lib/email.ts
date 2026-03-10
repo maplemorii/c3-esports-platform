@@ -5,10 +5,22 @@
  */
 import { Resend } from "resend"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
-const FROM = "C3 Esports <noreply@c3esports.gg>"
+// Use your verified Resend domain in production.
+// During development / before domain verification, use: "onboarding@resend.dev"
+const FROM = process.env.EMAIL_FROM ?? "C3 Esports <onboarding@resend.dev>"
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+
+// Lazy singleton — avoids throwing at module load time when RESEND_API_KEY is absent
+let _resend: Resend | null = null
+function getResend(): Resend {
+  if (!_resend) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is not set. Add it to your environment variables.")
+    }
+    _resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return _resend
+}
 
 export async function sendEduVerificationEmail({
   to,
@@ -21,7 +33,7 @@ export async function sendEduVerificationEmail({
 }) {
   const verifyUrl = `${APP_URL}/api/edu-verify/confirm?token=${token}`
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to,
     subject: "Verify your college email — C3 Esports",

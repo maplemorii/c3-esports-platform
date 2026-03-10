@@ -4,8 +4,10 @@
  * On success, redirects to /profile/edit?edu=verified.
  * On failure, redirects to /profile/edit?edu=error&reason=<reason>.
  */
+export const dynamic = "force-dynamic"
+
 import { NextResponse } from "next/server"
-import crypto from "crypto"
+import crypto from "node:crypto"
 import { prisma } from "@/lib/prisma"
 
 export async function GET(req: Request) {

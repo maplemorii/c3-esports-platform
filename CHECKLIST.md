@@ -266,15 +266,15 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [x] Staff dashboard (`/admin`) — open disputes + pending registrations + recent match activity
 - [x] Disputes queue (`/admin/disputes`) — paginated list of all disputes by status with match context
 - [x] Dispute detail (`/admin/disputes/[disputeId]`) — view both teams' submissions, resolve or dismiss
-- [ ] Match list (`/admin/matches`) — all matches with status/division/week filters
-- [ ] Match detail/override (`/admin/matches/[matchId]`) — force check-in, score override, forfeit, cancel
-- [ ] Registrations queue (`/admin/registrations`) — approve or reject pending team registrations (all seasons)
-- [ ] Standings management (`/admin/standings`) — pick division, recalculate or manually override entries
+- [x] Match list (`/admin/matches`) — all matches with status/division/week filters
+- [x] Match detail/override (`/admin/matches/[matchId]`) — force check-in, score override, forfeit, cancel
+- [x] Registrations queue (`/admin/registrations`) — approve or reject pending team registrations (all seasons)
+- [x] Standings management (`/admin/standings`) — pick division, view table, recalculate
 
 ### Staff Components
 
-- [ ] `DisputeCard.tsx` — dispute summary card with match context and inline resolve/dismiss action
-- [ ] `StaffMatchActions.tsx` — force check-in, override score, forfeit, cancel with confirmation dialogs
+- [x] `DisputeCard.tsx` — dispute summary card with match context and inline resolve/dismiss action
+- [x] `StaffMatchActions.tsx` — force check-in, override score, forfeit, cancel with confirmation dialogs
 
 ---
 
@@ -284,24 +284,24 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 - [x] `GET /api/admin/stats` — platform-wide stats dashboard (staff)
 - [x] `GET /api/admin/audit` — paginated audit log (admin)
-- [~] `GET/PATCH /api/admin/users` — user management (`src/app/api/admin/users/route.ts`)
-- [ ] `PATCH /api/users/:userId/role` — assign role to user (admin)
+- [x] `GET/PATCH /api/admin/users` — user list + role assignment (`src/app/api/admin/users/route.ts`)
+- [x] `PATCH /api/admin/users/:userId/edu-override` — manual edu verification override (staff)
 
 ### Admin Pages
 
 - [x] Admin overview dashboard (`/admin`) — stats + recent activity
 - [x] Admin seasons list + create (`/admin/seasons`, `/admin/seasons/create`)
-- [ ] Improve readability (change colors so no eye strain, easier on the eyes dashboard for admin)
-- [ ] Admin season detail + divisions (`/admin/seasons/[seasonId]`)
-- [ ] Admin teams list + detail (`/admin/teams`, `/admin/teams/[teamId]`)
-- [ ] Admin match scheduler + create (`/admin/matches`, `/admin/matches/create`)
-- [ ] Admin match detail/override (`/admin/matches/[matchId]`)
-- [ ] Admin standings override (`/admin/standings/[seasonId]`)
-- [ ] User management UI (`/admin/users` — role assignment)
+- [x] Admin match list (`/admin/matches`) — status/division filters
+- [x] Admin match detail/override (`/admin/matches/[matchId]`) — force check-in, score override, forfeit, cancel
+- [x] Admin standings (`/admin/standings`) — pick division, view table, recalculate
+- [x] Admin registrations queue (`/admin/registrations`) — cross-season pending/waitlisted
+- [x] Admin season detail hub (`/admin/seasons/[seasonId]`) — divisions + weeks overview
+- [x] Admin teams list + detail (`/admin/teams`, `/admin/teams/[teamId]`)
+- [x] User management UI (`/admin/users` — role assignment + edu override)
 
 ### Admin Components
 
-- [ ] `StandingsOverrideForm.tsx`, `MatchScheduleForm.tsx`
+- [x] `MatchScheduleForm.tsx` — create/edit match with timing fields
 
 ---
 

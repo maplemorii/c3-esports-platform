@@ -31,14 +31,15 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/admin",              label: "Overview",   icon: LayoutDashboard },
-  { href: "/admin/seasons",      label: "Seasons",    icon: Calendar },
-  { href: "/admin/teams",        label: "Teams",      icon: Users },
-  { href: "/admin/matches",      label: "Matches",    icon: Swords },
-  { href: "/admin/standings",    label: "Standings",  icon: BarChart2 },
-  { href: "/admin/disputes",     label: "Disputes",   icon: AlertTriangle },
-  { href: "/admin/users",        label: "Users",      icon: UserCog,       adminOnly: true },
-  { href: "/admin/audit",        label: "Audit Log",  icon: ClipboardList, adminOnly: true },
+  { href: "/admin",                  label: "Overview",      icon: LayoutDashboard },
+  { href: "/admin/seasons",          label: "Seasons",       icon: Calendar },
+  { href: "/admin/teams",            label: "Teams",         icon: Users },
+  { href: "/admin/matches",          label: "Matches",       icon: Swords },
+  { href: "/admin/standings",        label: "Standings",     icon: BarChart2 },
+  { href: "/admin/registrations",    label: "Registrations", icon: ClipboardList },
+  { href: "/admin/disputes",         label: "Disputes",      icon: AlertTriangle },
+  { href: "/admin/users",            label: "Users",         icon: UserCog,       adminOnly: true },
+  { href: "/admin/audit",            label: "Audit Log",     icon: ClipboardList, adminOnly: true },
 ]
 
 // ---------------------------------------------------------------------------
