@@ -28,6 +28,8 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+# Allow prisma.config.ts to resolve 'prisma/config' from the globally installed prisma
+ENV NODE_PATH=/usr/local/lib/node_modules
 
 # Non-root user for security
 RUN addgroup --system --gid 1001 nodejs
