@@ -22,7 +22,7 @@ import {
 const NAV_ITEMS = [
   { href: "/dashboard",  label: "Dashboard",  icon: LayoutDashboard },
   { href: "/team",       label: "My Teams",   icon: Users },
-  { href: "/matches",    label: "Matches",    icon: Swords },
+  { href: "/dashboard/matches", label: "Matches", icon: Swords },
   { href: "/standings",  label: "Standings",  icon: Trophy },
   { href: "/profile",    label: "Profile",    icon: User },
 ]
