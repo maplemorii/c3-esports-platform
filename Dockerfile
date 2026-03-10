@@ -43,14 +43,13 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Prisma schema + migrations needed for `prisma migrate deploy` at startup
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
-# Prisma CLI + all @prisma/* packages needed for `prisma migrate deploy` at startup
-# NOTE: Do NOT copy node_modules/.bin/prisma — it's a symlink that Docker dereferences,
-# breaking __dirname resolution for the sibling WASM files. Call the package entry directly.
+# Prisma CLI + all @prisma/* packages needed for `prisma migrate deploy` at startup.
+# IMPORTANT: Do NOT use node_modules/.bin/prisma — Docker dereferences the symlink,
+# making __dirname = .bin/ where no WASM files exist.
+# Call node_modules/prisma/build/index.js directly so __dirname = prisma/build/,
+# which is where all the WASM files live.
 COPY --from=deps /app/node_modules/prisma  ./node_modules/prisma
 COPY --from=deps /app/node_modules/@prisma ./node_modules/@prisma
-
-COPY docker-start.sh ./docker-start.sh
-RUN chmod +x docker-start.sh
 
 USER nextjs
 
@@ -60,4 +59,4 @@ ENV HOSTNAME="0.0.0.0"
 
 # DATABASE_URL, NEXTAUTH_SECRET, DISCORD_CLIENT_*, etc. injected at runtime by Railway
 # Runs migrations then starts the server
-CMD ["./docker-start.sh"]
+CMD ["sh", "-c", "node ./node_modules/prisma/build/index.js migrate deploy && node server.js"]
