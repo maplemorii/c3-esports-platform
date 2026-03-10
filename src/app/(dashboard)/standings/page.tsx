@@ -6,6 +6,7 @@
  * Links to the full public standings page.
  */
 
+import React from "react"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import Link from "next/link"
@@ -112,7 +113,25 @@ async function getMyStandings(userId: string) {
       return true
     })
 
-  return { divisions, activeSeason, myTeamIds: teamIds }
+  // Fetch H2H records for all relevant divisions
+  const divisionIds = divisions.map((d) => d.id)
+  const h2hRecords = divisionIds.length > 0
+    ? await prisma.headToHeadRecord.findMany({
+        where: { divisionId: { in: divisionIds } },
+        select: { divisionId: true, teamId: true, opponentId: true, wins: true, losses: true },
+      })
+    : []
+
+  // Index by divisionId + teamId
+  const h2hIndex = new Map<string, { opponentId: string; wins: number; losses: number }[]>()
+  for (const r of h2hRecords) {
+    const key = `${r.divisionId}:${r.teamId}`
+    const list = h2hIndex.get(key) ?? []
+    list.push({ opponentId: r.opponentId, wins: r.wins, losses: r.losses })
+    h2hIndex.set(key, list)
+  }
+
+  return { divisions, activeSeason, myTeamIds: teamIds, h2hIndex }
 }
 
 // ---------------------------------------------------------------------------
@@ -147,7 +166,7 @@ export default async function DashboardStandingsPage() {
   const session = await getSession()
   if (!session) redirect("/auth/signin")
 
-  const { divisions, activeSeason, myTeamIds = [] } = await getMyStandings(session.user.id)
+  const { divisions, activeSeason, myTeamIds = [], h2hIndex = new Map<string, { opponentId: string; wins: number; losses: number }[]>() } = await getMyStandings(session.user.id)
   const myTeamSet = new Set(myTeamIds)
 
   return (
@@ -228,6 +247,7 @@ export default async function DashboardStandingsPage() {
                     <th className="py-2 px-2 text-center">W</th>
                     <th className="py-2 px-2 text-center">L</th>
                     <th className="py-2 px-2 text-center hidden sm:table-cell">GD</th>
+                    <th className="py-2 px-2 text-center hidden lg:table-cell">H2H</th>
                     <th className="py-2 px-2 text-center font-bold">PTS</th>
                     <th className="py-2 pl-2 pr-4 text-center hidden md:table-cell">Streak</th>
                   </tr>
@@ -277,6 +297,21 @@ export default async function DashboardStandingsPage() {
                           entry.gameDifferential > 0 ? "text-emerald-400" : entry.gameDifferential < 0 ? "text-destructive" : "text-muted-foreground"
                         )}>
                           {entry.gameDifferential > 0 ? `+${entry.gameDifferential}` : entry.gameDifferential}
+                        </td>
+                        <td className="py-2.5 px-2 text-center tabular-nums hidden lg:table-cell">
+                          {(() => {
+                            const records = h2hIndex.get(`${division.id}:${entry.teamId}`) ?? []
+                            const w = records.reduce((s, r) => s + r.wins,   0)
+                            const l = records.reduce((s, r) => s + r.losses, 0)
+                            if (w === 0 && l === 0) return <span className="text-muted-foreground">—</span>
+                            return (
+                              <span className="text-xs">
+                                <span className="text-emerald-400 font-semibold">{w}</span>
+                                <span className="text-muted-foreground">-</span>
+                                <span className="text-destructive font-semibold">{l}</span>
+                              </span>
+                            )
+                          })() as React.ReactNode}
                         </td>
                         <td className="py-2.5 px-2 text-center tabular-nums font-bold">{entry.points}</td>
                         <td className="py-2.5 pl-2 pr-4 text-center hidden md:table-cell">
