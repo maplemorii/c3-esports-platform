@@ -17,7 +17,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Generate Prisma client (reads schema only — no DB connection needed)
-RUN npx prisma generate --schema=/prisma/schema.prisma
+RUN npx prisma generate
 
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
@@ -40,11 +40,19 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Prisma schema + migrations needed for `prisma migrate deploy` at startup
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+
+# Prisma CLI (not included in standalone node_modules)
+COPY --from=deps /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+COPY --from=deps /app/node_modules/prisma      ./node_modules/prisma
+
 USER nextjs
 
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# DATABASE_URL, NEXTAUTH_SECRET, DISCORD_CLIENT_* injected at runtime
-CMD ["node", "server.js"]
+# DATABASE_URL, NEXTAUTH_SECRET, DISCORD_CLIENT_*, etc. injected at runtime by Railway
+# Runs migrations then starts the server
+CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
