@@ -13,10 +13,11 @@ const OverrideSchema = z.object({
   note: z.string().max(500).optional(),
 })
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { userId: string } }
-) {
+type Params = { params: Promise<{ userId: string }> }
+
+export async function PATCH(req: Request, { params }: Params) {
+  const { userId } = await params
+
   const { error } = await requireRole("STAFF")
   if (error) return error
 
@@ -27,7 +28,7 @@ export async function PATCH(
   }
 
   const target = await prisma.user.findUnique({
-    where: { id: params.userId, deletedAt: null },
+    where: { id: userId, deletedAt: null },
     select: { id: true },
   })
   if (!target) {
@@ -37,7 +38,7 @@ export async function PATCH(
   const { approved, note } = parsed.data
 
   const updated = await prisma.user.update({
-    where: { id: params.userId },
+    where: { id: userId },
     data: {
       eduVerifyOverride: approved,
       eduVerifyNote: note ?? null,
