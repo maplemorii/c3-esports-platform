@@ -18,6 +18,7 @@
  *     b. Notifies submitting team (future: email/Discord)
  */
 
+import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { applyMatchToStandings } from "@/lib/services/standings.service"
 import type { ReplayUpload, ReplayParseStatus } from "@prisma/client"
@@ -131,7 +132,7 @@ export async function createReplayUpload(
       parseError:       null,
       ballchasingId:    null,
       ballchasingUrl:   null,
-      parsedData:       null,
+      parsedData:       Prisma.DbNull,
       parsedHomeGoals:  null,
       parsedAwayGoals:  null,
       parsedDuration:   null,
@@ -290,7 +291,7 @@ export async function handleParseResult(
         parsedAwayGoals:  result.awayGoals  ?? null,
         parsedDuration:   result.duration   ?? null,
         parsedOvertime:   result.overtime   ?? null,
-        parsedData:       (result.rawJson ?? null) as object | null,
+        parsedData: result.rawJson ?? Prisma.JsonNull,
         scoresAccepted:   false,
       },
     })
@@ -332,7 +333,7 @@ export async function handleParseResult(
       parsedAwayGoals:  result.awayGoals ?? null,
       parsedDuration:   result.duration  ?? null,
       parsedOvertime:   result.overtime  ?? null,
-      parsedData:       (result.rawJson ?? null) as object | null,
+      parsedData: result.rawJson ?? Prisma.JsonNull,
       scoresAccepted:   true,
     },
   })
