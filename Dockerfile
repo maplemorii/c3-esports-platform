@@ -43,13 +43,13 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Prisma schema + migrations needed for `prisma migrate deploy` at startup
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
-# Prisma CLI + all @prisma/* packages needed for `prisma migrate deploy` at startup.
-# IMPORTANT: Do NOT use node_modules/.bin/prisma — Docker dereferences the symlink,
-# making __dirname = .bin/ where no WASM files exist.
-# Call node_modules/prisma/build/index.js directly so __dirname = prisma/build/,
-# which is where all the WASM files live.
-COPY --from=deps /app/node_modules/prisma  ./node_modules/prisma
-COPY --from=deps /app/node_modules/@prisma ./node_modules/@prisma
+# Install prisma CLI globally so npm resolves all transitive deps correctly.
+# Cherry-picking individual packages from deps stage is fragile (prisma pulls in
+# @prisma/dev, valibot, and many others that differ by version).
+COPY --from=deps /app/node_modules/prisma/package.json /tmp/prisma-version.json
+RUN PRISMA_VERSION=$(node -e "process.stdout.write(require('/tmp/prisma-version.json').version)") && \
+    npm install -g "prisma@${PRISMA_VERSION}" && \
+    rm /tmp/prisma-version.json
 
 USER nextjs
 
@@ -59,4 +59,4 @@ ENV HOSTNAME="0.0.0.0"
 
 # DATABASE_URL, NEXTAUTH_SECRET, DISCORD_CLIENT_*, etc. injected at runtime by Railway
 # Runs migrations then starts the server
-CMD ["sh", "-c", "node ./node_modules/prisma/build/index.js migrate deploy && node server.js"]
+CMD ["sh", "-c", "prisma migrate deploy && node server.js"]
