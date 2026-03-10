@@ -19,6 +19,7 @@
  */
 
 import { prisma } from "@/lib/prisma"
+import { applyMatchToStandings } from "@/lib/services/standings.service"
 import type { ReplayUpload, ReplayParseStatus } from "@prisma/client"
 
 // ---------------------------------------------------------------------------
@@ -139,10 +140,21 @@ export async function createReplayUpload(
     },
   })
 
-  // Fire-and-forget: submit to ballchasing.com for parsing
-  // Intentionally not awaited — parse failure is handled async via webhook/poll
-  submitToBallchasing(upload.id).catch((err) => {
+  // Fire-and-forget: submit to ballchasing.com for parsing.
+  // On failure we mark the slot FAILED immediately so the user sees feedback
+  // rather than the slot staying PENDING indefinitely.
+  submitToBallchasing(upload.id).catch(async (err) => {
     console.error(`[replay] submitToBallchasing failed for upload ${upload.id}:`, err)
+    await prisma.replayUpload.update({
+      where: { id: upload.id },
+      data: {
+        parseStatus:      "FAILED",
+        parseError:       err instanceof Error ? err.message : "Failed to submit replay to ballchasing.com",
+        parseCompletedAt: new Date(),
+      },
+    }).catch((dbErr) => {
+      console.error(`[replay] could not mark upload ${upload.id} as FAILED:`, dbErr)
+    })
   })
 
   return upload
@@ -515,6 +527,10 @@ export async function checkFastPath(matchId: string): Promise<void> {
       ...(target === "COMPLETED" ? { completedAt: new Date() } : {}),
     },
   })
+
+  if (target === "COMPLETED") {
+    await applyMatchToStandings(matchId)
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -534,10 +550,37 @@ export async function checkFastPath(matchId: string): Promise<void> {
  *
  * @returns Number of uploads whose status changed this tick.
  */
+/** How long a PENDING upload is allowed to sit before we retry submitting it to ballchasing. */
+const PENDING_RETRY_AFTER_MS = 60_000 // 1 minute
+
 export async function pollProcessingReplays(): Promise<number> {
   const { getReplayStatus, toParseResult } = await import("@/lib/services/ballchasing.service")
   const { REPLAY_STALE_AFTER_MS } = await import("@/lib/constants")
 
+  let processed = 0
+
+  // ── 1. Retry stale PENDING uploads ─────────────────────────────────────────
+  //
+  // submitToBallchasing is fire-and-forget inside createReplayUpload. If it
+  // fails (network error, cold-start timeout, serverless termination), the row
+  // stays PENDING indefinitely because nothing watches for it.
+  // Any PENDING row older than PENDING_RETRY_AFTER_MS gets a fresh attempt.
+  const retryThreshold = new Date(Date.now() - PENDING_RETRY_AFTER_MS)
+  const stalePending = await prisma.replayUpload.findMany({
+    where:  { parseStatus: "PENDING", createdAt: { lt: retryThreshold } },
+    select: { id: true },
+  })
+
+  for (const upload of stalePending) {
+    try {
+      await submitToBallchasing(upload.id)
+      processed++
+    } catch (err) {
+      console.error(`[pollProcessingReplays] retry PENDING upload ${upload.id}:`, err)
+    }
+  }
+
+  // ── 2. Poll PROCESSING uploads for results ──────────────────────────────────
   const processing = await prisma.replayUpload.findMany({
     where:  { parseStatus: "PROCESSING" },
     select: {
@@ -549,11 +592,10 @@ export async function pollProcessingReplays(): Promise<number> {
   })
 
   const staleThreshold = new Date(Date.now() - REPLAY_STALE_AFTER_MS)
-  let processed = 0
 
   for (const upload of processing) {
     try {
-      // Stale without a response — fail it without another network call
+      // Stale without a response — fail it
       if (upload.parseStartedAt && upload.parseStartedAt < staleThreshold) {
         await handleParseResult(upload.id, {
           status:       "FAILED",

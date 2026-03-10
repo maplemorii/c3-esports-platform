@@ -205,6 +205,8 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [x] Dual-upload fast path: both teams uploaded all replays → `COMPLETED` automatically
 - [x] Single-upload path: one team uploaded → `VERIFYING` with pre-filled scores
 - [x] Cron: poll `PROCESSING` replays; escalate stale `VERIFYING` → `DISPUTED`
+- [x] Cron: retry stale `PENDING` replays (handles fire-and-forget failures)
+- [x] `GET /api/cron/replays` — cron endpoint for replay poll + PENDING retry
 
 ### Score Entry API
 

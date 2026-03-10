@@ -87,7 +87,7 @@ export async function uploadReplay(fileKey: string): Promise<BallchasingUploadRe
   const form = new FormData()
   form.append("file", blob, filename)
 
-  const res  = await ballchasingFetch("/v3/upload", { method: "POST", body: form })
+  const res  = await ballchasingFetch("/v2/upload", { method: "POST", body: form })
   const json = (await res.json()) as { id: string; location: string }
 
   return { id: json.id, location: json.location }
@@ -211,7 +211,7 @@ async function ballchasingFetch(
   const res = await fetch(`${BASE_URL}${path}`, {
     ...options,
     headers: {
-      Authorization: `Token ${apiKey}`,
+      Authorization: apiKey,
       ...options.headers,
     },
   })
