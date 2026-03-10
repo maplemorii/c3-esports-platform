@@ -17,7 +17,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Generate Prisma client (reads schema only — no DB connection needed)
-RUN npx prisma generate
+RUN npx prisma generate --schema=/prisma/schema.prisma
 
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
