@@ -307,11 +307,12 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 ## PHASE 7 — POLISH & PRODUCTION
 
 - [ ] SEO: metadata, OG images per team/season/bracket
+- [ ] User profile picture upload (if not registered with Discord)
 - [ ] Error boundaries and fallback UI (`error.tsx`, `not-found.tsx`)
 - [ ] Loading skeletons for data-heavy pages
 - [ ] Rate limiting on sensitive endpoints (Zod + middleware)
 - [ ] Request logging with Pino
-- [ ] Email notifications (result submitted, dispute opened, parse failed)
+- [ ] Email notifications (result submitted, dispute opened, parse failed, toggleable per user)
 - [ ] CI/CD pipeline (GitHub Actions → Railway)
 - [ ] Monitoring: Sentry + Railway Analytics(?)
 - [ ] Redis cache layer: standings cache, rate limit counters
