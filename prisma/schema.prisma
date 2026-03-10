@@ -265,10 +265,12 @@ model Team {
   registrations   SeasonRegistration[]
   homeMatches     Match[]             @relation("HomeTeam")
   awayMatches     Match[]             @relation("AwayTeam")
-  standingEntries StandingEntry[]
-  bracketSlots    BracketSlot[]
-  checkIns        MatchCheckIn[]
-  winnerOf        Match[]             @relation("MatchWinner")
+  standingEntries    StandingEntry[]
+  bracketSlots       BracketSlot[]
+  checkIns           MatchCheckIn[]
+  winnerOf           Match[]             @relation("MatchWinner")
+  h2hAsTeam          HeadToHeadRecord[]  @relation("H2HTeam")
+  h2hAsOpponent      HeadToHeadRecord[]  @relation("H2HOpponent")
 
   @@index([slug])
   @@index([ownerId])
@@ -375,8 +377,9 @@ model Division {
   season          Season               @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   registrations   SeasonRegistration[]
   matches         Match[]
-  standingEntries StandingEntry[]
-  bracket         Bracket?
+  standingEntries    StandingEntry[]
+  headToHeadRecords  HeadToHeadRecord[]
+  bracket            Bracket?
 
   // Division names must be unique within a season
   @@unique([seasonId, name])
@@ -857,5 +860,35 @@ model AuditLog {
   @@index([action])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+// =============================================================================
+// HEAD-TO-HEAD RECORDS
+// One row per ordered team pair per division (teamId vs opponentId).
+// Both directions are stored so each team's record is a simple lookup.
+// =============================================================================
+
+model HeadToHeadRecord {
+  id         String   @id @default(cuid())
+  divisionId String
+  teamId     String
+  opponentId String
+
+  wins      Int @default(0)
+  losses    Int @default(0)
+  gamesWon  Int @default(0)
+  gamesLost Int @default(0)
+  points    Int @default(0)   // H2H points earned vs this opponent
+
+  lastUpdated DateTime @default(now())
+
+  division Division @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  team     Team     @relation("H2HTeam",     fields: [teamId],     references: [id], onDelete: Cascade)
+  opponent Team     @relation("H2HOpponent", fields: [opponentId], references: [id], onDelete: Cascade)
+
+  // One record per ordered pair per division
+  @@unique([divisionId, teamId, opponentId])
+  @@index([divisionId, teamId])
+  @@map("head_to_head_records")
 }
 
