@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
+import { useIsMobile } from "@/hooks/useIsMobile"
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
@@ -11,6 +12,7 @@ interface CTASectionProps {
 }
 
 export function CTASection({ isSignedIn }: CTASectionProps) {
+  const isMobile = useIsMobile()
   return (
     <section className="relative overflow-hidden px-4 py-40">
       {/* Grid overlay */}
@@ -36,14 +38,14 @@ export function CTASection({ isSignedIn }: CTASectionProps) {
         <motion.div
           className="rounded-full"
           style={{
-            width: "260px",
-            height: "260px",
+            width: isMobile ? "180px" : "260px",
+            height: isMobile ? "180px" : "260px",
             background:
               "conic-gradient(from 180deg at 40% 42%, #7c3aed, #06b6d4, #a855f7, #0ea5e9, #7c3aed)",
-            filter: "blur(55px)",
+            filter: isMobile ? "blur(30px)" : "blur(55px)",
             opacity: 0.38,
           }}
-          animate={{ scale: [1, 1.12, 1], rotate: [0, 15, 0] }}
+          animate={isMobile ? {} : { scale: [1, 1.12, 1], rotate: [0, 15, 0] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
       </motion.div>

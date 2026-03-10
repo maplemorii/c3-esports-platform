@@ -180,3 +180,24 @@ html {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ─── Mobile optimizations ─────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Coarser grid is lighter to paint on small screens */
+  .grid-bg {
+    background-size: 48px 48px;
+  }
+
+  /* Pause marquee on mobile to save CPU (no hover to trigger it anyway) */
+  .marquee-track {
+    animation-duration: 20s;
+  }
+}
+
+/* Touch devices: promote animated elements to their own compositor layer */
+@media (hover: none) {
+  .will-composite {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+}

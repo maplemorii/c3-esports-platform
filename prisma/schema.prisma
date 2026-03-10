@@ -141,6 +141,16 @@ model User {
   password      String?   // Hashed (bcrypt). Null for OAuth-only accounts.
   role          Role      @default(USER)
 
+  // ── College student verification ──────────────────────────────────────────
+  // Users can sign up with any email but must verify a .edu email to compete.
+  // Staff can manually override for edge cases (community colleges, etc).
+  eduEmail          String?   // The .edu email the user submitted
+  eduEmailVerified  DateTime? // Timestamp when the email link was clicked
+  eduVerifyToken    String?   // SHA-256 hash of the random verification token
+  eduVerifyExpires  DateTime? // Token expires 24h after issue
+  eduVerifyOverride Boolean   @default(false) // Staff manual approval
+  eduVerifyNote     String?   // Staff note explaining the override
+
   // Soft delete
   deletedAt     DateTime?
 

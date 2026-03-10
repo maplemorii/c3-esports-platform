@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils"
 import { EditFormWrapper } from "./EditFormWrapper"
 import { EpicLinkButton } from "@/components/player/EpicLinkButton"
 import { SteamLinkButton } from "@/components/player/SteamLinkButton"
+import { EduVerificationCard } from "@/components/profile/EduVerificationCard"
 
 export const metadata: Metadata = { title: "Edit Profile" }
 
@@ -27,19 +28,31 @@ export default async function ProfileEditPage() {
   const session = await getSession()
   if (!session) redirect("/login")
 
-  const player = await prisma.player.findUnique({
-    where:  { userId: session.user.id, deletedAt: null },
-    select: {
-      id:              true,
-      displayName:     true,
-      epicUsername:    true,
-      steamId:         true,
-      discordUsername: true,
-      bio:             true,
-    },
-  })
+  const [player, user] = await Promise.all([
+    prisma.player.findUnique({
+      where:  { userId: session.user.id, deletedAt: null },
+      select: {
+        id:              true,
+        displayName:     true,
+        epicUsername:    true,
+        steamId:         true,
+        discordUsername: true,
+        bio:             true,
+      },
+    }),
+    prisma.user.findUnique({
+      where:  { id: session.user.id, deletedAt: null },
+      select: {
+        eduEmail:         true,
+        eduEmailVerified: true,
+        eduVerifyOverride: true,
+      },
+    }),
+  ])
 
   if (!player) redirect("/profile/setup")
+
+  const eduVerified = !!(user?.eduEmailVerified || user?.eduVerifyOverride)
 
   return (
     <div className="min-h-full flex flex-col items-center justify-start py-10 px-4">
@@ -115,6 +128,13 @@ export default async function ProfileEditPage() {
             </LinkedAccountRow>
           </div>
         </div>
+
+        {/* ── College verification ──────────────────────────────────────── */}
+        <EduVerificationCard
+          initialEduEmail={user?.eduEmail ?? null}
+          initialVerified={eduVerified}
+          isOverride={!!(user?.eduVerifyOverride)}
+        />
 
       </div>
     </div>

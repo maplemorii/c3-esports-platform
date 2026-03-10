@@ -10,6 +10,7 @@ import {
 } from "framer-motion"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
+import { useIsMobile } from "@/hooks/useIsMobile"
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 const SPRING = { stiffness: 55, damping: 22 }
@@ -20,20 +21,39 @@ function LetterReveal({
   delay = 0,
   className,
   style,
+  isMobile,
 }: {
   text: string
   delay?: number
   className?: string
   style?: React.CSSProperties
+  isMobile?: boolean
 }) {
+  // On mobile: single-element fade+slide — avoids 7 simultaneous 3D-composited layers
+  if (isMobile) {
+    return (
+      <motion.span
+        className={className}
+        style={style}
+        aria-label={text}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, delay, ease: EASE }}
+      >
+        {text}
+      </motion.span>
+    )
+  }
+
   return (
     <span className={className} style={style} aria-label={text}>
       {text.split("").map((char, i) => (
         <motion.span
           key={i}
           className="inline-block"
-          initial={{ opacity: 0, y: 52, rotateX: 20 }}
-          animate={{ opacity: 1, y: 0, rotateX: 0 }}
+          // rotateX removed — it forces 3D compositing per letter, expensive on all devices
+          initial={{ opacity: 0, y: 52 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{
             duration: 0.55,
             delay: delay + i * 0.038,
@@ -53,8 +73,9 @@ interface HeroSectionProps {
 
 export function HeroSection({ isSignedIn }: HeroSectionProps) {
   const containerRef = useRef<HTMLElement>(null)
+  const isMobile = useIsMobile()
 
-  /* ── Scroll parallax ── */
+  /* ── Scroll parallax (skipped on mobile) ── */
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
@@ -63,11 +84,16 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
   const textY  = useTransform(scrollYProgress, [0, 1], [0,  60])
   const fadeOut = useTransform(scrollYProgress, [0, 0.5], [1,  0])
 
-  /* ── Cursor glow ── */
+  /* ── Cursor glow (desktop only) ── */
   const rawX = useMotionValue(0)
   const rawY = useMotionValue(0)
   const cursorX = useSpring(rawX, SPRING)
   const cursorY = useSpring(rawY, SPRING)
+  const cursorGlowBg = useTransform(
+    [cursorX, cursorY],
+    ([x, y]: number[]) =>
+      `radial-gradient(480px circle at ${x}px ${y}px, rgba(124,58,237,0.065), transparent 65%)`
+  )
 
   function handleMouseMove(e: React.MouseEvent<HTMLElement>) {
     const rect = containerRef.current?.getBoundingClientRect()
@@ -79,24 +105,20 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
   return (
     <section
       ref={containerRef}
-      onMouseMove={handleMouseMove}
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-4 pt-20 pb-28"
+      onMouseMove={isMobile ? undefined : handleMouseMove}
+      className="relative min-h-svh flex flex-col items-center justify-center overflow-hidden px-4 pt-20 pb-28"
     >
       {/* ── GRID ── */}
       <div className="grid-bg absolute inset-0 pointer-events-none" aria-hidden />
 
-      {/* ── CURSOR GLOW ── */}
-      <motion.div
-        className="pointer-events-none absolute inset-0 z-0"
-        style={{
-          background: useTransform(
-            [cursorX, cursorY],
-            ([x, y]: number[]) =>
-              `radial-gradient(480px circle at ${x}px ${y}px, rgba(124,58,237,0.065), transparent 65%)`
-          ),
-        }}
-        aria-hidden
-      />
+      {/* ── CURSOR GLOW (desktop only) ── */}
+      {!isMobile && (
+        <motion.div
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{ background: cursorGlowBg }}
+          aria-hidden
+        />
+      )}
 
       {/* ── TOP VIGNETTE — protects text readability ── */}
       <div
@@ -110,19 +132,19 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
 
       {/* ── BOTTOM ORB — glowing abyss beneath text ── */}
       <motion.div
-        style={{ y: orbY }}
+        style={{ y: isMobile ? 0 : orbY }}
         className="absolute bottom-[-8%] left-1/2 -translate-x-1/2 pointer-events-none z-0"
         aria-hidden
       >
         {/* Wide upward diffusion */}
         <div
           style={{
-            width: "960px",
-            height: "620px",
+            width: isMobile ? "420px" : "960px",
+            height: isMobile ? "280px" : "620px",
             transform: "translateX(-50%)",
             background:
               "radial-gradient(ellipse at 50% 88%, rgba(124,58,237,0.32) 0%, rgba(6,182,212,0.13) 46%, transparent 70%)",
-            filter: "blur(90px)",
+            filter: isMobile ? "blur(40px)" : "blur(90px)",
           }}
         />
 
@@ -132,11 +154,11 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
             position: "absolute",
             bottom: 0,
             left: "50%",
-            width: "320px",
-            height: "320px",
+            width: isMobile ? "200px" : "320px",
+            height: isMobile ? "200px" : "320px",
             transform: "translateX(-50%)",
           }}
-          animate={{ scale: [1, 1.08, 1], rotate: [0, 10, 0] }}
+          animate={isMobile ? {} : { scale: [1, 1.08, 1], rotate: [0, 10, 0] }}
           transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
         >
           <div
@@ -187,7 +209,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
 
       {/* ── MAIN CONTENT ── */}
       <motion.div
-        style={{ y: textY, opacity: fadeOut }}
+        style={{ y: isMobile ? 0 : textY, opacity: isMobile ? 1 : fadeOut }}
         className="relative z-10 flex flex-col items-center text-center max-w-6xl mx-auto select-none"
       >
         {/* Season label */}
@@ -241,6 +263,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
           <LetterReveal
             text="HIGHEST"
             delay={0.30}
+            isMobile={isMobile}
             className="font-display font-bold text-white leading-none tracking-tight block"
             style={{
               fontSize: "clamp(4.5rem, 17vw, 12rem)",
@@ -490,7 +513,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
         aria-hidden
       >
         <motion.div
-          animate={{ y: [0, 7, 0] }}
+          animate={isMobile ? {} : { y: [0, 7, 0] }}
           transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
           className="w-px h-12 mx-auto"
           style={{

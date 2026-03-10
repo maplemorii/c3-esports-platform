@@ -26,6 +26,11 @@ export async function GET(req: Request) {
         role: true,
         createdAt: true,
         player: { select: { displayName: true } },
+        // Edu verification status for admin review
+        eduEmail: true,
+        eduEmailVerified: true,
+        eduVerifyOverride: true,
+        eduVerifyNote: true,
       },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,

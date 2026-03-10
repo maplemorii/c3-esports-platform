@@ -4,6 +4,7 @@ import { useRef } from "react"
 import { motion, useMotionValue, useTransform } from "framer-motion"
 import { FileVideo, Users, BarChart3, Shield, Zap, Calendar } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
+import { useIsMobile } from "@/hooks/useIsMobile"
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
@@ -289,6 +290,7 @@ function FeatureCard({
   colSpan?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
 
@@ -308,7 +310,7 @@ function FeatureCard({
   return (
     <motion.div
       ref={ref}
-      onMouseMove={handleMouseMove}
+      onMouseMove={isMobile ? undefined : handleMouseMove}
       className={`group relative overflow-hidden rounded-2xl flex flex-col gap-4 p-7 ${colSpan ?? ""}`}
       style={{
         background: "rgba(255,255,255,0.025)",

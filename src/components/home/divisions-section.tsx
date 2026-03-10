@@ -4,6 +4,7 @@ import { useRef } from "react"
 import { motion, useMotionValue, useTransform } from "framer-motion"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
+import { useIsMobile } from "@/hooks/useIsMobile"
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
@@ -63,6 +64,7 @@ function DivisionCard({
   index: number
 }) {
   const ref = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
 
@@ -82,7 +84,7 @@ function DivisionCard({
   return (
     <motion.div
       ref={ref}
-      onMouseMove={handleMouseMove}
+      onMouseMove={isMobile ? undefined : handleMouseMove}
       className="group relative flex flex-col overflow-hidden rounded-2xl"
       style={{
         background: "rgba(255,255,255,0.025)",
