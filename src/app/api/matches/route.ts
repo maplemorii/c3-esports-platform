@@ -50,7 +50,7 @@ export async function GET(req: Request) {
     }),
   }
 
-  const [matches, total] = await prisma.$transaction([
+  const [matches, total] = await Promise.all([
     prisma.match.findMany({
       where,
       orderBy: { scheduledAt: "asc" },

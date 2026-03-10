@@ -22,7 +22,7 @@ export async function GET(req: Request) {
 
   const where = action ? { action: { contains: action } } : {}
 
-  const [entries, total] = await prisma.$transaction([
+  const [entries, total] = await Promise.all([
     prisma.auditLog.findMany({
       where,
       orderBy: { createdAt: "desc" },

@@ -16,7 +16,7 @@ export async function GET(req: Request) {
   const page = Math.max(1, Number(searchParams.get("page") ?? 1))
   const limit = Math.min(100, Math.max(1, Number(searchParams.get("limit") ?? 25)))
 
-  const [users, total] = await prisma.$transaction([
+  const [users, total] = await Promise.all([
     prisma.user.findMany({
       where: { deletedAt: null },
       select: {

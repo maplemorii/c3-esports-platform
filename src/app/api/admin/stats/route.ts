@@ -18,7 +18,7 @@ export async function GET() {
     pendingRegistrations,
     totalMatches,
     completedMatches,
-  ] = await prisma.$transaction([
+  ] = await Promise.all([
     prisma.user.count({ where: { deletedAt: null } }),
     prisma.team.count({ where: { deletedAt: null } }),
     prisma.season.count({ where: { status: { in: ["REGISTRATION", "ACTIVE", "PLAYOFFS"] } } }),

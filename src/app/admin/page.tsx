@@ -37,7 +37,7 @@ async function getStats() {
     totalMatches,
     completedMatches,
     openDisputes,
-  ] = await prisma.$transaction([
+  ] = await Promise.all([
     prisma.user.count({ where: { deletedAt: null } }),
     prisma.team.count({ where: { deletedAt: null } }),
     prisma.season.count({ where: { status: { in: ["REGISTRATION", "ACTIVE", "PLAYOFFS"] } } }),
@@ -59,7 +59,7 @@ async function getStats() {
 }
 
 async function getRecentActivity() {
-  const [recentRegistrations, recentMatches, recentAuditEntries] = await prisma.$transaction([
+  const [recentRegistrations, recentMatches, recentAuditEntries] = await Promise.all([
     prisma.seasonRegistration.findMany({
       where:   { status: { in: ["PENDING", "WAITLISTED"] } },
       orderBy: { registeredAt: "desc" },
