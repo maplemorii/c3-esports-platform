@@ -1,0 +1,10 @@
+{
+  "name": "c3-esports-docs",
+  "scripts": {
+    "dev": "mintlify dev",
+    "build": "mintlify build"
+  },
+  "devDependencies": {
+    "mintlify": "latest"
+  }
+}
