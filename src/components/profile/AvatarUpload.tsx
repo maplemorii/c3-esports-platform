@@ -14,6 +14,7 @@
 
 import { useRef, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { Camera, Loader2, UserRound, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -28,6 +29,7 @@ interface AvatarUploadProps {
 
 export function AvatarUpload({ playerId, currentAvatarUrl, hasDiscordOAuth }: AvatarUploadProps) {
   const router    = useRouter()
+  const { update: updateSession } = useSession()
   const inputRef  = useRef<HTMLInputElement>(null)
   const [preview, setPreview]   = useState<string | null>(currentAvatarUrl)
   const [error,   setError]     = useState<string | null>(null)
@@ -85,7 +87,10 @@ export function AvatarUpload({ playerId, currentAvatarUrl, hasDiscordOAuth }: Av
       })
       if (!patchRes.ok) throw new Error("Failed to save avatar")
 
-      // 4. Refresh server component data
+      // 4. Refresh session JWT so the top-right avatar updates immediately
+      await updateSession()
+
+      // 5. Refresh server component data
       startTransition(() => {
         router.refresh()
       })

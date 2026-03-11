@@ -134,6 +134,14 @@ export async function PATCH(
       select: PLAYER_SELECT,
     })
 
+    // Keep user.image in sync so the session JWT reflects the new avatar
+    if (isSelf && data.avatarUrl !== undefined) {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data:  { image: data.avatarUrl },
+      })
+    }
+
     return NextResponse.json(updated)
   } catch (err) {
     return apiInternalError(err, "PATCH /api/players/:playerId")
