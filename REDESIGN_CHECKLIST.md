@@ -30,8 +30,8 @@ Track every file that needs a visual update for a full redesign. Check off each 
 ## Public Pages
 
 - [x] **Home / Landing** — `src/app/page.tsx` → `/` (+ all `src/components/home/*.tsx` section components)
-- [ ] **Seasons list** — `src/app/(public)/seasons/page.tsx` → `/seasons`
-- [ ] **Season detail** — `src/app/(public)/seasons/[seasonSlug]/page.tsx` → `/seasons/[slug]`
+- [x] **Seasons list** — `src/app/(public)/seasons/page.tsx` → `/seasons`
+- [x] **Season detail** — `src/app/(public)/seasons/[seasonSlug]/page.tsx` → `/seasons/[slug]`
 - [ ] **Season standings** — `src/app/(public)/seasons/[seasonSlug]/standings/page.tsx`
 - [ ] **Season matches** — `src/app/(public)/seasons/[seasonSlug]/matches/page.tsx`
 - [ ] **Teams list** — `src/app/(public)/teams/page.tsx` → `/teams`
