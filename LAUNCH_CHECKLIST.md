@@ -137,3 +137,88 @@ Configure these in Railway (Cron Service or `railway.toml`) with header `Authori
 - [ ] SSL certificate auto-provisioned (Railway does this automatically)
 - [ ] `www` redirect to apex domain (or vice versa) set up
 - [ ] `NEXTAUTH_URL` matches exactly (protocol + domain + no trailing slash)
+
+---
+
+## 13. Database Backups & Recovery
+
+This is a hard blocker — losing match history or player data with no restore path is unacceptable.
+
+- [ ] Automated daily backups enabled in Railway (or via `pg_dump` cron to R2/S3)
+- [ ] Retention policy set (keep at least 7 days of backups)
+- [ ] Test a restore: spin up a local Postgres container, restore a backup dump, verify data integrity
+- [ ] Document the restore procedure somewhere (runbook or this file)
+
+---
+
+## 14. Legal Pages
+
+Required before collecting user data from real people.
+
+- [ ] **Terms of Service** page exists and is linked in the footer and on the registration/signup form
+- [ ] **Privacy Policy** page exists and covers: what data you collect, how it's used, how to request deletion
+- [ ] Users must acknowledge ToS on account creation (checkbox or gated flow)
+- [ ] Contact email or form for legal/privacy inquiries is listed in the Privacy Policy
+
+---
+
+## 15. Auth — Password Reset & Account Safety
+
+- [ ] Password reset flow works end-to-end: "Forgot password" → email received → link opens → password changed → old sessions invalidated
+- [ ] Password reset links expire (check your NextAuth email provider token TTL)
+- [ ] Test that a verified Discord-only account can still set a password / recover access
+- [ ] Confirm sessions are invalidated on password change
+
+---
+
+## 16. Uptime Monitoring
+
+Sentry catches app errors but won't alert you if the entire service is down.
+
+- [ ] Set up an external uptime monitor (UptimeRobot free tier, Better Uptime, or similar) on `https://c3esports.com`
+- [ ] Add a `/api/health` endpoint that returns `200 OK` + DB reachability check (used as the monitor target)
+- [ ] Configure alert to notify you via email or Discord within 1–2 minutes of downtime
+
+---
+
+## 17. Player Integrity / Anti-Smurfing
+
+Critical for a competitive Rocket League league — multiple accounts and smurfs undermine fair play.
+
+- [ ] Each Discord account can only be linked to **one** platform account (enforce unique constraint on `discordId`)
+- [ ] Each player profile can only be in one team per division per season (verify this in registration logic)
+- [ ] Admin panel has a way to merge/ban duplicate accounts
+- [ ] Rocket League tracker link or Epic/Steam ID required on player profiles so staff can verify identity (even if optional at MVP, document the policy)
+
+---
+
+## 18. Content Moderation
+
+- [ ] Team name and logo are reviewed (or auto-flagged) before appearing publicly — at minimum an admin can rename a team or delete an inappropriate logo
+- [ ] Confirm admins can remove/override team logos via `/admin` without requiring the team owner to act
+- [ ] A clear "report abuse" path exists (even if it's just a Discord channel or email — document it)
+
+---
+
+## 19. Support & Communication
+
+- [ ] A support Discord server (or channel) is linked in the site footer or help page
+- [ ] A contact/support page or email address is published (`/support` or footer link)
+- [ ] You have a way to broadcast announcements to all registered users (email blast, Discord ping, or both)
+- [ ] Platform maintenance/downtime procedure: how will you notify players before taking the site down?
+
+---
+
+## 20. Cross-Browser & Mobile Check
+
+- [ ] Key pages (home, standings, match detail, team profile) render correctly in Chrome, Firefox, and Safari
+- [ ] Core flows (login, team registration, score submission) are usable on mobile viewports (375 px wide)
+- [ ] Check-in and score submission buttons are not cut off or broken on small screens
+
+---
+
+## 21. Rollback Plan
+
+- [ ] Document which Railway deploy to roll back to if a bad deploy goes out (Railway keeps deploy history — know where the button is)
+- [ ] Test the rollback flow once in staging so you're not fumbling during an incident
+- [ ] Identify who has Railway access and can execute a rollback at any hour
