@@ -6,10 +6,10 @@ Track every file that needs a visual update for a full redesign. Check off each 
 
 ## Shared / Global (do these first — they cascade everywhere)
 
-- [ ] **Design tokens** — decide on new color palette, typography scale, spacing, and border-radius; update `src/app/globals.css` and Tailwind config
-- [ ] **Root layout** — `src/app/layout.tsx` — font imports, body classes, background
-- [ ] **Navbar** — `src/components/layout/navbar.tsx` + `src/components/layout/navbar-client.tsx` — logo, links, mobile menu
-- [ ] **User menu** — `src/components/layout/user-menu.tsx` — avatar, dropdown items
+- [x] **Design tokens** — C3 red + navy blue palette applied; `src/app/globals.css` updated, typography scale, spacing, and border-radius; update `src/app/globals.css` and Tailwind config
+- [x] **Root layout** — `src/app/layout.tsx` — SessionProvider added, fonts intact
+- [x] **Navbar** — `src/components/layout/navbar.tsx` + `src/components/layout/navbar-client.tsx` — logo, links, mobile menu
+- [x] **User menu** — `src/components/layout/user-menu.tsx` — avatar, dropdown items
 - [ ] **Footer** — `src/components/layout/footer.tsx` — columns, colors, bottom bar
 - [ ] **Dashboard shell** — `src/components/layout/DashboardShell.tsx` — sidebar wrapper, content area
 - [ ] **Sidebar** — `src/components/layout/Sidebar.tsx` — nav items, active state, icons

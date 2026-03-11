@@ -38,7 +38,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
       <motion.header
         className="fixed top-0 left-0 right-0 z-50 w-full"
         animate={{
-          backgroundColor: scrolled ? "rgba(4,4,4,0.88)" : "rgba(4,4,4,0)",
+          backgroundColor: scrolled ? "rgba(5,8,20,0.92)" : "rgba(5,8,20,0)",
           borderBottomColor: scrolled
             ? "rgba(255,255,255,0.07)"
             : "rgba(255,255,255,0)",
@@ -51,14 +51,14 @@ export function NavbarClient({ session }: NavbarClientProps) {
           borderBottomStyle: "solid",
         }}
       >
-        {/* Subtle violet glow line at very top — only when scrolled */}
+        {/* C3 red→blue glow line at very top — only when scrolled */}
         <motion.div
           className="absolute top-0 left-0 right-0 h-px pointer-events-none"
           animate={{ opacity: scrolled ? 1 : 0 }}
           transition={{ duration: 0.3 }}
           style={{
             background:
-              "linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.5) 30%, rgba(59,130,246,0.4) 70%, transparent 100%)",
+              "linear-gradient(90deg, transparent 0%, rgba(196,28,53,0.6) 30%, rgba(59,130,246,0.5) 70%, transparent 100%)",
           }}
           aria-hidden
         />
@@ -104,7 +104,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
                 {/* Underline reveal on hover */}
                 <span
                   className="absolute bottom-0 left-3 right-3 h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left rounded-full"
-                  style={{ background: "rgba(255,255,255,0.25)" }}
+                  style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.5))" }}
                   aria-hidden
                 />
               </Link>
@@ -212,7 +212,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
             <div
               className="mx-3 mt-1 rounded-2xl overflow-hidden"
               style={{
-                background: "rgba(8,8,8,0.96)",
+                background: "rgba(5,8,20,0.97)",
                 border: "1px solid rgba(255,255,255,0.08)",
                 backdropFilter: "blur(24px)",
               }}

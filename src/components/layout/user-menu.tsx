@@ -56,7 +56,7 @@ export function UserMenu({ session }: { session: Session }) {
             <AvatarFallback
               className="text-xs font-semibold"
               style={{
-                background: "linear-gradient(135deg, rgba(59,130,246,0.4), rgba(59,130,246,0.3))",
+                background: "linear-gradient(135deg, rgba(196,28,53,0.5), rgba(59,130,246,0.4))",
                 color: "rgba(255,255,255,0.85)",
               }}
             >
@@ -70,7 +70,7 @@ export function UserMenu({ session }: { session: Session }) {
         sideOffset={10}
         className="w-52 p-0 overflow-hidden border-0"
         style={{
-          background: "rgba(10,10,12,0.92)",
+          background: "rgba(5,8,20,0.96)",
           backdropFilter: "blur(24px)",
           WebkitBackdropFilter: "blur(24px)",
           border: "1px solid rgba(255,255,255,0.07)",
@@ -78,10 +78,10 @@ export function UserMenu({ session }: { session: Session }) {
           borderRadius: "14px",
         }}
       >
-        {/* Top glow line */}
+        {/* Top glow line — C3 red→blue */}
         <div
           className="h-px w-full"
-          style={{ background: "linear-gradient(90deg, transparent, rgba(59,130,246,0.5) 40%, rgba(59,130,246,0.4) 70%, transparent)" }}
+          style={{ background: "linear-gradient(90deg, transparent, rgba(196,28,53,0.6) 35%, rgba(59,130,246,0.5) 70%, transparent)" }}
           aria-hidden
         />
 
@@ -94,7 +94,7 @@ export function UserMenu({ session }: { session: Session }) {
                 <AvatarFallback
                   className="text-sm font-semibold"
                   style={{
-                    background: "linear-gradient(135deg, rgba(59,130,246,0.5), rgba(59,130,246,0.4))",
+                    background: "linear-gradient(135deg, rgba(196,28,53,0.6), rgba(59,130,246,0.45))",
                     color: "rgba(255,255,255,0.9)",
                   }}
                 >
@@ -126,7 +126,7 @@ export function UserMenu({ session }: { session: Session }) {
               icon={ShieldCheck}
               label="Staff Panel"
               onClick={() => { setOpen(false); router.push("/admin") }}
-              accent="violet"
+              accent="blue"
             />
           )}
           {role === "ADMIN" && (
@@ -166,14 +166,14 @@ function MenuItem({
   icon: React.ElementType
   label: string
   onClick: () => void
-  accent?: "violet" | "red"
+  accent?: "blue" | "red"
   danger?: boolean
 }) {
   const [hovered, setHovered] = useState(false)
 
   const iconColor = danger
     ? "rgba(220,38,38,0.8)"
-    : accent === "violet"
+    : accent === "blue"
     ? "rgba(96,165,250,0.85)"
     : accent === "red"
     ? "rgba(220,38,38,0.75)"
@@ -186,7 +186,7 @@ function MenuItem({
   const bg = hovered
     ? danger
       ? "rgba(220,38,38,0.08)"
-      : accent === "violet"
+      : accent === "blue"
       ? "rgba(59,130,246,0.1)"
       : "rgba(255,255,255,0.05)"
     : "transparent"
@@ -203,7 +203,7 @@ function MenuItem({
         className="h-3.5 w-3.5 shrink-0"
         style={{
           color: hovered
-            ? danger ? "rgba(248,113,113,0.9)" : accent === "violet" ? "rgba(96,165,250,0.9)" : "rgba(255,255,255,0.7)"
+            ? danger ? "rgba(248,113,113,0.9)" : accent === "blue" ? "rgba(96,165,250,0.9)" : "rgba(255,255,255,0.7)"
             : iconColor,
           transition: "color 0.12s",
         }}
