@@ -28,6 +28,8 @@ import {
   parseBody,
   handleServiceError,
 } from "@/lib/utils/errors"
+import { sendResultSubmittedEmail } from "@/lib/email"
+import { logger } from "@/lib/logger"
 
 type Params = { params: Promise<{ matchId: string }> }
 
@@ -69,6 +71,8 @@ export async function POST(req: Request, { params }: Params) {
       homeTeamId:        true,
       awayTeamId:        true,
       submittedByTeamId: true,
+      homeTeam: { select: { name: true, owner: { select: { id: true, name: true, email: true, emailNotifResults: true } } } },
+      awayTeam: { select: { name: true, owner: { select: { id: true, name: true, email: true, emailNotifResults: true } } } },
     },
   })
   if (!match) return apiNotFound("Match")
@@ -180,6 +184,22 @@ export async function POST(req: Request, { params }: Params) {
       await transitionTo(matchId, "MATCH_FINISHED", session.user.id)
     }
     await transitionTo(matchId, "VERIFYING", session.user.id)
+
+    // Notify the opposing team manager (fire-and-forget)
+    const opposingOwner = ownedTeam.id === match.homeTeamId
+      ? match.awayTeam?.owner
+      : match.homeTeam?.owner
+    if (opposingOwner?.email && opposingOwner.emailNotifResults) {
+      sendResultSubmittedEmail({
+        to:            opposingOwner.email,
+        recipientName: opposingOwner.name ?? "Manager",
+        matchId,
+        homeTeam:  match.homeTeam?.name ?? "Home",
+        awayTeam:  match.awayTeam?.name ?? "Away",
+        homeScore,
+        awayScore,
+      }).catch((err) => logger.error({ err, matchId }, "Failed to send result email"))
+    }
 
     return NextResponse.json({ homeScore, awayScore, winnerId }, { status: 201 })
   } catch (err) {

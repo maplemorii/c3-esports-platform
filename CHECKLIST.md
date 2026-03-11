@@ -311,12 +311,12 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [x] User profile picture upload (if not registered with Discord)
 - [x] Error boundaries and fallback UI (`error.tsx`, `not-found.tsx`)
 - [x] Loading skeletons for data-heavy pages
-- [ ] Rate limiting on sensitive endpoints (Zod + middleware)
-- [ ] Request logging with Pino
-- [ ] Email notifications (result submitted, dispute opened, parse failed, toggleable per user)
-- [ ] CI/CD pipeline (GitHub Actions → Railway)
-- [ ] Monitoring: Sentry + Railway Analytics(?)
-- [ ] Redis cache layer: standings cache, rate limit counters
+- [x] Rate limiting on sensitive endpoints (Zod + middleware)
+- [x] Request logging with Pino
+- [x] Email notifications (result submitted, dispute opened, parse failed, toggleable per user)
+- [x] CI/CD pipeline (GitHub Actions → Railway)
+- [x] Monitoring: Sentry + Railway Analytics(?)
+- [x] Redis cache layer: standings cache, rate limit counters
 
 ---
 

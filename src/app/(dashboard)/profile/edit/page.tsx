@@ -22,6 +22,7 @@ import { EpicLinkButton } from "@/components/player/EpicLinkButton"
 import { SteamLinkButton } from "@/components/player/SteamLinkButton"
 import { EduVerificationCard } from "@/components/profile/EduVerificationCard"
 import { AvatarUpload } from "@/components/profile/AvatarUpload"
+import { NotificationPrefs } from "@/components/profile/NotificationPrefs"
 
 export const metadata: Metadata = { title: "Edit Profile" }
 
@@ -45,11 +46,14 @@ export default async function ProfileEditPage() {
     prisma.user.findUnique({
       where:  { id: session.user.id, deletedAt: null },
       select: {
-        image:             true,
-        accounts:          { select: { provider: true } },
-        eduEmail:          true,
-        eduEmailVerified:  true,
-        eduVerifyOverride: true,
+        image:              true,
+        accounts:           { select: { provider: true } },
+        eduEmail:           true,
+        eduEmailVerified:   true,
+        eduVerifyOverride:  true,
+        emailNotifResults:  true,
+        emailNotifDisputes: true,
+        emailNotifReplays:  true,
       },
     }),
   ])
@@ -152,6 +156,15 @@ export default async function ProfileEditPage() {
           initialEduEmail={user?.eduEmail ?? null}
           initialVerified={eduVerified}
           isOverride={!!(user?.eduVerifyOverride)}
+        />
+
+        {/* ── Notification preferences ──────────────────────────────────── */}
+        <NotificationPrefs
+          initial={{
+            emailNotifResults:  user?.emailNotifResults  ?? true,
+            emailNotifDisputes: user?.emailNotifDisputes ?? true,
+            emailNotifReplays:  user?.emailNotifReplays  ?? true,
+          }}
         />
 
       </div>

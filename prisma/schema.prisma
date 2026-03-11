@@ -151,6 +151,11 @@ model User {
   eduVerifyOverride Boolean   @default(false) @map("edu_verify_override") // Staff manual approval
   eduVerifyNote     String?   @map("edu_verify_note")      // Staff note explaining the override
 
+  // ── Email notification preferences ────────────────────────────────────────
+  emailNotifResults  Boolean @default(true) @map("email_notif_results")  // Result submitted/confirmed for your match
+  emailNotifDisputes Boolean @default(true) @map("email_notif_disputes") // Dispute filed for your match
+  emailNotifReplays  Boolean @default(true) @map("email_notif_replays")  // Replay parse failed
+
   // Soft delete
   deletedAt     DateTime?
 

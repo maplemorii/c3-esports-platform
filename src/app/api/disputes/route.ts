@@ -17,6 +17,9 @@ import {
   parseBody,
   handleServiceError,
 } from "@/lib/utils/errors"
+import { rateLimit, rateLimitResponse } from "@/lib/rateLimit"
+import { logger, logRequest } from "@/lib/logger"
+import { sendDisputeOpenedEmail } from "@/lib/email"
 
 // ---------------------------------------------------------------------------
 // GET — list disputes (STAFF+)
@@ -78,8 +81,14 @@ export async function GET(req: Request) {
 // ---------------------------------------------------------------------------
 
 export async function POST(req: Request) {
+  const t = Date.now()
+
   const { session, error } = await requireAuth()
   if (error) return error
+
+  // 5 dispute filings per user per hour
+  const rl = await rateLimit(req, "disputes", 5, 3600, session.user.id)
+  if (!rl.success) return rateLimitResponse(rl.retryAfter)
 
   const { data, error: bodyError } = await parseBody(req, CreateDisputeSchema)
   if (bodyError) return bodyError
@@ -93,6 +102,8 @@ export async function POST(req: Request) {
       awayTeamId: true,
       homeScore:  true,
       awayScore:  true,
+      homeTeam: { select: { name: true, owner: { select: { email: true, name: true, emailNotifDisputes: true } } } },
+      awayTeam: { select: { name: true, owner: { select: { email: true, name: true, emailNotifDisputes: true } } } },
     },
   })
   if (!match) return apiNotFound("Match")
@@ -158,8 +169,30 @@ export async function POST(req: Request) {
       return created
     })
 
+    logger.info({ disputeId: dispute.id, matchId: data.matchId, userId: session.user.id }, "Dispute filed")
+    logRequest(req, 201, t, { matchId: data.matchId, userId: session.user.id })
+
+    // Notify both team managers (fire-and-forget)
+    const filedByTeamName = filedByTeamId === match.homeTeamId
+      ? (match.homeTeam?.name ?? "Home")
+      : (match.awayTeam?.name ?? "Away")
+    const notifyOwners = [match.homeTeam?.owner, match.awayTeam?.owner]
+    for (const owner of notifyOwners) {
+      if (owner?.email && owner.emailNotifDisputes) {
+        sendDisputeOpenedEmail({
+          to:            owner.email,
+          recipientName: owner.name ?? "Manager",
+          matchId:       data.matchId,
+          homeTeam:      match.homeTeam?.name ?? "Home",
+          awayTeam:      match.awayTeam?.name ?? "Away",
+          filedByTeam:   filedByTeamName,
+        }).catch((err) => logger.error({ err, matchId: data.matchId }, "Failed to send dispute email"))
+      }
+    }
+
     return NextResponse.json(dispute, { status: 201 })
   } catch (err) {
+    logRequest(req, 500, t)
     return handleServiceError(err, "POST /disputes")
   }
 }

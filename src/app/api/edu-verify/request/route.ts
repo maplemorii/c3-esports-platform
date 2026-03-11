@@ -11,6 +11,8 @@ import crypto from "node:crypto"
 import { prisma } from "@/lib/prisma"
 import { requireAuth } from "@/lib/session"
 import { sendEduVerificationEmail } from "@/lib/email"
+import { rateLimit, rateLimitResponse } from "@/lib/rateLimit"
+import { logger, logRequest } from "@/lib/logger"
 
 // Accepts .edu TLDs — also handles country .edu variants (edu.au, edu.cn, etc.)
 const EDU_REGEX = /\.edu(\.[a-z]{2})?$/i
@@ -25,12 +27,19 @@ const RequestSchema = z.object({
 })
 
 export async function POST(req: Request) {
+  const t = Date.now()
+
   const { session, error } = await requireAuth()
   if (error) return error
+
+  // 3 verification emails per user per hour
+  const rl = await rateLimit(req, "edu-verify", 3, 3600, session.user.id)
+  if (!rl.success) return rateLimitResponse(rl.retryAfter)
 
   const body = await req.json().catch(() => null)
   const parsed = RequestSchema.safeParse(body)
   if (!parsed.success) {
+    logRequest(req, 400, t, { userId: session.user.id })
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
@@ -46,6 +55,7 @@ export async function POST(req: Request) {
     },
   })
   if (conflict) {
+    logRequest(req, 409, t, { userId: session.user.id, eduEmail })
     return NextResponse.json(
       { error: "This college email is already verified on another account." },
       { status: 409 }
@@ -79,5 +89,7 @@ export async function POST(req: Request) {
     name: user?.name ?? "there",
   })
 
+  logger.info({ userId: session.user.id, eduEmail }, "Edu verification email sent")
+  logRequest(req, 200, t, { userId: session.user.id })
   return NextResponse.json({ success: true })
 }

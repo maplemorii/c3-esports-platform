@@ -19,10 +19,18 @@ import {
 } from "@/lib/upload/storage"
 import { PresignUploadSchema } from "@/lib/validators/match.schema"
 import { parseBody, handleServiceError } from "@/lib/utils/errors"
+import { rateLimit, rateLimitResponse } from "@/lib/rateLimit"
+import { logRequest } from "@/lib/logger"
 
 export async function POST(req: Request) {
-  const { error } = await requireAuth()
+  const t = Date.now()
+
+  const { session, error } = await requireAuth()
   if (error) return error
+
+  // 30 presigned URLs per user per hour (covers full match replay sets with headroom)
+  const rl = await rateLimit(req, "upload:presign", 30, 3600, session.user.id)
+  if (!rl.success) return rateLimitResponse(rl.retryAfter)
 
   const { data, error: bodyError } = await parseBody(req, PresignUploadSchema)
   if (bodyError) return bodyError
@@ -36,8 +44,10 @@ export async function POST(req: Request) {
       data.contentType
     )
 
+    logRequest(req, 200, t, { category: data.category, userId: session.user.id })
     return NextResponse.json(result)
   } catch (err) {
+    logRequest(req, 500, t)
     return handleServiceError(err, "POST /upload/presign")
   }
 }

@@ -21,6 +21,7 @@
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { applyMatchToStandings } from "@/lib/services/standings.service"
+import { sendParseFailedEmail } from "@/lib/email"
 import type { ReplayUpload, ReplayParseStatus } from "@prisma/client"
 
 // ---------------------------------------------------------------------------
@@ -246,8 +247,15 @@ export async function handleParseResult(
       id:               true,
       matchId:          true,
       gameNumber:       true,
+      fileKey:          true,
       uploadedById:     true,
       uploadedByTeamId: true,
+      match: {
+        select: {
+          homeTeam: { select: { name: true } },
+          awayTeam: { select: { name: true } },
+        },
+      },
     },
   })
   if (!upload) throw new Error(`ReplayUpload ${replayUploadId} not found`)
@@ -263,7 +271,29 @@ export async function handleParseResult(
         parseCompletedAt: now,
       },
     })
-    // Future: notify team via email/Discord
+
+    // Notify the uploader if they have replay notifications enabled (fire-and-forget)
+    if (upload.uploadedById) {
+      prisma.user.findUnique({
+        where:  { id: upload.uploadedById },
+        select: { email: true, name: true, emailNotifReplays: true },
+      }).then((uploader) => {
+        if (uploader?.email && uploader.emailNotifReplays) {
+          const filename = upload.fileKey.split("/").pop() ?? upload.fileKey
+          return sendParseFailedEmail({
+            to:            uploader.email,
+            recipientName: uploader.name ?? "Manager",
+            matchId:       upload.matchId,
+            homeTeam:      upload.match?.homeTeam?.name ?? "Home",
+            awayTeam:      upload.match?.awayTeam?.name ?? "Away",
+            filename,
+          })
+        }
+      }).catch((err) => {
+        console.error(`[replay] failed to send parse-failed email for upload ${replayUploadId}:`, err)
+      })
+    }
+
     return
   }
 

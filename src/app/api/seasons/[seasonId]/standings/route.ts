@@ -8,6 +8,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { apiNotFound } from "@/lib/utils/errors"
+import { getCachedSeasonStandings, setCachedSeasonStandings } from "@/lib/cache/standings"
 
 type Params = { params: Promise<{ seasonId: string }> }
 
@@ -36,6 +37,10 @@ const STANDINGS_SELECT = {
 
 export async function GET(_req: Request, { params }: Params) {
   const { seasonId } = await params
+
+  // Cache-aside: serve from Redis when available
+  const cached = await getCachedSeasonStandings(seasonId)
+  if (cached) return NextResponse.json(cached)
 
   const season = await prisma.season.findUnique({
     where:  { id: seasonId },
@@ -71,6 +76,9 @@ export async function GET(_req: Request, { params }: Params) {
       ...entry,
     })),
   }))
+
+  // Store in cache (fire-and-forget)
+  setCachedSeasonStandings(seasonId, payload).catch(() => undefined)
 
   return NextResponse.json(payload)
 }

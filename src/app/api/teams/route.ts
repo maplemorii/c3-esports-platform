@@ -17,6 +17,8 @@ import { parseBody, apiConflict, apiInternalError } from "@/lib/utils/errors"
 import { slugify, dedupeSlug } from "@/lib/utils/slug"
 import { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE } from "@/lib/constants"
 import type { Prisma } from "@prisma/client"
+import { rateLimit, rateLimitResponse } from "@/lib/rateLimit"
+import { logger, logRequest } from "@/lib/logger"
 
 // ---------------------------------------------------------------------------
 // GET /api/teams
@@ -84,9 +86,15 @@ export async function GET(req: NextRequest) {
 // ---------------------------------------------------------------------------
 
 export async function POST(req: NextRequest) {
+  const t = Date.now()
+
   // Auth
   const { session, error } = await requireAuth()
   if (error) return error
+
+  // 3 team creations per user per day
+  const rl = await rateLimit(req, "teams:create", 3, 86400, session.user.id)
+  if (!rl.success) return rateLimitResponse(rl.retryAfter)
 
   // Validate body
   const { data, error: bodyError } = await parseBody(req, CreateTeamSchema)
@@ -144,8 +152,11 @@ export async function POST(req: NextRequest) {
         : []),
     ])
 
+    logger.info({ teamId: team.id, name: team.name, userId: session.user.id }, "Team created")
+    logRequest(req, 201, t, { teamId: team.id, userId: session.user.id })
     return NextResponse.json(team, { status: 201 })
   } catch (err) {
+    logRequest(req, 500, t)
     return apiInternalError(err, "POST /api/teams")
   }
 }

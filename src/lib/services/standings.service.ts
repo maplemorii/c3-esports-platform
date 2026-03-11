@@ -11,6 +11,7 @@
  */
 
 import { prisma } from "@/lib/prisma"
+import { invalidateStandingsCache } from "@/lib/cache/standings"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -60,13 +61,20 @@ export async function recalculateStandings(divisionId: string): Promise<void> {
   // Zero out H2H records (simpler to delete and re-create)
   await prisma.headToHeadRecord.deleteMany({ where: { divisionId } })
 
-  const matches = await prisma.match.findMany({
-    where: { divisionId, status: { in: ["COMPLETED", "FORFEITED", "NO_SHOW"] } },
-    select: { id: true },
-  })
+  const [matches, division] = await Promise.all([
+    prisma.match.findMany({
+      where: { divisionId, status: { in: ["COMPLETED", "FORFEITED", "NO_SHOW"] } },
+      select: { id: true },
+    }),
+    prisma.division.findUnique({ where: { id: divisionId }, select: { seasonId: true } }),
+  ])
 
   for (const match of matches) {
     await applyMatchToStandings(match.id)
+  }
+
+  if (division) {
+    await invalidateStandingsCache(divisionId, division.seasonId)
   }
 }
 
@@ -86,6 +94,7 @@ export async function applyMatchToStandings(matchId: string): Promise<void> {
       status: true,
       division: {
         select: {
+          seasonId: true,
           season: { select: { pointsConfig: true } },
         },
       },
@@ -99,6 +108,7 @@ export async function applyMatchToStandings(matchId: string): Promise<void> {
     // Both teams get a forfeit loss
     await applyDelta(divisionId, homeTeamId, { forfeitLoss: 1, loss: 1, points: cfg.forfeitLoss })
     await applyDelta(divisionId, awayTeamId, { forfeitLoss: 1, loss: 1, points: cfg.forfeitLoss })
+    await invalidateStandingsCache(divisionId, match.division.seasonId)
     return
   }
 
@@ -107,6 +117,7 @@ export async function applyMatchToStandings(matchId: string): Promise<void> {
     const loserId = winnerId === homeTeamId ? awayTeamId : homeTeamId
     await applyDelta(divisionId, winnerId!, { forfeitWin: 1, win: 1, points: cfg.forfeitWin })
     await applyDelta(divisionId, loserId, { forfeitLoss: 1, loss: 1, points: cfg.forfeitLoss })
+    await invalidateStandingsCache(divisionId, match.division.seasonId)
     return
   }
 
@@ -146,6 +157,8 @@ export async function applyMatchToStandings(matchId: string): Promise<void> {
     gamesLost: gamesWonHome,
     points: homeWon ? cfg.loss : cfg.win,
   })
+
+  await invalidateStandingsCache(divisionId, match.division.seasonId)
 }
 
 /**
@@ -164,6 +177,7 @@ export async function reverseMatchFromStandings(matchId: string): Promise<void> 
       status: true,
       division: {
         select: {
+          seasonId: true,
           season: { select: { pointsConfig: true } },
         },
       },
@@ -176,6 +190,7 @@ export async function reverseMatchFromStandings(matchId: string): Promise<void> 
   if (status === "NO_SHOW") {
     await applyDelta(divisionId, homeTeamId, { forfeitLoss: -1, loss: -1, points: -cfg.forfeitLoss })
     await applyDelta(divisionId, awayTeamId, { forfeitLoss: -1, loss: -1, points: -cfg.forfeitLoss })
+    await invalidateStandingsCache(divisionId, match.division.seasonId)
     return
   }
 
@@ -184,6 +199,7 @@ export async function reverseMatchFromStandings(matchId: string): Promise<void> 
     const loserId = winnerId === homeTeamId ? awayTeamId : homeTeamId
     await applyDelta(divisionId, winnerId!, { forfeitWin: -1, win: -1, points: -cfg.forfeitWin })
     await applyDelta(divisionId, loserId, { forfeitLoss: -1, loss: -1, points: -cfg.forfeitLoss })
+    await invalidateStandingsCache(divisionId, match.division.seasonId)
     return
   }
 
@@ -223,6 +239,8 @@ export async function reverseMatchFromStandings(matchId: string): Promise<void> 
     gamesLost: -gamesWonHome,
     points: homeWon ? -cfg.loss : -cfg.win,
   })
+
+  await invalidateStandingsCache(divisionId, match.division.seasonId)
 }
 
 /**

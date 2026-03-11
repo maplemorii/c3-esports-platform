@@ -10,11 +10,16 @@ import { prisma } from "@/lib/prisma"
 import { apiNotFound } from "@/lib/utils/errors"
 import { sortStandingsWithH2H } from "@/types/standings"
 import type { StandingsRow } from "@/types/standings"
+import { getCachedDivisionStandings, setCachedDivisionStandings } from "@/lib/cache/standings"
 
 type Params = { params: Promise<{ divisionId: string }> }
 
 export async function GET(_req: Request, { params }: Params) {
   const { divisionId } = await params
+
+  // Cache-aside: serve from Redis when available
+  const cached = await getCachedDivisionStandings(divisionId)
+  if (cached) return NextResponse.json(cached)
 
   const division = await prisma.division.findUnique({
     where:  { id: divisionId },
@@ -92,11 +97,16 @@ export async function GET(_req: Request, { params }: Params) {
 
   const sorted = sortStandingsWithH2H(rows).map((row, i) => ({ ...row, rank: i + 1 }))
 
-  return NextResponse.json({
+  const payload = {
     divisionId:   division.id,
     divisionName: division.name,
     tier:         division.tier,
     season:       division.season,
     standings:    sorted,
-  })
+  }
+
+  // Store in cache (fire-and-forget)
+  setCachedDivisionStandings(divisionId, payload).catch(() => undefined)
+
+  return NextResponse.json(payload)
 }
