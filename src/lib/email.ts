@@ -155,6 +155,33 @@ export async function sendParseFailedEmail({
 }
 
 // ---------------------------------------------------------------------------
+// Password reset
+// ---------------------------------------------------------------------------
+
+export async function sendPasswordResetEmail({
+  to,
+  recipientName,
+  resetUrl,
+}: {
+  to: string
+  recipientName: string
+  resetUrl: string
+}): Promise<void> {
+  await getResend().emails.send({
+    from: FROM,
+    to,
+    subject: "Reset your C3 Esports password",
+    html: layout(`
+      <h2 style="margin:0 0 8px">Password Reset</h2>
+      <p>Hi ${recipientName},</p>
+      <p>Someone requested a password reset for your account. If this was you, click the button below. The link expires in <strong>1 hour</strong>.</p>
+      ${actionButton(resetUrl, "Reset Password")}
+      <p style="color:#999;font-size:13px">If you didn't request this, you can safely ignore this email. Your password won't change.</p>
+    `),
+  })
+}
+
+// ---------------------------------------------------------------------------
 // Edu verification
 // ---------------------------------------------------------------------------
 
