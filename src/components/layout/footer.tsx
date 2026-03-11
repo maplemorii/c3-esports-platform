@@ -22,7 +22,7 @@ export function Footer() {
   return (
     <footer
       style={{
-        borderTop: "1px solid rgba(255,255,255,0.06)",
+        borderTop: "1px solid rgba(59,130,246,0.12)",
         background: "oklch(0.07 0.02 265)",
       }}
     >
@@ -71,7 +71,7 @@ export function Footer() {
                   <Link
                     key={href}
                     href={href}
-                    className="font-sans text-sm text-white/40 hover:text-white/75 transition-colors duration-150"
+                    className="font-sans text-sm text-white/40 hover:text-blue-300/80 transition-colors duration-150"
                   >
                     {label}
                   </Link>

@@ -10,10 +10,10 @@ Track every file that needs a visual update for a full redesign. Check off each 
 - [x] **Root layout** — `src/app/layout.tsx` — SessionProvider added, fonts intact
 - [x] **Navbar** — `src/components/layout/navbar.tsx` + `src/components/layout/navbar-client.tsx` — logo, links, mobile menu
 - [x] **User menu** — `src/components/layout/user-menu.tsx` — avatar, dropdown items
-- [ ] **Footer** — `src/components/layout/footer.tsx` — columns, colors, bottom bar
-- [ ] **Dashboard shell** — `src/components/layout/DashboardShell.tsx` — sidebar wrapper, content area
-- [ ] **Sidebar** — `src/components/layout/Sidebar.tsx` — nav items, active state, icons
-- [ ] **Admin sidebar** — `src/components/layout/AdminSidebar.tsx`
+- [x] **Footer** — `src/components/layout/footer.tsx` — columns, colors, bottom bar
+- [x] **Dashboard shell** — `src/components/layout/DashboardShell.tsx` — sidebar wrapper, content area
+- [x] **Sidebar** — `src/components/layout/Sidebar.tsx` — nav items, active state, icons
+- [x] **Admin sidebar** — `src/components/layout/AdminSidebar.tsx`
 
 ---
 

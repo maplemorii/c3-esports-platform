@@ -40,7 +40,13 @@ export function DashboardShell({ children, role, heading }: DashboardShellProps)
 
       <div className="flex flex-1 flex-col min-w-0">
         {/* Mobile top bar */}
-        <div className="flex h-14 items-center gap-3 border-b border-border px-4 md:hidden">
+        <div className="relative flex h-14 items-center gap-3 border-b border-border px-4 md:hidden">
+          {/* Red→blue accent line at bottom of mobile bar */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-px pointer-events-none"
+            style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.5), rgba(59,130,246,0.35), transparent)" }}
+            aria-hidden
+          />
           {isStaff ? (
             <MobileAdminSidebarTrigger role={role} />
           ) : (
