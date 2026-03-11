@@ -10,7 +10,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { cn } from "@/lib/utils"
-import { ChevronRight, ArrowUp, ArrowDown, Minus } from "lucide-react"
+import { ChevronRight, ArrowUp, ArrowDown, Minus, BarChart2 } from "lucide-react"
 import type { DivisionTier } from "@prisma/client"
 
 // ---------------------------------------------------------------------------
@@ -101,9 +101,21 @@ export async function generateMetadata({
 // ---------------------------------------------------------------------------
 
 const TIER_LABEL: Record<DivisionTier, string> = {
-  PREMIER:    "Premier",
-  CHALLENGERS: "Open Challengers",
-  CONTENDERS: "Open Contenders",
+  PREMIER:     "Premier",
+  CHALLENGERS: "Challengers",
+  CONTENDERS:  "Contenders",
+}
+
+const TIER_ACCENT: Record<DivisionTier, string> = {
+  PREMIER:     "text-amber-400 border-amber-400",
+  CHALLENGERS: "text-blue-400 border-blue-400",
+  CONTENDERS:  "text-cyan-400 border-cyan-400",
+}
+
+const RANK_STYLES: Record<number, { color: string; bg: string }> = {
+  1: { color: "rgba(234,179,8,0.9)",   bg: "rgba(234,179,8,0.04)" },
+  2: { color: "rgba(200,200,200,0.7)", bg: "" },
+  3: { color: "rgba(180,110,60,0.9)",  bg: "" },
 }
 
 function StreakBadge({ streak }: { streak: number }) {
@@ -115,9 +127,7 @@ function StreakBadge({ streak }: { streak: number }) {
       "flex items-center gap-0.5 text-xs font-semibold tabular-nums",
       isWin ? "text-emerald-400" : "text-destructive"
     )}>
-      {isWin
-        ? <ArrowUp className="h-3 w-3" />
-        : <ArrowDown className="h-3 w-3" />}
+      {isWin ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
       {count}
     </span>
   )
@@ -130,9 +140,10 @@ function StreakBadge({ streak }: { streak: number }) {
 function StandingsTable({ entries }: { entries: Entry[] }) {
   if (entries.length === 0) {
     return (
-      <p className="py-10 text-center text-sm text-muted-foreground">
-        No teams registered yet.
-      </p>
+      <div className="flex flex-col items-center gap-4 py-20 text-center">
+        <BarChart2 className="h-10 w-10 text-muted-foreground/30" />
+        <p className="text-sm text-muted-foreground">No teams registered yet.</p>
+      </div>
     )
   }
 
@@ -140,69 +151,87 @@ function StandingsTable({ entries }: { entries: Entry[] }) {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-border text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            <th className="py-3 pl-3 pr-2 text-left w-8">#</th>
-            <th className="py-3 px-2 text-left">Team</th>
-            <th className="py-3 px-2 text-center">GP</th>
-            <th className="py-3 px-2 text-center">W</th>
-            <th className="py-3 px-2 text-center">L</th>
-            <th className="py-3 px-2 text-center hidden sm:table-cell">GW</th>
-            <th className="py-3 px-2 text-center hidden sm:table-cell">GL</th>
-            <th className="py-3 px-2 text-center hidden md:table-cell">GD</th>
-            <th className="py-3 px-2 text-center">PTS</th>
-            <th className="py-3 pl-2 pr-3 text-center hidden lg:table-cell">Streak</th>
+          <tr
+            className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+          >
+            <th className="py-4 pl-6 pr-2 text-left w-10">#</th>
+            <th className="py-4 px-3 text-left">Team</th>
+            <th className="py-4 px-3 text-center">GP</th>
+            <th className="py-4 px-3 text-center">W</th>
+            <th className="py-4 px-3 text-center">L</th>
+            <th className="py-4 px-3 text-center hidden sm:table-cell">GW</th>
+            <th className="py-4 px-3 text-center hidden sm:table-cell">GL</th>
+            <th className="py-4 px-3 text-center hidden md:table-cell">GD</th>
+            <th className="py-4 px-3 text-center font-bold text-foreground/60">PTS</th>
+            <th className="py-4 pl-3 pr-6 text-center hidden lg:table-cell">Streak</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-border">
-          {entries.map((entry, i) => (
-            <tr
-              key={entry.id}
-              className={cn(
-                "group hover:bg-muted/30 transition-colors",
-                i === 0 && "bg-brand/5"
-              )}
-            >
-              {/* Rank */}
-              <td className="py-3 pl-3 pr-2 text-muted-foreground tabular-nums font-medium">
-                {i + 1}
-              </td>
-
-              {/* Team */}
-              <td className="py-3 px-2">
-                <Link
-                  href={`/teams/${entry.team.slug}`}
-                  className="flex items-center gap-2.5 hover:text-brand transition-colors"
-                >
-                  <div
-                    className="h-7 w-7 shrink-0 rounded overflow-hidden flex items-center justify-center text-[10px] font-bold text-white"
-                    style={{ backgroundColor: entry.team.primaryColor ?? "oklch(0.50 0.20 15)" }}
+        <tbody>
+          {entries.map((entry, i) => {
+            const rank = i + 1
+            const rankStyle = RANK_STYLES[rank]
+            return (
+              <tr
+                key={entry.id}
+                className="group transition-colors hover:bg-white/[0.03]"
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.04)",
+                  background: rankStyle?.bg || undefined,
+                }}
+              >
+                {/* Rank */}
+                <td className="py-4 pl-6 pr-2">
+                  <span
+                    className="font-display text-base font-bold tabular-nums"
+                    style={{ color: rankStyle?.color ?? "rgba(255,255,255,0.25)" }}
                   >
-                    {entry.team.logoUrl
-                      ? <img src={entry.team.logoUrl} alt="" className="h-full w-full object-cover" />
-                      : entry.team.name.slice(0, 2).toUpperCase()
-                    }
-                  </div>
-                  <span className="font-semibold truncate">{entry.team.name}</span>
-                </Link>
-              </td>
+                    {rank}
+                  </span>
+                </td>
 
-              <td className="py-3 px-2 text-center tabular-nums text-muted-foreground">{entry.matchesPlayed}</td>
-              <td className="py-3 px-2 text-center tabular-nums font-semibold text-emerald-400">{entry.wins}</td>
-              <td className="py-3 px-2 text-center tabular-nums text-destructive">{entry.losses}</td>
-              <td className="py-3 px-2 text-center tabular-nums text-muted-foreground hidden sm:table-cell">{entry.gamesWon}</td>
-              <td className="py-3 px-2 text-center tabular-nums text-muted-foreground hidden sm:table-cell">{entry.gamesLost}</td>
-              <td className={cn(
-                "py-3 px-2 text-center tabular-nums font-medium hidden md:table-cell",
-                entry.gameDifferential > 0 ? "text-emerald-400" : entry.gameDifferential < 0 ? "text-destructive" : "text-muted-foreground"
-              )}>
-                {entry.gameDifferential > 0 ? `+${entry.gameDifferential}` : entry.gameDifferential}
-              </td>
-              <td className="py-3 px-2 text-center tabular-nums font-bold">{entry.points}</td>
-              <td className="py-3 pl-2 pr-3 text-center hidden lg:table-cell">
-                <StreakBadge streak={entry.streak} />
-              </td>
-            </tr>
-          ))}
+                {/* Team */}
+                <td className="py-4 px-3">
+                  <Link
+                    href={`/teams/${entry.team.slug}`}
+                    className="flex items-center gap-3 hover:text-brand transition-colors duration-150"
+                  >
+                    <div
+                      className="h-8 w-8 shrink-0 rounded overflow-hidden flex items-center justify-center text-[10px] font-bold text-white"
+                      style={{ backgroundColor: entry.team.primaryColor ?? "oklch(0.50 0.20 15)" }}
+                    >
+                      {entry.team.logoUrl
+                        // eslint-disable-next-line @next/next/no-img-element
+                        ? <img src={entry.team.logoUrl} alt="" className="h-full w-full object-cover" />
+                        : entry.team.name.slice(0, 2).toUpperCase()
+                      }
+                    </div>
+                    <span className="font-semibold truncate">{entry.team.name}</span>
+                  </Link>
+                </td>
+
+                <td className="py-4 px-3 text-center tabular-nums text-muted-foreground">{entry.matchesPlayed}</td>
+                <td className="py-4 px-3 text-center tabular-nums font-semibold text-emerald-400">{entry.wins}</td>
+                <td className="py-4 px-3 text-center tabular-nums text-destructive">{entry.losses}</td>
+                <td className="py-4 px-3 text-center tabular-nums text-muted-foreground hidden sm:table-cell">{entry.gamesWon}</td>
+                <td className="py-4 px-3 text-center tabular-nums text-muted-foreground hidden sm:table-cell">{entry.gamesLost}</td>
+                <td className={cn(
+                  "py-4 px-3 text-center tabular-nums font-medium hidden md:table-cell",
+                  entry.gameDifferential > 0 ? "text-emerald-400" : entry.gameDifferential < 0 ? "text-destructive" : "text-muted-foreground"
+                )}>
+                  {entry.gameDifferential > 0 ? `+${entry.gameDifferential}` : entry.gameDifferential}
+                </td>
+                <td className="py-4 px-3 text-center">
+                  <span className="font-display text-base font-bold tabular-nums text-foreground">
+                    {entry.points}
+                  </span>
+                </td>
+                <td className="py-4 pl-3 pr-6 text-center hidden lg:table-cell">
+                  <StreakBadge streak={entry.streak} />
+                </td>
+              </tr>
+            )
+          })}
         </tbody>
       </table>
     </div>
@@ -226,63 +255,104 @@ export default async function StandingsPage({
   const season = await getData(seasonSlug)
   if (!season) notFound()
 
-  // Select division from query param or default to first
   const activeDivision: Division =
     season.divisions.find((d) => d.id === divisionParam) ??
     season.divisions[0]
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12">
+    <div className="relative min-h-screen">
+      {/* Ambient glow */}
+      <div
+        className="pointer-events-none absolute top-0 right-0 h-96 w-96 opacity-10"
+        style={{
+          background: "radial-gradient(circle, rgba(59,130,246,0.6), transparent 70%)",
+          filter: "blur(80px)",
+          transform: "translate(30%, -20%)",
+        }}
+        aria-hidden
+      />
 
-      {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-xs text-muted-foreground">
-        <Link href="/seasons" className="hover:text-brand transition-colors">Seasons</Link>
-        <ChevronRight className="h-3.5 w-3.5" />
-        <Link href={`/seasons/${season.slug}`} className="hover:text-brand transition-colors">{season.name}</Link>
-        <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-foreground">Standings</span>
-      </nav>
+      <div className="relative mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
 
-      {/* Header */}
-      <h1 className="mb-6 font-display text-3xl font-bold uppercase tracking-wide">
-        Standings
-      </h1>
+        {/* Breadcrumb */}
+        <nav className="mb-8 flex items-center gap-2 text-xs text-muted-foreground">
+          <Link href="/seasons" className="hover:text-brand transition-colors duration-150">Seasons</Link>
+          <ChevronRight className="h-3.5 w-3.5" />
+          <Link href={`/seasons/${season.slug}`} className="hover:text-brand transition-colors duration-150">{season.name}</Link>
+          <ChevronRight className="h-3.5 w-3.5" />
+          <span className="text-foreground">Standings</span>
+        </nav>
 
-      {season.divisions.length === 0 ? (
-        <p className="text-muted-foreground">No divisions have been set up yet.</p>
-      ) : (
-        <>
-          {/* Division tabs */}
-          <div className="mb-4 flex gap-1 border-b border-border">
-            {season.divisions.map((div) => (
-              <Link
-                key={div.id}
-                href={`/seasons/${season.slug}/standings?division=${div.id}`}
-                className={cn(
-                  "px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px",
-                  div.id === activeDivision?.id
-                    ? "border-brand text-brand"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {TIER_LABEL[div.tier]}
-              </Link>
-            ))}
-          </div>
-
-          {/* Active division table */}
-          {activeDivision && (
-            <div className="rounded-xl border border-border bg-card overflow-hidden">
-              <StandingsTable entries={activeDivision.standingEntries} />
-            </div>
-          )}
-
-          {/* Legend */}
-          <p className="mt-3 text-xs text-muted-foreground">
-            GP = Games Played · W = Wins · L = Losses · GW = Game Wins · GL = Game Losses · GD = Game Differential · PTS = Points
+        {/* Header */}
+        <div className="mb-10">
+          <p className="mb-2 font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-brand/70">
+            {season.name}
           </p>
-        </>
-      )}
+          <h1 className="font-display text-5xl font-bold uppercase tracking-tight text-foreground sm:text-6xl">
+            Standings
+          </h1>
+          <div
+            className="mt-6 h-px w-24"
+            style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.3), transparent)" }}
+          />
+        </div>
+
+        {season.divisions.length === 0 ? (
+          <div className="flex flex-col items-center gap-4 py-32 text-center">
+            <BarChart2 className="h-12 w-12 text-muted-foreground/20" />
+            <p className="text-muted-foreground">No divisions have been set up yet.</p>
+          </div>
+        ) : (
+          <>
+            {/* Division tabs */}
+            <div className="mb-6 flex gap-2 flex-wrap">
+              {season.divisions.map((div) => {
+                const isActive = div.id === activeDivision?.id
+                return (
+                  <Link
+                    key={div.id}
+                    href={`/seasons/${season.slug}/standings?division=${div.id}`}
+                    className={cn(
+                      "rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-150 border",
+                      isActive
+                        ? cn("bg-card text-foreground border-border", TIER_ACCENT[div.tier])
+                        : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    )}
+                  >
+                    {TIER_LABEL[div.tier]}
+                  </Link>
+                )
+              })}
+            </div>
+
+            {/* Standings table */}
+            {activeDivision && (
+              <div className="rounded-2xl overflow-hidden border border-border bg-card">
+                {/* Division header */}
+                <div
+                  className="relative px-6 py-4 border-b border-border"
+                  style={{ background: "rgba(255,255,255,0.02)" }}
+                >
+                  <div
+                    className="absolute top-0 left-0 right-0 h-px"
+                    style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.5), rgba(59,130,246,0.3), transparent)" }}
+                    aria-hidden
+                  />
+                  <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+                    {TIER_LABEL[activeDivision.tier]} Division · {activeDivision.standingEntries.length} teams
+                  </h2>
+                </div>
+                <StandingsTable entries={activeDivision.standingEntries} />
+              </div>
+            )}
+
+            {/* Legend */}
+            <p className="mt-4 text-xs text-muted-foreground/60">
+              GP = Games Played · W = Wins · L = Losses · GW = Game Wins · GL = Game Losses · GD = Game Diff · PTS = Points
+            </p>
+          </>
+        )}
+      </div>
     </div>
   )
 }

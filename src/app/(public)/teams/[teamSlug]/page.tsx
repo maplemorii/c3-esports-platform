@@ -16,8 +16,10 @@ import {
   MessageSquare,
   Trophy,
   ChevronLeft,
+  Users,
+  Calendar,
 } from "lucide-react"
-import type { RegistrationStatus } from "@prisma/client"
+import type { RegistrationStatus, DivisionTier } from "@prisma/client"
 import { TeamLogo } from "@/components/team/TeamLogo"
 import { RosterTable } from "@/components/team/RosterTable"
 
@@ -114,167 +116,234 @@ export default async function TeamProfilePage({
   const currentReg = team.registrations.find((r) => r.status === "APPROVED") ?? null
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 space-y-6">
+    <div className="relative min-h-screen">
+      {/* Team color ambient glow */}
+      <div
+        className="pointer-events-none absolute top-0 left-0 right-0 h-80 opacity-15"
+        style={{
+          background: `radial-gradient(ellipse 60% 100% at 30% 0%, ${color}, transparent 70%)`,
+          filter: "blur(60px)",
+        }}
+        aria-hidden
+      />
 
-      {/* ── Back link ────────────────────────────────────────────── */}
-      <Link
-        href="/teams"
-        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ChevronLeft className="h-3.5 w-3.5" />
-        All Teams
-      </Link>
+      <div className="relative mx-auto max-w-7xl px-6 py-12 md:px-10 md:py-16">
 
-      {/* ── Team header ───────────────────────────────────────────── */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <div className="h-2 w-full" style={{ backgroundColor: color }} />
+        {/* Back link */}
+        <Link
+          href="/teams"
+          className="mb-8 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors duration-150"
+        >
+          <ChevronLeft className="h-3.5 w-3.5" />
+          All Teams
+        </Link>
 
-        <div className="p-6 sm:p-8">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-            <TeamLogo
-              name={team.name}
-              logoUrl={team.logoUrl}
-              primaryColor={team.primaryColor}
-              size="xl"
-              className="shadow-lg"
-            />
+        {/* Hero card */}
+        <div className="relative rounded-2xl border border-border bg-card overflow-hidden mb-6">
+          {/* Top accent using team color */}
+          <div className="h-1.5 w-full" style={{ backgroundColor: color }} />
 
-            <div className="flex-1 min-w-0">
-              <h1 className="font-display text-3xl font-bold uppercase tracking-wide leading-none sm:text-4xl">
-                {team.name}
-              </h1>
+          <div className="p-8 sm:p-10">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
+              {/* Logo */}
+              <TeamLogo
+                name={team.name}
+                logoUrl={team.logoUrl}
+                primaryColor={team.primaryColor}
+                size="xl"
+                className="shadow-xl"
+              />
 
-              {currentReg?.division && (
-                <div className="mt-2">
-                  <DivisionBadge tier={currentReg.division.tier} name={currentReg.division.name} />
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <h1 className="font-display text-4xl font-bold uppercase tracking-tight leading-none sm:text-5xl">
+                  {team.name}
+                </h1>
+
+                {currentReg?.division && (
+                  <div className="mt-3">
+                    <DivisionBadge tier={currentReg.division.tier} name={currentReg.division.name} />
+                  </div>
+                )}
+                {currentReg && (
+                  <p className="mt-2 text-sm text-muted-foreground">{currentReg.season.name}</p>
+                )}
+
+                {/* Team colors */}
+                {(team.primaryColor || team.secondaryColor) && (
+                  <div className="mt-4 flex items-center gap-2">
+                    {team.primaryColor && (
+                      <span
+                        className="h-5 w-5 rounded-full border border-black/20 shadow-sm"
+                        style={{ backgroundColor: team.primaryColor }}
+                        title={`Primary: ${team.primaryColor}`}
+                      />
+                    )}
+                    {team.secondaryColor && (
+                      <span
+                        className="h-5 w-5 rounded-full border border-black/20 shadow-sm"
+                        style={{ backgroundColor: team.secondaryColor }}
+                        title={`Secondary: ${team.secondaryColor}`}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Stats */}
+              <div className="flex gap-6 sm:flex-col sm:items-end shrink-0">
+                <div className="text-center sm:text-right">
+                  <p className="font-display text-3xl font-bold text-foreground">
+                    {team.memberships.length}
+                  </p>
+                  <p className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground sm:justify-end">
+                    <Users className="h-3 w-3" />
+                    Players
+                  </p>
                 </div>
-              )}
-
-              {currentReg && (
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {currentReg.season.name}
-                </p>
-              )}
-
-              {(team.primaryColor || team.secondaryColor) && (
-                <div className="mt-3 flex items-center gap-1.5">
-                  {team.primaryColor && (
-                    <span
-                      className="h-4 w-4 rounded-full border border-black/20 shadow-sm"
-                      style={{ backgroundColor: team.primaryColor }}
-                      title={`Primary: ${team.primaryColor}`}
-                    />
-                  )}
-                  {team.secondaryColor && (
-                    <span
-                      className="h-4 w-4 rounded-full border border-black/20 shadow-sm"
-                      style={{ backgroundColor: team.secondaryColor }}
-                      title={`Secondary: ${team.secondaryColor}`}
-                    />
-                  )}
+                <div className="text-center sm:text-right">
+                  <p className="font-display text-3xl font-bold text-foreground">
+                    {team.registrations.length}
+                  </p>
+                  <p className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground sm:justify-end">
+                    <Trophy className="h-3 w-3" />
+                    Seasons
+                  </p>
                 </div>
-              )}
+              </div>
             </div>
+
+            {/* Social links */}
+            {(team.website || team.twitterHandle || team.discordInvite) && (
+              <div className="mt-8 flex flex-wrap gap-4 border-t border-border pt-6">
+                {team.website && (
+                  <a
+                    href={team.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-brand transition-colors duration-150"
+                  >
+                    <Globe className="h-4 w-4" />
+                    Website
+                  </a>
+                )}
+                {team.twitterHandle && (
+                  <a
+                    href={`https://twitter.com/${team.twitterHandle.replace("@", "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-brand transition-colors duration-150"
+                  >
+                    <Twitter className="h-4 w-4" />
+                    {team.twitterHandle.startsWith("@") ? team.twitterHandle : `@${team.twitterHandle}`}
+                  </a>
+                )}
+                {team.discordInvite && (
+                  <a
+                    href={team.discordInvite}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-brand transition-colors duration-150"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    Discord
+                  </a>
+                )}
+              </div>
+            )}
           </div>
+        </div>
 
-          {/* Social links */}
-          {(team.website || team.twitterHandle || team.discordInvite) && (
-            <div className="mt-6 flex flex-wrap gap-4 border-t border-border pt-5">
-              {team.website && (
-                <a
-                  href={team.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Globe className="h-4 w-4" />
-                  Website
-                </a>
-              )}
-              {team.twitterHandle && (
-                <a
-                  href={`https://twitter.com/${team.twitterHandle.replace("@", "")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Twitter className="h-4 w-4" />
-                  {team.twitterHandle.startsWith("@") ? team.twitterHandle : `@${team.twitterHandle}`}
-                </a>
-              )}
-              {team.discordInvite && (
-                <a
-                  href={team.discordInvite}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <MessageSquare className="h-4 w-4" />
-                  Discord
-                </a>
-              )}
+        <div className="grid gap-6 lg:grid-cols-3">
+
+          {/* Roster — takes 2/3 */}
+          <section className="lg:col-span-2 rounded-2xl border border-border bg-card overflow-hidden">
+            <div
+              className="relative px-6 py-4 border-b border-border"
+              style={{ background: "rgba(255,255,255,0.02)" }}
+            >
+              <div
+                className="absolute top-0 left-0 right-0 h-px"
+                style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.5), rgba(59,130,246,0.3), transparent)" }}
+                aria-hidden
+              />
+              <div className="flex items-center justify-between">
+                <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+                  Active Roster
+                </h2>
+                <span className="text-xs text-muted-foreground">
+                  {team.memberships.length} {team.memberships.length === 1 ? "player" : "players"}
+                </span>
+              </div>
             </div>
-          )}
+            <RosterTable members={team.memberships} />
+          </section>
+
+          {/* Season history — takes 1/3 */}
+          <section className="rounded-2xl border border-border bg-card overflow-hidden self-start">
+            <div
+              className="relative px-6 py-4 border-b border-border"
+              style={{ background: "rgba(255,255,255,0.02)" }}
+            >
+              <div
+                className="absolute top-0 left-0 right-0 h-px"
+                style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.5), rgba(59,130,246,0.3), transparent)" }}
+                aria-hidden
+              />
+              <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+                Season History
+              </h2>
+            </div>
+
+            {team.registrations.length === 0 ? (
+              <div className="flex flex-col items-center gap-3 px-6 py-12 text-center">
+                <Trophy className="h-8 w-8 text-muted-foreground/20" />
+                <p className="text-sm text-muted-foreground">No seasons yet.</p>
+              </div>
+            ) : (
+              <ul className="divide-y divide-border">
+                {team.registrations.map((reg) => (
+                  <li key={reg.id} className="flex items-start justify-between gap-3 px-6 py-4">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold truncate">{reg.season.name}</p>
+                      {reg.division && (
+                        <p className="mt-0.5 text-xs text-muted-foreground truncate">
+                          {reg.division.name}
+                        </p>
+                      )}
+                      <p className="mt-1 flex items-center gap-1 text-[10px] text-muted-foreground/60">
+                        <Calendar className="h-3 w-3" />
+                        {formatDate(reg.registeredAt)}
+                      </p>
+                    </div>
+                    <RegistrationBadge status={reg.status} />
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <div className="px-6 py-3 border-t border-border">
+              <p className="text-[10px] text-muted-foreground/40">
+                Founded {formatDate(team.createdAt)}
+              </p>
+            </div>
+          </section>
+
         </div>
       </div>
-
-      {/* ── Active Roster ─────────────────────────────────────────── */}
-      <section className="rounded-xl border border-border bg-card">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-            Active Roster
-          </h2>
-          <span className="text-xs text-muted-foreground">
-            {team.memberships.length} {team.memberships.length === 1 ? "player" : "players"}
-          </span>
-        </div>
-        <RosterTable members={team.memberships} />
-      </section>
-
-      {/* ── Season History ────────────────────────────────────────── */}
-      {team.registrations.length > 0 && (
-        <section className="rounded-xl border border-border bg-card">
-          <div className="px-6 py-4 border-b border-border">
-            <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-              Season History
-            </h2>
-          </div>
-          <ul className="divide-y divide-border">
-            {team.registrations.map((reg) => (
-              <li key={reg.id} className="flex items-center justify-between gap-4 px-6 py-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  <Trophy className="h-4 w-4 shrink-0 text-muted-foreground/50" />
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">{reg.season.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {reg.division?.name ?? "Division TBD"} · {formatDate(reg.registeredAt)}
-                    </p>
-                  </div>
-                </div>
-                <RegistrationBadge status={reg.status} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      <p className="text-xs text-muted-foreground/40 pb-2">
-        Team founded {formatDate(team.createdAt)}
-      </p>
-
     </div>
   )
 }
 
 // ---------------------------------------------------------------------------
-// Sub-components (page-specific)
+// Sub-components
 // ---------------------------------------------------------------------------
 
-function DivisionBadge({ tier, name }: { tier: string; name: string }) {
+function DivisionBadge({ tier, name }: { tier: DivisionTier | string; name: string }) {
   const map: Record<string, string> = {
-    PREMIER:    "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-    CHALLENGERS:"bg-sky-500/20 text-sky-400 border-sky-500/30",
-    CONTENDERS: "bg-brand/20 text-brand border-brand/30",
+    PREMIER:     "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+    CHALLENGERS: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+    CONTENDERS:  "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
   }
   return (
     <span className={cn(
@@ -290,10 +359,10 @@ function DivisionBadge({ tier, name }: { tier: string; name: string }) {
 function RegistrationBadge({ status }: { status: RegistrationStatus }) {
   const map: Record<RegistrationStatus, { label: string; cls: string }> = {
     PENDING:    { label: "Pending",    cls: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30" },
-    APPROVED:   { label: "Approved",  cls: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" },
-    REJECTED:   { label: "Rejected",  cls: "bg-destructive/15 text-destructive border-destructive/30" },
-    WAITLISTED: { label: "Waitlisted",cls: "bg-orange-500/15 text-orange-400 border-orange-500/30" },
-    WITHDRAWN:  { label: "Withdrawn", cls: "bg-muted text-muted-foreground" },
+    APPROVED:   { label: "Approved",   cls: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" },
+    REJECTED:   { label: "Rejected",   cls: "bg-destructive/15 text-destructive border-destructive/30" },
+    WAITLISTED: { label: "Waitlisted", cls: "bg-orange-500/15 text-orange-400 border-orange-500/30" },
+    WITHDRAWN:  { label: "Withdrawn",  cls: "bg-muted text-muted-foreground border-border" },
   }
   const { label, cls } = map[status]
   return (

@@ -41,9 +41,16 @@ export function TeamCard({ team }: { team: TeamCardData }) {
   return (
     <Link
       href={`/teams/${team.slug}`}
-      className="group flex flex-col rounded-xl border border-border bg-card overflow-hidden transition-colors hover:border-brand/40"
+      className="group relative flex flex-col rounded-xl border border-border bg-card overflow-hidden transition-all duration-150 hover:border-border/80 hover:bg-muted/10"
     >
-      {/* Color strip */}
+      {/* Hover accent line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        style={{ background: "linear-gradient(90deg, transparent, rgba(59,130,246,0.4) 50%, transparent)" }}
+        aria-hidden
+      />
+
+      {/* Team color strip */}
       <div className="h-1.5 w-full shrink-0" style={{ backgroundColor: color }} />
 
       <div className="flex items-start gap-4 p-5">
@@ -52,14 +59,15 @@ export function TeamCard({ team }: { team: TeamCardData }) {
           logoUrl={team.logoUrl}
           primaryColor={team.primaryColor}
           size="md"
+          className="shadow-sm"
         />
 
         <div className="flex-1 min-w-0">
-          <h2 className="font-display text-base font-bold uppercase tracking-wide truncate group-hover:text-brand transition-colors">
+          <h2 className="font-display text-base font-bold uppercase tracking-wide truncate group-hover:text-brand transition-colors duration-150">
             {team.name}
           </h2>
 
-          <div className="mt-1 flex flex-wrap items-center gap-2">
+          <div className="mt-1.5 flex flex-wrap items-center gap-2">
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
               <Users className="h-3 w-3" />
               {team.memberCount} {team.memberCount === 1 ? "member" : "members"}
@@ -74,7 +82,7 @@ export function TeamCard({ team }: { team: TeamCardData }) {
           </div>
 
           {team.activeReg && (
-            <p className="mt-1 text-[11px] text-muted-foreground/70 truncate">
+            <p className="mt-1 text-[11px] text-muted-foreground/60 truncate">
               {team.activeReg.season.name}
             </p>
           )}
@@ -90,9 +98,9 @@ export function TeamCard({ team }: { team: TeamCardData }) {
 
 function DivisionPip({ tier, name }: { tier: DivisionTier; name: string }) {
   const map: Record<DivisionTier, string> = {
-    PREMIER:    "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-    CHALLENGERS:"bg-sky-500/20 text-sky-400 border-sky-500/30",
-    CONTENDERS: "bg-brand/20 text-brand border-brand/30",
+    PREMIER:     "bg-yellow-500/15 text-yellow-400 border-yellow-500/25",
+    CHALLENGERS: "bg-blue-500/15 text-blue-400 border-blue-500/25",
+    CONTENDERS:  "bg-cyan-500/15 text-cyan-400 border-cyan-500/25",
   }
   return (
     <span

@@ -8,7 +8,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
-import { cn } from "@/lib/utils"
 import { Users, Search } from "lucide-react"
 import { TeamCard } from "@/components/team/TeamCard"
 import type { TeamCardData } from "@/components/team/TeamCard"
@@ -82,79 +81,109 @@ export default async function TeamsPage({
   const teams = await getTeams(search.trim())
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-14">
+    <div className="relative min-h-screen">
+      {/* Ambient glow */}
+      <div
+        className="pointer-events-none absolute top-0 left-0 h-96 w-96 opacity-10"
+        style={{
+          background: "radial-gradient(circle, rgba(196,28,53,0.6), transparent 70%)",
+          filter: "blur(80px)",
+          transform: "translate(-30%, -20%)",
+        }}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute top-0 right-0 h-96 w-96 opacity-10"
+        style={{
+          background: "radial-gradient(circle, rgba(59,130,246,0.6), transparent 70%)",
+          filter: "blur(80px)",
+          transform: "translate(30%, -20%)",
+        }}
+        aria-hidden
+      />
 
-      {/* ── Header ───────────────────────────────────────────────── */}
-      <div className="mb-12">
-        <p
-          className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em]"
-          style={{ color: "rgba(96,165,250,0.6)" }}
-        >
-          Carolina Collegiate Clash
-        </p>
-        <h1
-          className="font-sans text-5xl font-black uppercase sm:text-6xl"
-          style={{ color: "rgba(255,255,255,0.92)", letterSpacing: "-0.01em" }}
-        >
-          Teams
-        </h1>
-        <p className="mt-3 text-sm" style={{ color: "rgba(255,255,255,0.28)" }}>
-          {teams.length} team{teams.length !== 1 ? "s" : ""} competing in C3
-        </p>
-        <div
-          className="mt-6 h-px w-20"
-          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.3), transparent)" }}
-        />
-      </div>
+      <div className="relative mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
 
-      {/* ── Search ───────────────────────────────────────────────── */}
-      <form method="GET" className="mb-8">
-        <div className="relative max-w-md">
-          <Search
-            className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2"
-            style={{ color: "rgba(255,255,255,0.25)" }}
-          />
-          <input
-            type="text"
-            name="search"
-            defaultValue={search}
-            placeholder="Search teams…"
-            className="w-full rounded-xl pl-10 pr-4 py-2.5 text-sm font-sans outline-none transition-all duration-150"
-            style={{
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              color: "rgba(255,255,255,0.85)",
-            }}
-          />
-        </div>
-      </form>
-
-      {/* ── Grid ─────────────────────────────────────────────────── */}
-      {teams.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 py-20 text-center">
-          <Users className="h-10 w-10" style={{ color: "rgba(255,255,255,0.1)" }} />
-          <p style={{ color: "rgba(255,255,255,0.28)" }}>
-            {search ? `No teams found matching "${search}".` : "No teams yet."}
+        {/* Header */}
+        <div className="mb-12">
+          <p className="mb-2 font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-brand/70">
+            Carolina Collegiate Clash
           </p>
-          {search && (
-            <Link
-              href="/teams"
-              className="text-xs transition-colors duration-150"
-              style={{ color: "rgba(96,165,250,0.7)" }}
-            >
-              Clear search
-            </Link>
-          )}
+          <div className="flex items-end justify-between gap-6 flex-wrap">
+            <div>
+              <h1 className="font-display text-5xl font-bold uppercase tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+                Teams
+              </h1>
+              {teams.length > 0 && (
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {teams.length} team{teams.length !== 1 ? "s" : ""} competing in C3
+                </p>
+              )}
+            </div>
+
+            {/* Search */}
+            <form method="GET" className="shrink-0">
+              <div className="relative w-72">
+                <Search
+                  className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50"
+                />
+                <input
+                  type="text"
+                  name="search"
+                  defaultValue={search}
+                  placeholder="Search teams…"
+                  className="w-full rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none transition-all duration-150 focus:ring-1 focus:ring-brand/30"
+                  style={{
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    color: "rgba(255,255,255,0.85)",
+                  }}
+                />
+              </div>
+            </form>
+          </div>
+
+          <div
+            className="mt-6 h-px w-24"
+            style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.3), transparent)" }}
+          />
         </div>
-      ) : (
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {teams.map((team) => (
-            <li key={team.id}>
-              <TeamCard team={team} />
-            </li>
-          ))}
-        </ul>
-      )}
+
+        {/* Grid */}
+        {teams.length === 0 ? (
+          <div className="flex flex-col items-center gap-5 py-32 text-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-border bg-card">
+              <Users className="h-8 w-8 text-muted-foreground/40" />
+            </div>
+            <div>
+              <p className="font-display text-lg font-semibold uppercase tracking-wide text-foreground/50">
+                {search ? "No results" : "No teams yet"}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {search
+                  ? `No teams found matching "${search}".`
+                  : "Check back soon for registered teams."}
+              </p>
+            </div>
+            {search && (
+              <Link
+                href="/teams"
+                className="text-xs text-brand/70 hover:text-brand transition-colors duration-150"
+              >
+                Clear search
+              </Link>
+            )}
+          </div>
+        ) : (
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {teams.map((team) => (
+              <li key={team.id}>
+                <TeamCard team={team} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   )
 }
