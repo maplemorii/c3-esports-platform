@@ -31,7 +31,7 @@ const STEPS = [
 export function HowItWorksSection() {
   return (
     <section className="px-4 py-28">
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-7xl">
         {/* Header */}
         <motion.div
           className="mb-20"
@@ -109,7 +109,7 @@ export function HowItWorksSection() {
                 <span
                   className="font-display text-xl font-bold"
                   style={{
-                    background: "linear-gradient(135deg, #a855f7, #06b6d4)",
+                    background: "linear-gradient(135deg, rgba(196,28,53,0.9), rgba(59,130,246,0.9))",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     backgroundClip: "text",

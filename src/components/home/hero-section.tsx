@@ -167,9 +167,9 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
               inset: 0,
               borderRadius: "50%",
               background:
-                "conic-gradient(from 200deg at 40% 42%, #7c3aed 0deg, #06b6d4 80deg, #a855f7 160deg, #0ea5e9 240deg, #7c3aed 360deg)",
+                "conic-gradient(from 200deg at 40% 42%, rgba(196,28,53,1) 0deg, rgba(59,130,246,1) 120deg, rgba(196,28,53,0.8) 240deg, rgba(59,130,246,1) 360deg)",
               filter: "blur(44px)",
-              opacity: 0.50,
+              opacity: 0.55,
             }}
           />
           <div
@@ -178,7 +178,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
               inset: "30%",
               borderRadius: "50%",
               background:
-                "radial-gradient(circle at 32% 28%, rgba(232,121,249,0.9), rgba(14,165,233,0.75) 52%, rgba(59,130,246,0.5) 85%)",
+                "radial-gradient(circle at 32% 28%, rgba(196,28,53,0.9), rgba(59,130,246,0.8) 52%, rgba(59,130,246,0.5) 85%)",
               filter: "blur(10px)",
             }}
           />
@@ -282,7 +282,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
               animate={{ clipPath: "inset(0 0% 0 0)" }}
               transition={{ duration: 0.85, delay: 0.60, ease: EASE }}
               style={{
-                background: "linear-gradient(120deg, #a855f7 0%, #06b6d4 55%, #7c3aed 100%)",
+                background: "linear-gradient(120deg, rgba(196,28,53,0.95) 0%, rgba(59,130,246,0.95) 55%, rgba(196,28,53,0.8) 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -316,7 +316,11 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
             <Link
               href={isSignedIn ? "/dashboard" : "/auth/register"}
-              className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-black transition-colors duration-200 hover:bg-white/90"
+              className="group inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 active:scale-95"
+              style={{
+                background: "linear-gradient(135deg, rgba(196,28,53,0.95), rgba(59,130,246,0.9))",
+                boxShadow: "0 0 32px rgba(196,28,53,0.25)",
+              }}
             >
               {isSignedIn ? "Go to Dashboard" : "Register Your Team"}
               <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -419,7 +423,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
               <div className="h-0.5 flex-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
                 <motion.div
                   className="h-full rounded-full"
-                  style={{ background: "linear-gradient(90deg, #7c3aed, #06b6d4)", width: "62%" }}
+                  style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.9), rgba(59,130,246,0.9))", width: "62%" }}
                   animate={{ width: ["60%", "65%", "60%"] }}
                   transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
                 />

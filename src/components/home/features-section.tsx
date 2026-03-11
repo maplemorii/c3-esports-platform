@@ -122,7 +122,7 @@ function ReplayCard({ index }: { index: number }) {
             >
               <motion.div
                 className="h-full rounded-full"
-                style={{ background: "linear-gradient(90deg, #7c3aed, #06b6d4)" }}
+                style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.9), rgba(59,130,246,0.9))" }}
                 animate={{ width: ["0%", "100%"] }}
                 transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" }}
               />
@@ -393,7 +393,7 @@ export function FeaturesSection() {
   return (
     <section className="px-4 py-24">
       <div
-        className="mx-auto max-w-5xl pt-24 pb-0"
+        className="mx-auto max-w-7xl pt-24 pb-0"
         style={{
           borderTop: "1px solid rgba(255,255,255,0.06)",
         }}

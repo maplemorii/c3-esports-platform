@@ -38,7 +38,7 @@ export function StatsSection() {
 
   return (
     <section ref={ref} className="px-4 py-24">
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-7xl">
         {/* Section label */}
         <motion.p
           initial={{ opacity: 0, y: 16 }}
@@ -68,8 +68,8 @@ export function StatsSection() {
                 style={{
                   background:
                     i % 2 === 0
-                      ? "linear-gradient(135deg, #a855f7, #06b6d4)"
-                      : "linear-gradient(135deg, #06b6d4, #a855f7)",
+                      ? "linear-gradient(135deg, rgba(196,28,53,0.95), rgba(59,130,246,0.9))"
+                      : "linear-gradient(135deg, rgba(59,130,246,0.9), rgba(196,28,53,0.95))",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",

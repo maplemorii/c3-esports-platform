@@ -182,7 +182,7 @@ function DivisionCard({
 export function DivisionsSection() {
   return (
     <section className="px-4 py-24">
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-7xl">
         {/* Header */}
         <motion.div
           className="mb-16"

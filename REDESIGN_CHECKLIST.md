@@ -19,17 +19,17 @@ Track every file that needs a visual update for a full redesign. Check off each 
 
 ## UI Primitives (update once, used everywhere)
 
-- [ ] `src/components/ui/button.tsx` + `src/components/ui/button-variants.ts`
-- [ ] `src/components/ui/avatar.tsx`
-- [ ] `src/components/ui/dropdown-menu.tsx`
-- [ ] `src/components/ui/sheet.tsx` (mobile drawer)
-- [ ] `src/components/ui/skeleton.tsx`
+- [x] `src/components/ui/button.tsx` + `src/components/ui/button-variants.ts`
+- [x] `src/components/ui/avatar.tsx`
+- [x] `src/components/ui/dropdown-menu.tsx`
+- [x] `src/components/ui/sheet.tsx` (mobile drawer)
+- [x] `src/components/ui/skeleton.tsx`
 
 ---
 
 ## Public Pages
 
-- [ ] **Home / Landing** — `src/app/page.tsx` → `/`
+- [x] **Home / Landing** — `src/app/page.tsx` → `/` (+ all `src/components/home/*.tsx` section components)
 - [ ] **Seasons list** — `src/app/(public)/seasons/page.tsx` → `/seasons`
 - [ ] **Season detail** — `src/app/(public)/seasons/[seasonSlug]/page.tsx` → `/seasons/[slug]`
 - [ ] **Season standings** — `src/app/(public)/seasons/[seasonSlug]/standings/page.tsx`

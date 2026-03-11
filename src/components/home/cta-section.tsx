@@ -41,7 +41,7 @@ export function CTASection({ isSignedIn }: CTASectionProps) {
             width: isMobile ? "180px" : "260px",
             height: isMobile ? "180px" : "260px",
             background:
-              "conic-gradient(from 180deg at 40% 42%, #7c3aed, #06b6d4, #a855f7, #0ea5e9, #7c3aed)",
+              "conic-gradient(from 180deg at 40% 42%, rgba(196,28,53,1), rgba(59,130,246,1), rgba(196,28,53,0.8), rgba(59,130,246,0.9), rgba(196,28,53,1))",
             filter: isMobile ? "blur(30px)" : "blur(55px)",
             opacity: 0.38,
           }}
@@ -65,7 +65,7 @@ export function CTASection({ isSignedIn }: CTASectionProps) {
         className="absolute top-0 left-0 right-0 h-px pointer-events-none"
         style={{
           background:
-            "linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.4) 30%, rgba(59,130,246,0.4) 70%, transparent 100%)",
+            "linear-gradient(90deg, transparent 0%, rgba(196,28,53,0.4) 25%, rgba(59,130,246,0.4) 75%, transparent 100%)",
         }}
         aria-hidden
       />
@@ -153,8 +153,8 @@ export function CTASection({ isSignedIn }: CTASectionProps) {
                 href="/auth/register"
                 className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-8 py-4 text-sm font-semibold text-white transition-all duration-200 active:scale-95"
                 style={{
-                  background: "linear-gradient(135deg, #7c3aed, #06b6d4)",
-                  boxShadow: "0 0 40px rgba(59,130,246,0.35)",
+                  background: "linear-gradient(135deg, rgba(196,28,53,0.95), rgba(59,130,246,0.9))",
+                  boxShadow: "0 0 40px rgba(196,28,53,0.30)",
                 }}
               >
                 <span className="relative">Create an Account</span>
