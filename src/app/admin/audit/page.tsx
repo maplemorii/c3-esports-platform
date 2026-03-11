@@ -10,6 +10,7 @@ import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { formatDate } from "@/lib/utils/dates"
 import { ClipboardList, ChevronRight } from "lucide-react"
+import { ActionFilterSelect } from "./_components/ActionFilterSelect"
 
 export const metadata: Metadata = { title: "Audit Log — Admin" }
 
@@ -140,22 +141,11 @@ export default async function AdminAuditPage({
       {/* Filters */}
       <div className="flex gap-3 flex-wrap">
         {/* Action filter */}
-        <form method="GET" action="/admin/audit">
-          {entityType && <input type="hidden" name="entityType" value={entityType} />}
-          <select
-            name="action"
-            defaultValue={action ?? ""}
-            onChange={(e) => (e.currentTarget.form as HTMLFormElement).submit()}
-            className="rounded-lg border border-border bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
-          >
-            <option value="">All actions</option>
-            {distinctActions.map((a) => (
-              <option key={a} value={a}>
-                {ACTION_LABELS[a] ?? a}
-              </option>
-            ))}
-          </select>
-        </form>
+        <ActionFilterSelect
+          actions={distinctActions}
+          current={action}
+          entityType={entityType}
+        />
 
         {/* Entity type filter */}
         <form method="GET" action="/admin/audit">

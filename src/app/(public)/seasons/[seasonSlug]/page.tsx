@@ -87,9 +87,13 @@ export async function generateMetadata({
   const { seasonSlug } = await params
   const season = await getSeason(seasonSlug)
   if (!season) return { title: "Season Not Found" }
+  const title       = season.name
+  const description = season.description ?? `${season.name} — divisions, schedule, and standings for Carolina Collegiate Clash.`
   return {
-    title: season.name,
-    description: season.description ?? `${season.name} — Carolina Collegiate Clash`,
+    title,
+    description,
+    openGraph: { title, description, type: "website" },
+    twitter:   { card: "summary_large_image", title, description },
   }
 }
 

@@ -35,9 +35,15 @@ export async function generateMetadata({
     where:  { slug: teamSlug, deletedAt: null },
     select: { name: true },
   })
-  return team
-    ? { title: team.name, description: `${team.name} — C3 Esports team profile.` }
-    : {}
+  if (!team) return {}
+  const title       = team.name
+  const description = `${team.name} — View the roster, season history, and profile for this C3 Esports League team.`
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website" },
+    twitter:   { card: "summary_large_image", title, description },
+  }
 }
 
 // ---------------------------------------------------------------------------

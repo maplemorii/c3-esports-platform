@@ -1,4 +1,5 @@
 import { getServerSession } from "next-auth"
+import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
 import { HeroSection } from "@/components/home/hero-section"
 import { MarqueeSection } from "@/components/home/marquee-section"
@@ -10,17 +11,17 @@ import { CTASection } from "@/components/home/cta-section"
 
 export default async function Home() {
   const session = await getServerSession(authOptions)
-  const isSignedIn = !!session
+  if (session) redirect("/dashboard")
 
   return (
     <div className="flex flex-col">
-      <HeroSection isSignedIn={isSignedIn} />
+      <HeroSection isSignedIn={false} />
       <MarqueeSection />
       <StatsSection />
       <DivisionsSection />
       <FeaturesSection />
       <HowItWorksSection />
-      <CTASection isSignedIn={isSignedIn} />
+      <CTASection isSignedIn={false} />
     </div>
   )
 }

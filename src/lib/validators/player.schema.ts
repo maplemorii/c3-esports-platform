@@ -71,6 +71,7 @@ export const CreatePlayerSchema = z.object({
   steamId:         steamId,
   discordUsername: discordUsername,
   bio:             z.string().max(500).optional(),
+  avatarUrl:       z.string().url("Must be a valid URL").optional(),
 })
 
 export type CreatePlayerInput = z.infer<typeof CreatePlayerSchema>

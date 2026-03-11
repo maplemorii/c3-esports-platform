@@ -78,7 +78,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { seasonSlug } = await params
   const data = await getData(seasonSlug)
-  return { title: data ? `Schedule — ${data.season.name}` : "Match Schedule" }
+  if (!data) return { title: "Match Schedule" }
+  const title       = `Schedule — ${data.season.name}`
+  const description = `Full match schedule for ${data.season.name} — C3 Esports League.`
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website" },
+    twitter:   { card: "summary_large_image", title, description },
+  }
 }
 
 // ---------------------------------------------------------------------------

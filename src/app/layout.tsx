@@ -26,11 +26,30 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXTAUTH_URL ?? "http://localhost:3000"),
   title: {
     default: "C3 Esports League",
     template: "%s | C3 Esports League",
   },
-  description: "The premier Rocket League platform in the Carolinas.",
+  description: "The premier collegiate Rocket League platform in the Carolinas.",
+  openGraph: {
+    siteName: "C3 Esports League",
+    type: "website",
+    locale: "en_US",
+    title: {
+      default: "C3 Esports League",
+      template: "%s | C3 Esports League",
+    },
+    description: "The premier collegiate Rocket League platform in the Carolinas.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: {
+      default: "C3 Esports League",
+      template: "%s | C3 Esports League",
+    },
+    description: "The premier collegiate Rocket League platform in the Carolinas.",
+  },
 }
 
 export default function RootLayout({

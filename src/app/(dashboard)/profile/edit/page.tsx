@@ -21,6 +21,7 @@ import { EditFormWrapper } from "./EditFormWrapper"
 import { EpicLinkButton } from "@/components/player/EpicLinkButton"
 import { SteamLinkButton } from "@/components/player/SteamLinkButton"
 import { EduVerificationCard } from "@/components/profile/EduVerificationCard"
+import { AvatarUpload } from "@/components/profile/AvatarUpload"
 
 export const metadata: Metadata = { title: "Edit Profile" }
 
@@ -34,6 +35,7 @@ export default async function ProfileEditPage() {
       select: {
         id:              true,
         displayName:     true,
+        avatarUrl:       true,
         epicUsername:    true,
         steamId:         true,
         discordUsername: true,
@@ -43,8 +45,10 @@ export default async function ProfileEditPage() {
     prisma.user.findUnique({
       where:  { id: session.user.id, deletedAt: null },
       select: {
-        eduEmail:         true,
-        eduEmailVerified: true,
+        image:             true,
+        accounts:          { select: { provider: true } },
+        eduEmail:          true,
+        eduEmailVerified:  true,
         eduVerifyOverride: true,
       },
     }),
@@ -52,7 +56,9 @@ export default async function ProfileEditPage() {
 
   if (!player) redirect("/profile/setup")
 
-  const eduVerified = !!(user?.eduEmailVerified || user?.eduVerifyOverride)
+  const eduVerified     = !!(user?.eduEmailVerified || user?.eduVerifyOverride)
+  const hasDiscordOAuth = user?.accounts.some((a) => a.provider === "discord") ?? false
+  const currentAvatar   = player.avatarUrl ?? user?.image ?? null
 
   return (
     <div className="min-h-full flex flex-col items-center justify-start py-10 px-4">
@@ -83,6 +89,18 @@ export default async function ProfileEditPage() {
               Update your display name, linked accounts, and bio.
             </p>
           </div>
+        </div>
+
+        {/* ── Avatar upload ────────────────────────────────────────────── */}
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm flex flex-col items-center gap-1">
+          <p className="self-start text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
+            Profile Photo
+          </p>
+          <AvatarUpload
+            playerId={player.id}
+            currentAvatarUrl={currentAvatar}
+            hasDiscordOAuth={hasDiscordOAuth}
+          />
         </div>
 
         {/* ── Profile form ─────────────────────────────────────────────── */}
