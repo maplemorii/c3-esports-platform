@@ -23,14 +23,14 @@ function ReplayCard({ index }: { index: number }) {
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.7, delay: index * 0.07, ease: EASE }}
       whileHover={{
-        borderColor: "rgba(124,58,237,0.25)",
+        borderColor: "rgba(59,130,246,0.25)",
         transition: { duration: 0.2 },
       }}
     >
       {/* Top border accent */}
       <div
         className="absolute top-0 left-0 right-0 h-px"
-        style={{ background: "linear-gradient(90deg, rgba(124,58,237,0.7), rgba(6,182,212,0.4), transparent)" }}
+        style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
         aria-hidden
       />
 
@@ -38,7 +38,7 @@ function ReplayCard({ index }: { index: number }) {
       <div
         className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
         style={{
-          background: "radial-gradient(600px circle at 30% 60%, rgba(124,58,237,0.06), transparent 70%)",
+          background: "radial-gradient(600px circle at 30% 60%, rgba(59,130,246,0.06), transparent 70%)",
         }}
         aria-hidden
       />
@@ -50,11 +50,11 @@ function ReplayCard({ index }: { index: number }) {
             <div
               className="inline-flex h-10 w-10 items-center justify-center rounded-xl mb-5"
               style={{
-                background: "rgba(124,58,237,0.15)",
-                border: "1px solid rgba(124,58,237,0.28)",
+                background: "rgba(59,130,246,0.15)",
+                border: "1px solid rgba(59,130,246,0.28)",
               }}
             >
-              <FileVideo className="h-5 w-5 text-violet-400" />
+              <FileVideo className="h-5 w-5 text-blue-400" />
             </div>
             <h3 className="font-display text-xl font-bold uppercase tracking-wide text-white mb-2">
               Replay Parsing
@@ -70,7 +70,7 @@ function ReplayCard({ index }: { index: number }) {
           <div className="mt-6 flex items-center gap-2">
             <div
               className="h-1.5 w-1.5 rounded-full"
-              style={{ background: "rgba(124,58,237,0.8)" }}
+              style={{ background: "rgba(59,130,246,0.8)" }}
             />
             <span
               className="font-sans text-[11px] tracking-wide"
@@ -97,9 +97,9 @@ function ReplayCard({ index }: { index: number }) {
             <div className="flex items-center gap-3 mb-3">
               <div
                 className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0"
-                style={{ background: "rgba(124,58,237,0.2)", border: "1px solid rgba(124,58,237,0.3)" }}
+                style={{ background: "rgba(59,130,246,0.2)", border: "1px solid rgba(59,130,246,0.3)" }}
               >
-                <FileVideo className="h-4 w-4 text-violet-400" />
+                <FileVideo className="h-4 w-4 text-blue-400" />
               </div>
               <div className="flex-1 min-w-0">
                 <p
@@ -187,13 +187,13 @@ function StandingsCard({ index }: { index: number }) {
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.7, delay: index * 0.07, ease: EASE }}
       whileHover={{
-        borderColor: "rgba(6,182,212,0.25)",
+        borderColor: "rgba(59,130,246,0.25)",
         transition: { duration: 0.2 },
       }}
     >
       <div
         className="absolute top-0 left-0 right-0 h-px"
-        style={{ background: "linear-gradient(90deg, rgba(6,182,212,0.7), rgba(124,58,237,0.3), transparent)" }}
+        style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.3), transparent)" }}
         aria-hidden
       />
 
@@ -203,8 +203,8 @@ function StandingsCard({ index }: { index: number }) {
             <div
               className="h-9 w-9 rounded-xl flex items-center justify-center"
               style={{
-                background: "rgba(6,182,212,0.12)",
-                border: "1px solid rgba(6,182,212,0.25)",
+                background: "rgba(59,130,246,0.12)",
+                border: "1px solid rgba(59,130,246,0.25)",
               }}
             >
               <BarChart3 className="h-4 w-4 text-cyan-400" />
@@ -238,8 +238,8 @@ function StandingsCard({ index }: { index: number }) {
               transition={{ duration: 0.4, delay: index * 0.07 + i * 0.06, ease: EASE }}
               className="flex items-center gap-3 rounded-lg px-3 py-2"
               style={{
-                background: i === 0 ? "rgba(124,58,237,0.08)" : "transparent",
-                border: i === 0 ? "1px solid rgba(124,58,237,0.15)" : "1px solid transparent",
+                background: i === 0 ? "rgba(59,130,246,0.08)" : "transparent",
+                border: i === 0 ? "1px solid rgba(59,130,246,0.15)" : "1px solid transparent",
               }}
             >
               <span
@@ -247,7 +247,7 @@ function StandingsCard({ index }: { index: number }) {
                 style={{
                   color:
                     i === 0
-                      ? "rgba(167,139,250,0.9)"
+                      ? "rgba(96,165,250,0.9)"
                       : `rgba(255,255,255,${0.45 - i * 0.08})`,
                 }}
               >
@@ -364,28 +364,28 @@ export function FeaturesSection() {
       title: "Team Management",
       description:
         "Build your roster, manage substitutes, and register for seasons — all from one unified team dashboard.",
-      accentColor: "rgba(124,58,237,0.07)",
+      accentColor: "rgba(59,130,246,0.07)",
     },
     {
       icon: Calendar,
       title: "Scheduled Matches",
       description:
         "Weekly match windows with built-in check-in, grace periods, and automatic forfeit handling.",
-      accentColor: "rgba(6,182,212,0.07)",
+      accentColor: "rgba(59,130,246,0.07)",
     },
     {
       icon: Shield,
       title: "Dispute System",
       description:
         "Score conflict? File a dispute with evidence. Staff review with a full audit trail.",
-      accentColor: "rgba(124,58,237,0.07)",
+      accentColor: "rgba(59,130,246,0.07)",
     },
     {
       icon: Zap,
       title: "Instant Notifications",
       description:
         "Get alerted when check-in opens, scores are submitted, or staff take action on your team.",
-      accentColor: "rgba(6,182,212,0.07)",
+      accentColor: "rgba(59,130,246,0.07)",
       colSpan: "lg:col-span-2",
     },
   ]

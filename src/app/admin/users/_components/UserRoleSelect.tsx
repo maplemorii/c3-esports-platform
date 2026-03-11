@@ -11,7 +11,7 @@ const ROLES: Role[] = ["USER", "TEAM_MANAGER", "STAFF", "ADMIN"]
 const ROLE_CLS: Record<Role, string> = {
   USER:         "text-muted-foreground",
   TEAM_MANAGER: "text-sky-400",
-  STAFF:        "text-violet-400",
+  STAFF:        "text-blue-400",
   ADMIN:        "text-destructive",
 }
 

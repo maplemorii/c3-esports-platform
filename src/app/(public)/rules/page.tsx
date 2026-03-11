@@ -12,7 +12,7 @@ export default function RulesPage() {
       <div className="mb-12">
         <p
           className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em]"
-          style={{ color: "rgba(167,139,250,0.6)" }}
+          style={{ color: "rgba(96,165,250,0.6)" }}
         >
           Official
         </p>
@@ -27,7 +27,7 @@ export default function RulesPage() {
         </p>
         <div
           className="mt-6 h-px w-20"
-          style={{ background: "linear-gradient(90deg, rgba(124,58,237,0.6), rgba(6,182,212,0.3), transparent)" }}
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.3), transparent)" }}
         />
       </div>
 
@@ -148,7 +148,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     >
       <h2
         className="font-sans text-[11px] font-semibold uppercase tracking-[0.28em] mb-4"
-        style={{ color: "rgba(167,139,250,0.7)" }}
+        style={{ color: "rgba(96,165,250,0.7)" }}
       >
         {title}
       </h2>

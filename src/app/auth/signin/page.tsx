@@ -37,12 +37,12 @@ export default function SignInPage() {
   return (
     <div
       className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-16 overflow-hidden"
-      style={{ background: "oklch(0.04 0 0)" }}
+      style={{ background: "oklch(0.07 0.02 265)" }}
     >
       {/* Ambient orbs */}
       <div
         className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full opacity-20"
-        style={{ background: "radial-gradient(circle, rgba(124,58,237,0.4) 0%, rgba(220,38,38,0.15) 40%, transparent 70%)", filter: "blur(80px)" }}
+        style={{ background: "radial-gradient(circle, rgba(59,130,246,0.4) 0%, rgba(220,38,38,0.15) 40%, transparent 70%)", filter: "blur(80px)" }}
         aria-hidden
       />
 
@@ -122,7 +122,7 @@ export default function SignInPage() {
                   border: "1px solid rgba(255,255,255,0.08)",
                   color: "rgba(255,255,255,0.85)",
                 }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(124,58,237,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.12)" }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(59,130,246,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.12)" }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none" }}
               />
             </Field>
@@ -140,7 +140,7 @@ export default function SignInPage() {
                   border: "1px solid rgba(255,255,255,0.08)",
                   color: "rgba(255,255,255,0.85)",
                 }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(124,58,237,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.12)" }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(59,130,246,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.12)" }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none" }}
               />
             </Field>
@@ -159,19 +159,19 @@ export default function SignInPage() {
               disabled={loading}
               className="w-full rounded-xl px-4 py-2.5 font-sans text-sm font-semibold transition-all duration-150 disabled:opacity-50"
               style={{
-                background: "rgba(124,58,237,0.18)",
-                border: "1px solid rgba(124,58,237,0.3)",
-                color: "rgba(196,181,253,0.9)",
+                background: "rgba(59,130,246,0.18)",
+                border: "1px solid rgba(59,130,246,0.3)",
+                color: "rgba(147,197,253,0.9)",
               }}
               onMouseEnter={(e) => {
                 if (!loading) {
-                  e.currentTarget.style.background = "rgba(124,58,237,0.28)"
-                  e.currentTarget.style.borderColor = "rgba(124,58,237,0.5)"
+                  e.currentTarget.style.background = "rgba(59,130,246,0.28)"
+                  e.currentTarget.style.borderColor = "rgba(59,130,246,0.5)"
                 }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(124,58,237,0.18)"
-                e.currentTarget.style.borderColor = "rgba(124,58,237,0.3)"
+                e.currentTarget.style.background = "rgba(59,130,246,0.18)"
+                e.currentTarget.style.borderColor = "rgba(59,130,246,0.3)"
               }}
             >
               {loading ? "Signing in…" : "Sign In"}
@@ -183,9 +183,9 @@ export default function SignInPage() {
             <Link
               href="/auth/register"
               className="font-medium transition-colors duration-150"
-              style={{ color: "rgba(167,139,250,0.8)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(196,181,253,1)" }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(167,139,250,0.8)" }}
+              style={{ color: "rgba(96,165,250,0.8)" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(147,197,253,1)" }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(96,165,250,0.8)" }}
             >
               Register
             </Link>

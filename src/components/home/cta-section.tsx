@@ -30,7 +30,7 @@ export function CTASection({ isSignedIn }: CTASectionProps) {
             width: "700px",
             height: "400px",
             background:
-              "radial-gradient(ellipse at 50% 50%, rgba(124,58,237,0.22) 0%, rgba(6,182,212,0.10) 50%, transparent 72%)",
+              "radial-gradient(ellipse at 50% 50%, rgba(59,130,246,0.22) 0%, rgba(59,130,246,0.10) 50%, transparent 72%)",
             filter: "blur(80px)",
           }}
         />
@@ -55,7 +55,7 @@ export function CTASection({ isSignedIn }: CTASectionProps) {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 80% 70% at 50% 50%, transparent 20%, oklch(0.04 0 0) 100%)",
+            "radial-gradient(ellipse 80% 70% at 50% 50%, transparent 20%, oklch(0.07 0.02 265) 100%)",
         }}
         aria-hidden
       />
@@ -65,7 +65,7 @@ export function CTASection({ isSignedIn }: CTASectionProps) {
         className="absolute top-0 left-0 right-0 h-px pointer-events-none"
         style={{
           background:
-            "linear-gradient(90deg, transparent 0%, rgba(124,58,237,0.4) 30%, rgba(6,182,212,0.4) 70%, transparent 100%)",
+            "linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.4) 30%, rgba(59,130,246,0.4) 70%, transparent 100%)",
         }}
         aria-hidden
       />
@@ -154,7 +154,7 @@ export function CTASection({ isSignedIn }: CTASectionProps) {
                 className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-8 py-4 text-sm font-semibold text-white transition-all duration-200 active:scale-95"
                 style={{
                   background: "linear-gradient(135deg, #7c3aed, #06b6d4)",
-                  boxShadow: "0 0 40px rgba(124,58,237,0.35)",
+                  boxShadow: "0 0 40px rgba(59,130,246,0.35)",
                 }}
               >
                 <span className="relative">Create an Account</span>

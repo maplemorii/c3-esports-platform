@@ -9,14 +9,14 @@ export default function PrivacyPage() {
   return (
     <div
       className="min-h-screen"
-      style={{ background: "oklch(0.04 0 0)" }}
+      style={{ background: "oklch(0.07 0.02 265)" }}
     >
       <div className="mx-auto max-w-3xl px-4 py-16">
         {/* Header */}
         <div className="mb-12">
           <p
             className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em]"
-            style={{ color: "rgba(167,139,250,0.6)" }}
+            style={{ color: "rgba(96,165,250,0.6)" }}
           >
             Legal
           </p>
@@ -36,7 +36,7 @@ export default function PrivacyPage() {
             className="mt-6 h-px w-20"
             style={{
               background:
-                "linear-gradient(90deg, rgba(124,58,237,0.6), rgba(6,182,212,0.3), transparent)",
+                "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.3), transparent)",
             }}
           />
         </div>
@@ -190,7 +190,7 @@ export default function PrivacyPage() {
               <a
                 href="mailto:admin@c3esports.gg"
                 className="transition-colors duration-150"
-                style={{ color: "rgba(167,139,250,0.85)" }}
+                style={{ color: "rgba(96,165,250,0.85)" }}
               >
                 admin@c3esports.gg
               </a>

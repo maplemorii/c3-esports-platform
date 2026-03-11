@@ -26,7 +26,7 @@ const PAGE_SIZE = 30
 const ROLE_META: Record<Role, { label: string; cls: string }> = {
   USER:         { label: "User",         cls: "bg-muted text-muted-foreground" },
   TEAM_MANAGER: { label: "Team Manager", cls: "bg-sky-500/15 text-sky-400" },
-  STAFF:        { label: "Staff",        cls: "bg-violet-500/15 text-violet-400" },
+  STAFF:        { label: "Staff",        cls: "bg-blue-500/15 text-blue-400" },
   ADMIN:        { label: "Admin",        cls: "bg-destructive/15 text-destructive" },
 }
 
@@ -216,7 +216,7 @@ export default async function AdminUsersPage({
                         <GraduationCap className="h-3 w-3" />
                         {user.eduEmail}
                         {user.eduEmailVerified && <CheckCircle2 className="h-3 w-3 text-emerald-400" />}
-                        {user.eduVerifyOverride && <span className="text-violet-400">(override)</span>}
+                        {user.eduVerifyOverride && <span className="text-blue-400">(override)</span>}
                         {user.eduVerifyNote && <span className="italic">— {user.eduVerifyNote}</span>}
                       </p>
                     )}

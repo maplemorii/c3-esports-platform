@@ -20,7 +20,7 @@ export default function AuthErrorPage({
   return (
     <div
       className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-16 overflow-hidden"
-      style={{ background: "oklch(0.04 0 0)" }}
+      style={{ background: "oklch(0.07 0.02 265)" }}
     >
       {/* Red ambient glow */}
       <div
@@ -62,9 +62,9 @@ export default function AuthErrorPage({
             href="/auth/signin"
             className="w-full rounded-xl px-4 py-2.5 font-sans text-sm font-semibold text-center transition-all duration-150"
             style={{
-              background: "rgba(124,58,237,0.18)",
-              border: "1px solid rgba(124,58,237,0.3)",
-              color: "rgba(196,181,253,0.9)",
+              background: "rgba(59,130,246,0.18)",
+              border: "1px solid rgba(59,130,246,0.3)",
+              color: "rgba(147,197,253,0.9)",
             }}
           >
             Try Again

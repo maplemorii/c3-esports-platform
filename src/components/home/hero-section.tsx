@@ -92,7 +92,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
   const cursorGlowBg = useTransform(
     [cursorX, cursorY],
     ([x, y]: number[]) =>
-      `radial-gradient(480px circle at ${x}px ${y}px, rgba(124,58,237,0.065), transparent 65%)`
+      `radial-gradient(480px circle at ${x}px ${y}px, rgba(59,130,246,0.065), transparent 65%)`
   )
 
   function handleMouseMove(e: React.MouseEvent<HTMLElement>) {
@@ -125,7 +125,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
         className="absolute inset-x-0 top-0 h-[55%] pointer-events-none z-0"
         style={{
           background:
-            "linear-gradient(to bottom, oklch(0.04 0 0) 0%, transparent 100%)",
+            "linear-gradient(to bottom, oklch(0.07 0.02 265) 0%, transparent 100%)",
         }}
         aria-hidden
       />
@@ -143,7 +143,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
             height: isMobile ? "280px" : "620px",
             transform: "translateX(-50%)",
             background:
-              "radial-gradient(ellipse at 50% 88%, rgba(124,58,237,0.32) 0%, rgba(6,182,212,0.13) 46%, transparent 70%)",
+              "radial-gradient(ellipse at 50% 88%, rgba(59,130,246,0.32) 0%, rgba(59,130,246,0.13) 46%, transparent 70%)",
             filter: isMobile ? "blur(40px)" : "blur(90px)",
           }}
         />
@@ -178,7 +178,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
               inset: "30%",
               borderRadius: "50%",
               background:
-                "radial-gradient(circle at 32% 28%, rgba(232,121,249,0.9), rgba(14,165,233,0.75) 52%, rgba(124,58,237,0.5) 85%)",
+                "radial-gradient(circle at 32% 28%, rgba(232,121,249,0.9), rgba(14,165,233,0.75) 52%, rgba(59,130,246,0.5) 85%)",
               filter: "blur(10px)",
             }}
           />
@@ -202,7 +202,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
       <div
         className="absolute inset-x-0 bottom-0 h-32 pointer-events-none z-0"
         style={{
-          background: "linear-gradient(to top, oklch(0.04 0 0), transparent)",
+          background: "linear-gradient(to top, oklch(0.07 0.02 265), transparent)",
         }}
         aria-hidden
       />
@@ -384,9 +384,9 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
                 <div className="flex items-center gap-2.5">
                   <div
                     className="h-7 w-7 rounded-lg flex items-center justify-center"
-                    style={{ background: "rgba(124,58,237,0.18)", border: "1px solid rgba(124,58,237,0.30)" }}
+                    style={{ background: "rgba(59,130,246,0.18)", border: "1px solid rgba(59,130,246,0.30)" }}
                   >
-                    <span className="font-display text-[8px] font-bold text-violet-400">NC</span>
+                    <span className="font-display text-[8px] font-bold text-blue-400">NC</span>
                   </div>
                   <span className="font-sans text-xs font-medium" style={{ color: "rgba(255,255,255,0.80)" }}>
                     NC State RL
@@ -401,7 +401,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
                 <div className="flex items-center gap-2.5">
                   <div
                     className="h-7 w-7 rounded-lg flex items-center justify-center"
-                    style={{ background: "rgba(6,182,212,0.14)", border: "1px solid rgba(6,182,212,0.25)" }}
+                    style={{ background: "rgba(59,130,246,0.14)", border: "1px solid rgba(59,130,246,0.25)" }}
                   >
                     <span className="font-display text-[8px] font-bold text-cyan-400">UNC</span>
                   </div>
@@ -467,7 +467,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
 
             <div className="space-y-3">
               {[
-                { rank: 1, name: "NC State RL",    record: "8–0", accent: "rgba(124,58,237,0.9)" },
+                { rank: 1, name: "NC State RL",    record: "8–0", accent: "rgba(59,130,246,0.9)" },
                 { rank: 2, name: "UNC Chapel Hill", record: "7–1", accent: "rgba(255,255,255,0.55)" },
                 { rank: 3, name: "Duke Gaming",     record: "6–2", accent: "rgba(255,255,255,0.35)" },
                 { rank: 4, name: "App State RL",    record: "5–3", accent: "rgba(255,255,255,0.22)" },

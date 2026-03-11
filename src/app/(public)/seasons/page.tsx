@@ -68,7 +68,7 @@ const STATUS_LABEL: Record<SeasonStatus, string> = {
 const STATUS_CLASSES: Record<SeasonStatus, string> = {
   DRAFT:        "bg-white/5 text-white/30",
   REGISTRATION: "bg-sky-500/10 text-sky-400",
-  ACTIVE:       "bg-violet-500/10 text-violet-400",
+  ACTIVE:       "bg-blue-500/10 text-blue-400",
   PLAYOFFS:     "bg-amber-500/10 text-amber-400",
   COMPLETED:    "bg-white/5 text-white/30",
   CANCELLED:    "bg-red-500/10 text-red-400",
@@ -100,7 +100,7 @@ function SeasonCard({ season }: { season: Season }) {
         "group relative flex flex-col gap-4 rounded-2xl p-5 overflow-hidden transition-all duration-200 border",
         "hover:bg-white/[0.05]",
         isActive
-          ? "border-violet-500/20 hover:border-violet-500/35"
+          ? "border-blue-500/20 hover:border-blue-500/35"
           : "border-white/[0.06] hover:border-white/10"
       )}
       style={{ background: "rgba(255,255,255,0.03)" }}
@@ -109,7 +109,7 @@ function SeasonCard({ season }: { season: Season }) {
       {isActive && (
         <div
           className="absolute top-0 left-0 right-0 h-px"
-          style={{ background: "linear-gradient(90deg, transparent, rgba(124,58,237,0.6) 50%, transparent)" }}
+          style={{ background: "linear-gradient(90deg, transparent, rgba(59,130,246,0.6) 50%, transparent)" }}
           aria-hidden
         />
       )}
@@ -164,7 +164,7 @@ function SeasonCard({ season }: { season: Season }) {
           {totalTeams > 0 ? `${totalTeams} team${totalTeams !== 1 ? "s" : ""} registered` : ""}
         </span>
         {cta && (
-          <span className="flex items-center gap-1 font-medium transition-all duration-200" style={{ color: "rgba(167,139,250,0.75)" }}>
+          <span className="flex items-center gap-1 font-medium transition-all duration-200" style={{ color: "rgba(96,165,250,0.75)" }}>
             {cta} <ChevronRight className="h-3 w-3" />
           </span>
         )}
@@ -191,7 +191,7 @@ export default async function SeasonsPage() {
       <div className="mb-12">
         <p
           className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em]"
-          style={{ color: "rgba(167,139,250,0.6)" }}
+          style={{ color: "rgba(96,165,250,0.6)" }}
         >
           Carolina Collegiate Clash
         </p>
@@ -207,7 +207,7 @@ export default async function SeasonsPage() {
         {/* Decorative line */}
         <div
           className="mt-6 h-px w-20"
-          style={{ background: "linear-gradient(90deg, rgba(124,58,237,0.6), rgba(6,182,212,0.3), transparent)" }}
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.3), transparent)" }}
         />
       </div>
 

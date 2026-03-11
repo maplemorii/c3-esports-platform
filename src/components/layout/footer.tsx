@@ -23,7 +23,7 @@ export function Footer() {
     <footer
       style={{
         borderTop: "1px solid rgba(255,255,255,0.06)",
-        background: "oklch(0.04 0 0)",
+        background: "oklch(0.07 0.02 265)",
       }}
     >
       <div className="mx-auto max-w-5xl px-4 py-16">
@@ -51,7 +51,7 @@ export function Footer() {
               className="mt-8 h-px w-24"
               style={{
                 background:
-                  "linear-gradient(90deg, rgba(124,58,237,0.5), rgba(6,182,212,0.3), transparent)",
+                  "linear-gradient(90deg, rgba(196,28,53,0.5), rgba(59,130,246,0.3), transparent)",
               }}
               aria-hidden
             />

@@ -35,7 +35,7 @@ export function MarqueeSection() {
       <div
         className="absolute left-0 top-0 h-full w-24 z-10 pointer-events-none"
         style={{
-          background: "linear-gradient(to right, oklch(0.04 0 0), transparent)",
+          background: "linear-gradient(to right, oklch(0.07 0.02 265), transparent)",
         }}
         aria-hidden
       />
@@ -43,7 +43,7 @@ export function MarqueeSection() {
       <div
         className="absolute right-0 top-0 h-full w-24 z-10 pointer-events-none"
         style={{
-          background: "linear-gradient(to left, oklch(0.04 0 0), transparent)",
+          background: "linear-gradient(to left, oklch(0.07 0.02 265), transparent)",
         }}
         aria-hidden
       />

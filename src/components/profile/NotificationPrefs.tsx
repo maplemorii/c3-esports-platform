@@ -85,7 +85,7 @@ export function NotificationPrefs({ initial }: Props) {
                 "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent",
                 "transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2",
                 "focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-                prefs[key] ? "bg-violet-600" : "bg-muted",
+                prefs[key] ? "bg-blue-600" : "bg-muted",
               ].join(" ")}
             >
               <span

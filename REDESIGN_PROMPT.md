@@ -26,22 +26,29 @@ C3 Esports is a collegiate Rocket League league for students across North Caroli
 
 ### Dark theme (default — `html` has `class="dark"`)
 ```
-Background:       oklch(0.04 0 0)   →  bg-background
-Card surface:     oklch(0.08 0 0)   →  bg-card
-Subtle surface:   oklch(0.11 0 0)   →  bg-muted / bg-secondary
-Border:           oklch(0.16 0 0)   →  border-border
-Primary text:     oklch(0.97 0 0)   →  text-foreground
-Muted text:       oklch(0.48 0 0)   →  text-muted-foreground
-Brand (crimson):  oklch(0.50 0.20 15) → text-brand / bg-brand
-Ring / focus:     oklch(0.50 0.20 15) → ring-ring
+Background:       oklch(0.07 0.02 265)  →  bg-background  (dark navy, not pure black)
+Card surface:     oklch(0.10 0.02 265)  →  bg-card
+Subtle surface:   oklch(0.13 0.018 265) →  bg-muted / bg-secondary
+Border:           oklch(0.20 0.015 265) →  border-border
+Primary text:     oklch(0.97 0 0)       →  text-foreground
+Muted text:       oklch(0.50 0.01 265)  →  text-muted-foreground
+Brand red:        oklch(0.52 0.23 17)   →  text-brand / bg-brand  (C3 crimson)
+Accent blue:      oklch(0.60 0.20 265)  →  ring-ring / focus states  (C3 blue)
+Sidebar:          oklch(0.08 0.022 265) →  bg-sidebar
 ```
 
 ### Accent palette (use sparingly for highlights, badges, status)
 ```
-Violet:  rgba(124,58,237,…)   — links, active states, glow effects
-Cyan:    rgba(6,182,212,…)    — decorative gradients only
+Blue:    rgba(59,130,246,…)   — links, active states, focus rings, glow effects
+Red:     rgba(196,28,53,…)    — gradient start stops (decorative), brand CTAs
 Emerald: rgba(52,211,153,…)   — success / verified states
 Red:     rgba(220,38,38,…)    — destructive / error states
+```
+
+### Gradient direction (always red → blue, matching C3 logo diagonal)
+```
+Decorative lines:  linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.3), transparent)
+Ambient orbs:      radial-gradient(circle, rgba(59,130,246,0.3) 0%, rgba(196,28,53,0.15) 40%, transparent 70%)
 ```
 
 ### Typography scale
@@ -122,7 +129,7 @@ Code / ID:       font-mono text-sm
 ```tsx
 <input className="w-full rounded-xl px-3.5 py-2.5 text-sm font-sans outline-none
   bg-muted border border-border text-foreground
-  focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/12
+  focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/12
   transition-all duration-150" />
 ```
 
@@ -150,10 +157,10 @@ Code / ID:       font-mono text-sm
 </p>
 ```
 
-### Decorative gradient rule (hero / footer of cards)
+### Decorative gradient rule (hero / footer of cards) — always red → blue
 ```tsx
 <div className="h-px w-20"
-  style={{ background: "linear-gradient(90deg, rgba(124,58,237,0.6), rgba(6,182,212,0.3), transparent)" }}
+  style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.3), transparent)" }}
 />
 ```
 

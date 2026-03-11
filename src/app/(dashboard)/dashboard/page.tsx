@@ -178,7 +178,7 @@ export default async function DashboardPage() {
         <div
           aria-hidden
           className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full opacity-30"
-          style={{ background: "radial-gradient(circle, rgba(124,58,237,0.4), transparent 70%)", filter: "blur(40px)" }}
+          style={{ background: "radial-gradient(circle, rgba(59,130,246,0.4), transparent 70%)", filter: "blur(40px)" }}
         />
         <div
           aria-hidden
@@ -232,13 +232,13 @@ export default async function DashboardPage() {
       {!allDone && (
         <section
           className="rounded-2xl p-6"
-          style={{ background: "rgba(124,58,237,0.06)", border: "1px solid rgba(124,58,237,0.15)" }}
+          style={{ background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.15)" }}
         >
           <div className="flex items-center gap-2 mb-5">
-            <Rocket className="h-4 w-4" style={{ color: "rgba(167,139,250,0.8)" }} />
+            <Rocket className="h-4 w-4" style={{ color: "rgba(96,165,250,0.8)" }} />
             <h2
               className="font-sans text-[11px] font-semibold uppercase tracking-[0.28em]"
-              style={{ color: "rgba(167,139,250,0.8)" }}
+              style={{ color: "rgba(96,165,250,0.8)" }}
             >
               Getting Started
             </h2>
@@ -275,7 +275,7 @@ export default async function DashboardPage() {
                   <Link
                     href={step.href}
                     className="shrink-0 flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-150"
-                    style={{ background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.25)", color: "rgba(196,181,253,0.85)" }}
+                    style={{ background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.25)", color: "rgba(147,197,253,0.85)" }}
                   >
                     {step.cta}
                     <ChevronRight className="h-3 w-3" />
@@ -299,7 +299,7 @@ export default async function DashboardPage() {
           <Link
             href="/team/create"
             className="flex items-center gap-1 text-xs font-medium transition-colors duration-150"
-            style={{ color: "rgba(167,139,250,0.6)" }}
+            style={{ color: "rgba(96,165,250,0.6)" }}
           >
             <Plus className="h-3 w-3" />
             New Team
@@ -321,7 +321,7 @@ export default async function DashboardPage() {
             <Link
               href="/team/create"
               className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-150"
-              style={{ background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.25)", color: "rgba(196,181,253,0.85)" }}
+              style={{ background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.25)", color: "rgba(147,197,253,0.85)" }}
             >
               <Plus className="h-3.5 w-3.5" />
               Create your first team
@@ -335,16 +335,16 @@ export default async function DashboardPage() {
                 <Link
                   key={team.id}
                   href={`/team/${team.id}`}
-                  className="group relative overflow-hidden rounded-xl transition-all duration-150 border border-white/[0.07] hover:bg-white/5 hover:border-violet-500/30"
+                  className="group relative overflow-hidden rounded-xl transition-all duration-150 border border-white/[0.07] hover:bg-white/5 hover:border-blue-500/30"
                   style={{ background: "rgba(255,255,255,0.03)" }}
                 >
                   {/* Color strip */}
-                  <div className="h-0.5 w-full" style={{ backgroundColor: team.primaryColor ?? "rgba(124,58,237,0.8)" }} />
+                  <div className="h-0.5 w-full" style={{ backgroundColor: team.primaryColor ?? "rgba(59,130,246,0.8)" }} />
 
                   <div className="flex items-center gap-3.5 p-4">
                     <div
                       className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white overflow-hidden"
-                      style={{ backgroundColor: team.primaryColor ?? "rgba(124,58,237,0.6)" }}
+                      style={{ backgroundColor: team.primaryColor ?? "rgba(59,130,246,0.6)" }}
                     >
                       {team.logoUrl
                         // eslint-disable-next-line @next/next/no-img-element
@@ -399,9 +399,9 @@ export default async function DashboardPage() {
             <div className="flex items-center gap-3">
               <div
                 className="flex h-9 w-9 items-center justify-center rounded-xl"
-                style={{ background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.2)" }}
+                style={{ background: "rgba(59,130,246,0.12)", border: "1px solid rgba(59,130,246,0.2)" }}
               >
-                <Trophy className="h-4 w-4" style={{ color: "rgba(167,139,250,0.85)" }} />
+                <Trophy className="h-4 w-4" style={{ color: "rgba(96,165,250,0.85)" }} />
               </div>
               <div>
                 <p
@@ -417,7 +417,7 @@ export default async function DashboardPage() {
               <Link
                 href={`/team/${allTeams[0].id}/register`}
                 className="flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all duration-150"
-                style={{ background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.25)", color: "rgba(196,181,253,0.85)" }}
+                style={{ background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.25)", color: "rgba(147,197,253,0.85)" }}
               >
                 <ClipboardList className="h-3.5 w-3.5" />
                 Register your team
@@ -504,14 +504,14 @@ function QuickLink({ href, icon: Icon, label, desc }: { href: string; icon: Reac
   return (
     <Link
       href={href}
-      className="group flex items-center gap-3 rounded-xl p-4 transition-all duration-150 border border-white/[0.07] hover:bg-white/5 hover:border-violet-500/25"
+      className="group flex items-center gap-3 rounded-xl p-4 transition-all duration-150 border border-white/[0.07] hover:bg-white/5 hover:border-blue-500/25"
       style={{ background: "rgba(255,255,255,0.03)" }}
     >
       <div
         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-        style={{ background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.18)" }}
+        style={{ background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.18)" }}
       >
-        <Icon className="h-4 w-4" style={{ color: "rgba(167,139,250,0.8)" }} />
+        <Icon className="h-4 w-4" style={{ color: "rgba(96,165,250,0.8)" }} />
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.75)" }}>{label}</p>
@@ -528,9 +528,9 @@ function DarkButton({ href, icon: Icon, label, accent }: { href: string; icon: R
       href={href}
       className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all duration-150"
       style={{
-        background: accent ? "rgba(124,58,237,0.15)" : "rgba(255,255,255,0.05)",
-        border: `1px solid ${accent ? "rgba(124,58,237,0.3)" : "rgba(255,255,255,0.1)"}`,
-        color: accent ? "rgba(196,181,253,0.85)" : "rgba(255,255,255,0.55)",
+        background: accent ? "rgba(59,130,246,0.15)" : "rgba(255,255,255,0.05)",
+        border: `1px solid ${accent ? "rgba(59,130,246,0.3)" : "rgba(255,255,255,0.1)"}`,
+        color: accent ? "rgba(147,197,253,0.85)" : "rgba(255,255,255,0.55)",
       }}
     >
       <Icon className="h-3.5 w-3.5" />

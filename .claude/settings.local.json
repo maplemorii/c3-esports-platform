@@ -15,7 +15,13 @@
       "Bash(ls -la \"c:/Users/benit/c3-esports-platform/src/app/\\(public\\)/\")",
       "Bash(ls c:/Users/benit/c3-esports-platform/src/app/\\\\\\(public\\\\\\)/)",
       "Bash(grep -r \"font-rajdhani\\\\|font-inter\\\\|@import\\\\|--font\" /c/Users/benit/c3-esports-platform/src/app --include=*.tsx --include=*.ts -l)",
-      "Bash(xargs basename -a)"
+      "Bash(xargs basename -a)",
+      "Bash(git add:*)",
+      "Bash(find \"/Users/maplemorii/c3-esports-platform/src/app/\\(public\\)\" -type f -name \"page.tsx\" -o -type d)",
+      "Bash(find \"/Users/maplemorii/c3-esports-platform/src/app/\\(dashboard\\)\" -type d)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npx next:*)"
     ]
   }
 }

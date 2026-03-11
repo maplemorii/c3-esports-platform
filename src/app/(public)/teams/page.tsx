@@ -88,7 +88,7 @@ export default async function TeamsPage({
       <div className="mb-12">
         <p
           className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em]"
-          style={{ color: "rgba(167,139,250,0.6)" }}
+          style={{ color: "rgba(96,165,250,0.6)" }}
         >
           Carolina Collegiate Clash
         </p>
@@ -103,7 +103,7 @@ export default async function TeamsPage({
         </p>
         <div
           className="mt-6 h-px w-20"
-          style={{ background: "linear-gradient(90deg, rgba(124,58,237,0.6), rgba(6,182,212,0.3), transparent)" }}
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.3), transparent)" }}
         />
       </div>
 
@@ -140,7 +140,7 @@ export default async function TeamsPage({
             <Link
               href="/teams"
               className="text-xs transition-colors duration-150"
-              style={{ color: "rgba(167,139,250,0.7)" }}
+              style={{ color: "rgba(96,165,250,0.7)" }}
             >
               Clear search
             </Link>

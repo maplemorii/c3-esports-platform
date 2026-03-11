@@ -120,7 +120,7 @@ const STATUS_META: Record<MatchStatus, { label: string; color: string; icon: Rea
   CHECKING_IN:    { label: "Check-in Open",   color: "text-amber-400 bg-amber-400/10 border-amber-400/30",            icon: AlertCircle },
   IN_PROGRESS:    { label: "In Progress",     color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/30",      icon: Zap },
   MATCH_FINISHED: { label: "Awaiting Result", color: "text-sky-400 bg-sky-400/10 border-sky-400/30",                  icon: Clock },
-  VERIFYING:      { label: "Verifying",       color: "text-violet-400 bg-violet-400/10 border-violet-400/30",         icon: Shield },
+  VERIFYING:      { label: "Verifying",       color: "text-blue-400 bg-blue-400/10 border-blue-400/30",         icon: Shield },
   DISPUTED:       { label: "Disputed",        color: "text-destructive bg-destructive/10 border-destructive/30",       icon: Scale },
   COMPLETED:      { label: "Completed",       color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/30",      icon: CheckCircle2 },
   FORFEITED:      { label: "Forfeited",       color: "text-orange-400 bg-orange-400/10 border-orange-400/30",         icon: XCircle },

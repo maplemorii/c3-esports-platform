@@ -103,10 +103,10 @@ export function EduVerificationCard({
 
         {/* Sent confirmation */}
         {sent && !isVerified && (
-          <div className="flex items-start gap-3 rounded-lg border border-violet-500/20 bg-violet-500/5 px-4 py-3">
-            <MailCheck className="h-4 w-4 text-violet-400 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 rounded-lg border border-blue-500/20 bg-blue-500/5 px-4 py-3">
+            <MailCheck className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-violet-300">Verification email sent!</p>
+              <p className="text-sm font-medium text-blue-300">Verification email sent!</p>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Check <strong>{eduEmail}</strong> and click the link to confirm. It expires in 24&nbsp;hours.
               </p>
@@ -177,7 +177,7 @@ export function EduVerificationCard({
             Don&apos;t have a .edu email?{" "}
             <a
               href="https://discord.gg/c3esports"
-              className="text-violet-400 hover:underline"
+              className="text-blue-400 hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >

@@ -24,7 +24,7 @@ const ROLE_LABEL: Record<string, string> = {
 
 const ROLE_COLOR: Record<string, string> = {
   ADMIN:  "rgba(220,38,38,0.85)",
-  STAFF:  "rgba(167,139,250,0.85)",
+  STAFF:  "rgba(96,165,250,0.85)",
   PLAYER: "rgba(255,255,255,0.28)",
 }
 
@@ -46,7 +46,7 @@ export function UserMenu({ session }: { session: Session }) {
             className="absolute inset-0 rounded-full pointer-events-none"
             animate={{
               boxShadow: open
-                ? "0 0 0 2px rgba(124,58,237,0.6), 0 0 16px rgba(124,58,237,0.3)"
+                ? "0 0 0 2px rgba(59,130,246,0.6), 0 0 16px rgba(59,130,246,0.3)"
                 : "0 0 0 1.5px rgba(255,255,255,0.12)",
             }}
             transition={{ duration: 0.2 }}
@@ -56,7 +56,7 @@ export function UserMenu({ session }: { session: Session }) {
             <AvatarFallback
               className="text-xs font-semibold"
               style={{
-                background: "linear-gradient(135deg, rgba(124,58,237,0.4), rgba(6,182,212,0.3))",
+                background: "linear-gradient(135deg, rgba(59,130,246,0.4), rgba(59,130,246,0.3))",
                 color: "rgba(255,255,255,0.85)",
               }}
             >
@@ -81,7 +81,7 @@ export function UserMenu({ session }: { session: Session }) {
         {/* Top glow line */}
         <div
           className="h-px w-full"
-          style={{ background: "linear-gradient(90deg, transparent, rgba(124,58,237,0.5) 40%, rgba(6,182,212,0.4) 70%, transparent)" }}
+          style={{ background: "linear-gradient(90deg, transparent, rgba(59,130,246,0.5) 40%, rgba(59,130,246,0.4) 70%, transparent)" }}
           aria-hidden
         />
 
@@ -94,7 +94,7 @@ export function UserMenu({ session }: { session: Session }) {
                 <AvatarFallback
                   className="text-sm font-semibold"
                   style={{
-                    background: "linear-gradient(135deg, rgba(124,58,237,0.5), rgba(6,182,212,0.4))",
+                    background: "linear-gradient(135deg, rgba(59,130,246,0.5), rgba(59,130,246,0.4))",
                     color: "rgba(255,255,255,0.9)",
                   }}
                 >
@@ -174,7 +174,7 @@ function MenuItem({
   const iconColor = danger
     ? "rgba(220,38,38,0.8)"
     : accent === "violet"
-    ? "rgba(167,139,250,0.85)"
+    ? "rgba(96,165,250,0.85)"
     : accent === "red"
     ? "rgba(220,38,38,0.75)"
     : "rgba(255,255,255,0.35)"
@@ -187,7 +187,7 @@ function MenuItem({
     ? danger
       ? "rgba(220,38,38,0.08)"
       : accent === "violet"
-      ? "rgba(124,58,237,0.1)"
+      ? "rgba(59,130,246,0.1)"
       : "rgba(255,255,255,0.05)"
     : "transparent"
 
@@ -203,7 +203,7 @@ function MenuItem({
         className="h-3.5 w-3.5 shrink-0"
         style={{
           color: hovered
-            ? danger ? "rgba(248,113,113,0.9)" : accent === "violet" ? "rgba(167,139,250,0.9)" : "rgba(255,255,255,0.7)"
+            ? danger ? "rgba(248,113,113,0.9)" : accent === "violet" ? "rgba(96,165,250,0.9)" : "rgba(255,255,255,0.7)"
             : iconColor,
           transition: "color 0.12s",
         }}

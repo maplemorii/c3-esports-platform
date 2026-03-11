@@ -71,7 +71,7 @@ export function HowItWorksSection() {
               className="h-full"
               style={{
                 background:
-                  "linear-gradient(90deg, rgba(124,58,237,0.5) 0%, rgba(6,182,212,0.3) 50%, rgba(124,58,237,0.15) 100%)",
+                  "linear-gradient(90deg, rgba(59,130,246,0.5) 0%, rgba(59,130,246,0.3) 50%, rgba(59,130,246,0.15) 100%)",
               }}
               initial={{ scaleX: 0, originX: 0 }}
               whileInView={{ scaleX: 1 }}
@@ -98,9 +98,9 @@ export function HowItWorksSection() {
                 }}
                 whileInView={{
                   boxShadow: [
-                    "0 0 0px rgba(124,58,237,0)",
-                    "0 0 32px rgba(124,58,237,0.40)",
-                    "0 0 20px rgba(124,58,237,0.25)",
+                    "0 0 0px rgba(59,130,246,0)",
+                    "0 0 32px rgba(59,130,246,0.40)",
+                    "0 0 20px rgba(59,130,246,0.25)",
                   ],
                 }}
                 viewport={{ once: true }}
@@ -136,7 +136,7 @@ export function HowItWorksSection() {
                 >
                   <span
                     className="h-1 w-1 rounded-full"
-                    style={{ background: "rgba(124,58,237,0.7)" }}
+                    style={{ background: "rgba(59,130,246,0.7)" }}
                   />
                   {detail}
                 </span>

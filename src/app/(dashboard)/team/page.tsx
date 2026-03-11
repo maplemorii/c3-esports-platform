@@ -533,7 +533,7 @@ function RolePip({
   const roleCls: Record<MembershipRole, string> = {
     PLAYER:     "border-border text-muted-foreground",
     SUBSTITUTE: "border-sky-500/30 text-sky-400",
-    COACH:      "border-violet-500/30 text-violet-400",
+    COACH:      "border-blue-500/30 text-blue-400",
   }
   return (
     <span className={cn(

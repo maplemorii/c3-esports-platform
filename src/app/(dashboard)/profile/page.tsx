@@ -544,7 +544,7 @@ function InfoRow({
 function RoleBadge({ role }: { role: string }) {
   const map: Record<string, { label: string; cls: string }> = {
     ADMIN:        { label: "Admin",        cls: "border-red-500/30 bg-red-500/10 text-red-400" },
-    STAFF:        { label: "Staff",        cls: "border-violet-500/30 bg-violet-500/10 text-violet-400" },
+    STAFF:        { label: "Staff",        cls: "border-blue-500/30 bg-blue-500/10 text-blue-400" },
     TEAM_MANAGER: { label: "Team Manager", cls: "border-yellow-500/30 bg-yellow-500/10 text-yellow-400" },
     USER:         { label: "Player",       cls: "border-border bg-muted text-muted-foreground" },
   }

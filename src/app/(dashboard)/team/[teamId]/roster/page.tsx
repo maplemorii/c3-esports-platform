@@ -52,7 +52,7 @@ const ROLE_OPTIONS: { value: MembershipRole; label: string }[] = [
 const ROLE_BADGE: Record<MembershipRole, string> = {
   PLAYER:     "bg-muted text-muted-foreground",
   SUBSTITUTE: "bg-sky-500/15 text-sky-400 border-sky-500/30",
-  COACH:      "bg-violet-500/15 text-violet-400 border-violet-500/30",
+  COACH:      "bg-blue-500/15 text-blue-400 border-blue-500/30",
 }
 
 const inputCls =

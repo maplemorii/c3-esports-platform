@@ -58,7 +58,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
           transition={{ duration: 0.3 }}
           style={{
             background:
-              "linear-gradient(90deg, transparent 0%, rgba(124,58,237,0.5) 30%, rgba(6,182,212,0.4) 70%, transparent 100%)",
+              "linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.5) 30%, rgba(59,130,246,0.4) 70%, transparent 100%)",
           }}
           aria-hidden
         />

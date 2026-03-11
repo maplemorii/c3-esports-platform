@@ -96,7 +96,7 @@ function RoleBadge({ role }: { role: MembershipRole }) {
   const map: Record<MembershipRole, { label: string; cls: string }> = {
     PLAYER:     { label: "Player", cls: "bg-muted text-muted-foreground" },
     SUBSTITUTE: { label: "Sub",    cls: "bg-sky-500/15 text-sky-400 border-sky-500/30" },
-    COACH:      { label: "Coach",  cls: "bg-violet-500/15 text-violet-400 border-violet-500/30" },
+    COACH:      { label: "Coach",  cls: "bg-blue-500/15 text-blue-400 border-blue-500/30" },
   }
   const { label, cls } = map[role]
   return (
