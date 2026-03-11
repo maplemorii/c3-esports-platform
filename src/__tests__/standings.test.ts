@@ -44,7 +44,7 @@ import type { StandingsRow } from "@/types/standings"
 function makeRow(teamId: string, points: number, overrides: Partial<StandingsRow> = {}): StandingsRow {
   return {
     id: teamId, rank: 0, teamId,
-    team: { id: teamId, name: teamId, slug: teamId, logoUrl: null },
+    team: { id: teamId, name: teamId, slug: teamId, logoUrl: null, primaryColor: null },
     wins: 0, losses: 0, matchesPlayed: 0, forfeitWins: 0, forfeitLosses: 0,
     gamesWon: 0, gamesLost: 0, gameDifferential: 0,
     goalsFor: 0, goalsAgainst: 0, goalDifferential: 0,
@@ -195,7 +195,7 @@ describe("applyMatchToStandings", () => {
     await applyMatchToStandings("match-1")
 
     const homeUpdate = prismaMock.standingEntry.update.mock.calls.find(
-      (c) => (c[0].data as Record<string, unknown>).wins === 1
+      (c: any[]) => (c[0].data as Record<string, unknown>).wins === 1
     )
     expect(homeUpdate).toBeDefined()
     expect((homeUpdate![0].data as Record<string, unknown>).points).toBe(3)
@@ -215,7 +215,7 @@ describe("applyMatchToStandings", () => {
     await applyMatchToStandings("match-1")
 
     const awayUpdate = prismaMock.standingEntry.update.mock.calls.find(
-      (c) => (c[0].data as Record<string, unknown>).losses === 1
+      (c: any[]) => (c[0].data as Record<string, unknown>).losses === 1
     )
     expect(awayUpdate).toBeDefined()
     expect((awayUpdate![0].data as Record<string, unknown>).points).toBe(0)
@@ -229,7 +229,7 @@ describe("applyMatchToStandings", () => {
     await applyMatchToStandings("match-1")
 
     const forfeitCalls = prismaMock.standingEntry.update.mock.calls.filter(
-      (c) => (c[0].data as Record<string, unknown>).forfeitLosses === 1
+      (c: any[]) => (c[0].data as Record<string, unknown>).forfeitLosses === 1
     )
     expect(forfeitCalls).toHaveLength(2)
   })
@@ -244,7 +244,7 @@ describe("applyMatchToStandings", () => {
     await applyMatchToStandings("match-1")
 
     const winCall = prismaMock.standingEntry.update.mock.calls.find(
-      (c) => (c[0].data as Record<string, unknown>).forfeitWins === 1
+      (c: any[]) => (c[0].data as Record<string, unknown>).forfeitWins === 1
     )
     expect(winCall).toBeDefined()
   })
@@ -276,7 +276,7 @@ describe("reverseMatchFromStandings", () => {
 
     // wins: 2 + (-1) = 1
     const homeUpdate = prismaMock.standingEntry.update.mock.calls.find(
-      (c) => (c[0].data as Record<string, unknown>).wins === 1
+      (c: any[]) => (c[0].data as Record<string, unknown>).wins === 1
     )
     expect(homeUpdate).toBeDefined()
     // points: 6 + (-3) = 3

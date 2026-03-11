@@ -71,11 +71,11 @@ describe("isValidTransition", () => {
     ["DISPUTED",    "VERIFYING"],     // backwards
   ]
 
-  it.each(VALID)("allows %s → %s", (from, to) => {
+  it.each(VALID)("allows %s → %s", (from: MatchStatus, to: MatchStatus) => {
     expect(isValidTransition(from, to)).toBe(true)
   })
 
-  it.each(INVALID)("blocks %s → %s", (from, to) => {
+  it.each(INVALID)("blocks %s → %s", (from: MatchStatus, to: MatchStatus) => {
     expect(isValidTransition(from, to)).toBe(false)
   })
 })
@@ -136,7 +136,7 @@ describe("transitionTo", () => {
 
     await transitionTo("match-1", "COMPLETED", "staff-1")
 
-    const txArgs = prismaMock.$transaction.mock.calls[0][0] as unknown[]
+    const txArgs = prismaMock.$transaction.mock.calls[0][0] as unknown as unknown[]
     // The transaction array is built with prisma.match.update + prisma.auditLog.create
     // We just confirm the transaction was called — the update includes completedAt
     expect(txArgs).toHaveLength(2)

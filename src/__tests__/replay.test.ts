@@ -108,7 +108,7 @@ describe("handleParseResult — SUCCESS", () => {
     })
 
     const successUpdate = prismaMock.replayUpload.update.mock.calls.find(
-      (c) => (c[0].data as Record<string, unknown>).parseStatus === "SUCCESS"
+      (c: any[]) => (c[0].data as Record<string, unknown>).parseStatus === "SUCCESS"
     )
     expect(successUpdate).toBeDefined()
   })
@@ -153,7 +153,7 @@ describe("handleParseResult — MISMATCH detection", () => {
     await handleParseResult("upload-1", { status: "SUCCESS", homeGoals: 3, awayGoals: 0 })
 
     const mismatchUpdate = prismaMock.replayUpload.update.mock.calls.find(
-      (c) => (c[0].data as Record<string, unknown>).parseStatus === "MISMATCH"
+      (c: any[]) => (c[0].data as Record<string, unknown>).parseStatus === "MISMATCH"
     )
     expect(mismatchUpdate).toBeDefined()
   })
