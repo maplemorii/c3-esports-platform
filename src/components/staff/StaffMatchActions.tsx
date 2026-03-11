@@ -151,7 +151,7 @@ function ForceCheckInPanel({
   return (
     <div className="mt-2 space-y-3 p-4 rounded-lg border border-border bg-muted/20">
       <p className="text-xs text-muted-foreground">
-        Force check-in a team even if they haven't done so themselves.
+        Force check-in a team even if they haven&apos;t done so themselves.
       </p>
       <div className="flex gap-2 flex-wrap">
         {teams.map(({ team, checkedIn }) => (

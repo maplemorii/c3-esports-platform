@@ -10,6 +10,7 @@
  */
 
 import { useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Loader2, Link2, Link2Off } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -51,7 +52,7 @@ export function SteamLinkButton({ steamId }: SteamLinkButtonProps) {
   }
 
   return (
-    <a
+    <Link
       href="/api/auth/steam"
       className={cn(
         buttonVariants({ variant: "outline", size: "sm" }),
@@ -60,6 +61,6 @@ export function SteamLinkButton({ steamId }: SteamLinkButtonProps) {
     >
       <Link2 className="h-3 w-3" />
       Link via Steam
-    </a>
+    </Link>
   )
 }

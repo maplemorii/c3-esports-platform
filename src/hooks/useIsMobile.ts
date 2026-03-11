@@ -6,7 +6,12 @@ import { useState, useEffect } from "react"
 export function useIsMobile() {
   const [mobile, setMobile] = useState(false)
   useEffect(() => {
-    setMobile(window.matchMedia("(hover: none)").matches)
+    const mq = window.matchMedia("(hover: none)")
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMobile(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setMobile(e.matches)
+    mq.addEventListener("change", handler)
+    return () => mq.removeEventListener("change", handler)
   }, [])
   return mobile
 }

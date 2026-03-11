@@ -9,6 +9,7 @@
  */
 
 import { useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Loader2, Link2, Link2Off } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -50,7 +51,7 @@ export function EpicLinkButton({ epicUsername }: EpicLinkButtonProps) {
   }
 
   return (
-    <a
+    <Link
       href="/api/auth/epic"
       className={cn(
         buttonVariants({ variant: "outline", size: "sm" }),
@@ -59,6 +60,6 @@ export function EpicLinkButton({ epicUsername }: EpicLinkButtonProps) {
     >
       <Link2 className="h-3 w-3" />
       Link via Epic
-    </a>
+    </Link>
   )
 }

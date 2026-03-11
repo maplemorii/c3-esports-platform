@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition, useEffect } from "react"
+import { useState, useTransition } from "react"
 import { useSearchParams } from "next/navigation"
 import { GraduationCap, CheckCircle2, XCircle, Loader2, AlertCircle, MailCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -33,11 +33,6 @@ export function EduVerificationCard({
       : null
   )
   const [isPending, startTransition] = useTransition()
-
-  // If the user just came back from clicking the email link and it worked
-  useEffect(() => {
-    if (eduParam === "verified") setVerified(true)
-  }, [eduParam])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
