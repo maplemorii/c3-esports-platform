@@ -3,6 +3,9 @@ import { Inter, Rajdhani, Playfair_Display } from "next/font/google"
 import "./globals.css"
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
+import { Providers } from "@/components/providers"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
 
 /* Display / headings — condensed bold, esports feel */
 const rajdhani = Rajdhani({
@@ -52,19 +55,23 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session = await getServerSession(authOptions)
+
   return (
     <html lang="en" className="dark">
       <body
         className={`${rajdhani.variable} ${inter.variable} ${playfair.variable} font-sans antialiased min-h-screen flex flex-col`}
       >
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <Providers session={session}>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   )
