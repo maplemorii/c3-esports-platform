@@ -12,6 +12,10 @@ const LINKS = {
     { href: "/auth/signin", label: "Sign In" },
     { href: "/credits", label: "Credits" },
   ],
+  Legal: [
+    { href: "/legal/terms", label: "Terms of Service" },
+    { href: "/legal/privacy", label: "Privacy Policy" },
+  ],
 }
 
 export function Footer() {
@@ -23,7 +27,7 @@ export function Footer() {
       }}
     >
       <div className="mx-auto max-w-5xl px-4 py-16">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-5">
           {/* Brand block */}
           <div className="lg:col-span-2">
             <Link href="/" className="inline-flex items-center mb-4" aria-label="C3 Esports — home">

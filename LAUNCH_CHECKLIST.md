@@ -155,10 +155,10 @@ This is a hard blocker — losing match history or player data with no restore p
 
 Required before collecting user data from real people.
 
-- [ ] **Terms of Service** page exists and is linked in the footer and on the registration/signup form
-- [ ] **Privacy Policy** page exists and covers: what data you collect, how it's used, how to request deletion
-- [ ] Users must acknowledge ToS on account creation (checkbox or gated flow)
-- [ ] Contact email or form for legal/privacy inquiries is listed in the Privacy Policy
+- [x] **Terms of Service** page exists and is linked in the footer and on the registration/signup form
+- [x] **Privacy Policy** page exists and covers: what data you collect, how it's used, how to request deletion
+- [x] Users must acknowledge ToS on account creation (checkbox or gated flow)
+- [x] Contact email or form for legal/privacy inquiries is listed in the Privacy Policy
 
 ---
 

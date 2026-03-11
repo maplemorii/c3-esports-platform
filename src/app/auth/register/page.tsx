@@ -14,6 +14,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirm, setConfirm] = useState("")
+  const [tosAccepted, setTosAccepted] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -116,6 +117,26 @@ export default function RegisterPage() {
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none" }}
               />
             </Field>
+
+            <label className="flex items-start gap-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                required
+                checked={tosAccepted}
+                onChange={(e) => setTosAccepted(e.target.checked)}
+                className="mt-0.5 shrink-0 accent-violet-500"
+              />
+              <span className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.35)" }}>
+                I agree to the{" "}
+                <Link href="/legal/terms" target="_blank" className="transition-colors duration-150" style={{ color: "rgba(167,139,250,0.8)" }}>
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link href="/legal/privacy" target="_blank" className="transition-colors duration-150" style={{ color: "rgba(167,139,250,0.8)" }}>
+                  Privacy Policy
+                </Link>
+              </span>
+            </label>
 
             {error && (
               <p
