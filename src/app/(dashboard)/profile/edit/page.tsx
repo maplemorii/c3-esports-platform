@@ -10,6 +10,7 @@
  */
 
 import type { Metadata } from "next"
+import { Suspense } from "react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { ArrowLeft, UserRound, Link2, CheckCircle2, XCircle, Gamepad2, Layers } from "lucide-react"
@@ -152,11 +153,13 @@ export default async function ProfileEditPage() {
         </div>
 
         {/* ── College verification ──────────────────────────────────────── */}
-        <EduVerificationCard
-          initialEduEmail={user?.eduEmail ?? null}
-          initialVerified={eduVerified}
-          isOverride={!!(user?.eduVerifyOverride)}
-        />
+        <Suspense fallback={null}>
+          <EduVerificationCard
+            initialEduEmail={user?.eduEmail ?? null}
+            initialVerified={eduVerified}
+            isOverride={!!(user?.eduVerifyOverride)}
+          />
+        </Suspense>
 
         {/* ── Notification preferences ──────────────────────────────────── */}
         <NotificationPrefs
