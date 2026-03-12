@@ -18,10 +18,7 @@ export default function AuthErrorPage({
   const message = ERROR_MESSAGES[searchParams.error ?? "Default"] ?? ERROR_MESSAGES.Default
 
   return (
-    <div
-      className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-16 overflow-hidden"
-      style={{ background: "oklch(0.07 0.02 265)" }}
-    >
+    <div className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-16 overflow-hidden">
       {/* Red ambient glow */}
       <div
         className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full opacity-15"
@@ -60,11 +57,10 @@ export default function AuthErrorPage({
 
           <Link
             href="/auth/signin"
-            className="w-full rounded-xl px-4 py-2.5 font-sans text-sm font-semibold text-center transition-all duration-150"
+            className="w-full rounded-xl px-4 py-2.5 font-sans text-sm font-semibold text-center text-white transition-all duration-150"
             style={{
-              background: "rgba(59,130,246,0.18)",
-              border: "1px solid rgba(59,130,246,0.3)",
-              color: "rgba(147,197,253,0.9)",
+              background: "linear-gradient(135deg, rgba(196,28,53,0.9), rgba(59,130,246,0.9))",
+              boxShadow: "0 0 20px rgba(196,28,53,0.2)",
             }}
           >
             Try Again

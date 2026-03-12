@@ -36,20 +36,20 @@ Track every file that needs a visual update for a full redesign. Check off each 
 - [x] **Season matches** — `src/app/(public)/seasons/[seasonSlug]/matches/page.tsx`
 - [x] **Teams list** — `src/app/(public)/teams/page.tsx` → `/teams`
 - [x] **Team public profile** — `src/app/(public)/teams/[teamSlug]/page.tsx` → `/teams/[slug]`
-- [ ] **Public matches** — `src/app/(public)/matches/page.tsx` → `/matches`
-- [ ] **Rules** — `src/app/(public)/rules/page.tsx` → `/rules`
-- [ ] **Credits** — `src/app/(public)/credits/page.tsx` → `/credits`
-- [ ] **Terms of Service** — `src/app/(public)/legal/terms/page.tsx` → `/legal/terms`
-- [ ] **Privacy Policy** — `src/app/(public)/legal/privacy/page.tsx` → `/legal/privacy`
+- [x] **Public matches** — `src/app/(public)/matches/page.tsx` → `/matches`
+- [x] **Rules** — `src/app/(public)/rules/page.tsx` → `/rules`
+- [x] **Credits** — `src/app/(public)/credits/page.tsx` → `/credits`
+- [x] **Terms of Service** — `src/app/(public)/legal/terms/page.tsx` → `/legal/terms`
+- [x] **Privacy Policy** — `src/app/(public)/legal/privacy/page.tsx` → `/legal/privacy`
 
 ---
 
 ## Auth Pages
 
-- [ ] **Sign in** — `src/app/auth/signin/page.tsx` → `/auth/signin`
-- [ ] **Register** — `src/app/auth/register/page.tsx` → `/auth/register`
-- [ ] **Auth error** — `src/app/auth/error/page.tsx` → `/auth/error`
-- [ ] **Unauthorized** — `src/app/unauthorized/page.tsx` → `/unauthorized`
+- [x] **Sign in** — `src/app/auth/signin/page.tsx` → `/auth/signin`
+- [x] **Register** — `src/app/auth/register/page.tsx` → `/auth/register`
+- [x] **Auth error** — `src/app/auth/error/page.tsx` → `/auth/error`
+- [x] **Unauthorized** — `src/app/unauthorized/page.tsx` → `/unauthorized`
 
 ---
 
