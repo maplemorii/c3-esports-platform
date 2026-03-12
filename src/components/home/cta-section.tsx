@@ -55,7 +55,7 @@ export function CTASection({ isSignedIn }: CTASectionProps) {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 80% 70% at 50% 50%, transparent 20%, oklch(0.07 0.02 265) 100%)",
+            "radial-gradient(ellipse 80% 70% at 50% 50%, transparent 20%, oklch(0.10 0.02 265) 100%)",
         }}
         aria-hidden
       />

@@ -365,7 +365,7 @@ export default async function SeasonOverviewPage({
             <div
               key={label}
               className="flex flex-col items-center gap-1 px-6 py-6"
-              style={{ background: "oklch(0.07 0.02 265)" }}
+              style={{ background: "oklch(0.10 0.02 265)" }}
             >
               <span className="font-display text-2xl font-bold text-foreground">{value}</span>
               <span className="font-sans text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{label}</span>

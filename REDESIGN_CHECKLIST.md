@@ -106,7 +106,7 @@ Track every file that needs a visual update for a full redesign. Check off each 
 - [x] **Season detail** — `src/app/admin/seasons/[seasonId]/page.tsx`
 - [ ] **Season settings** — `src/app/admin/seasons/[seasonId]/settings/page.tsx`
 - [x] **Registrations (per season)** — `src/app/admin/seasons/[seasonId]/registrations/page.tsx`
-- [x] **Matches list** — `src/app/admin/matches/page.tsx`
+- [x] **Matches list** — `src/app/Type error: Object literal may only specify known properties, and 'divideColor' does not exist in type 'Properties<string | number, string & {}>'.admin/matches/page.tsx`
 - [ ] **Create match** — `src/app/admin/matches/create/page.tsx`
 - [x] **Match detail** — `src/app/admin/matches/[matchId]/page.tsx`
 - [x] **Registrations (global)** — `src/app/admin/registrations/page.tsx`
@@ -129,4 +129,3 @@ Track every file that needs a visual update for a full redesign. Check off each 
 
 - [ ] `src/app/(dashboard)/profile/loading.tsx` — profile skeleton
 - [ ] Add/update any other `loading.tsx` or `error.tsx` files to match new design
-

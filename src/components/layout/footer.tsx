@@ -23,7 +23,7 @@ export function Footer() {
     <footer
       style={{
         borderTop: "1px solid rgba(59,130,246,0.12)",
-        background: "oklch(0.07 0.02 265)",
+        background: "oklch(0.10 0.02 265)",
       }}
     >
       <div className="mx-auto max-w-5xl px-4 py-16">

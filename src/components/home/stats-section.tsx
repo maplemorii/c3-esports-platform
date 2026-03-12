@@ -61,7 +61,7 @@ export function StatsSection() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: i * 0.08, ease: EASE }}
               className="flex flex-col items-center justify-center gap-2 px-6 py-12"
-              style={{ background: "oklch(0.07 0.02 265)" }}
+              style={{ background: "oklch(0.10 0.02 265)" }}
             >
               <dt
                 className="font-display text-5xl font-bold sm:text-6xl"

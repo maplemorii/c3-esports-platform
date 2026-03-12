@@ -125,7 +125,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
         className="absolute inset-x-0 top-0 h-[55%] pointer-events-none z-0"
         style={{
           background:
-            "linear-gradient(to bottom, oklch(0.07 0.02 265) 0%, transparent 100%)",
+            "linear-gradient(to bottom, oklch(0.10 0.02 265) 0%, transparent 100%)",
         }}
         aria-hidden
       />
@@ -202,7 +202,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
       <div
         className="absolute inset-x-0 bottom-0 h-32 pointer-events-none z-0"
         style={{
-          background: "linear-gradient(to top, oklch(0.07 0.02 265), transparent)",
+          background: "linear-gradient(to top, oklch(0.10 0.02 265), transparent)",
         }}
         aria-hidden
       />
