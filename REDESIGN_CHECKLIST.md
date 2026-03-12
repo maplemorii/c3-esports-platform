@@ -83,6 +83,7 @@ Track every file that needs a visual update for a full redesign. Check off each 
 - [ ] **Team roster** — `src/app/(dashboard)/team/[teamId]/roster/page.tsx`
 - [ ] **Team settings** — `src/app/(dashboard)/team/[teamId]/settings/page.tsx`
 - [ ] **Team registration** — `src/app/(dashboard)/team/[teamId]/register/page.tsx`
+- [ ] add functionality so that if you are an admin, you dont get tips to create a team or register for a season like the "getting started" stuff.
 
 ---
 
