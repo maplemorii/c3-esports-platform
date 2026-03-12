@@ -82,23 +82,28 @@ export default async function ProfileEditPage() {
         </Link>
 
         {/* ── Header ───────────────────────────────────────────────────── */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card">
-            <UserRound className="h-5 w-5 text-muted-foreground" />
-          </div>
-          <div>
-            <h1 className="font-display text-xl font-bold uppercase tracking-wider text-foreground">
-              Edit Profile
-            </h1>
-            <p className="text-xs text-muted-foreground">
-              Update your display name, linked accounts, and bio.
-            </p>
-          </div>
+        <div>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-brand/70">Profile</p>
+          <h1 className="font-display text-3xl font-bold uppercase tracking-wide text-foreground">
+            Edit Profile
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Update your display name, linked accounts, and bio.
+          </p>
+          <div
+            className="mt-4 h-px"
+            style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.4), rgba(59,130,246,0.2), transparent)" }}
+          />
         </div>
 
         {/* ── Avatar upload ────────────────────────────────────────────── */}
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm flex flex-col items-center gap-1">
-          <p className="self-start text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 flex flex-col items-center gap-1">
+          <div
+            className="absolute top-0 left-0 right-0 h-px"
+            style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.3), rgba(59,130,246,0.2), transparent)" }}
+            aria-hidden
+          />
+          <p className="self-start text-xs font-semibold uppercase tracking-widest text-muted-foreground/60 mb-4">
             Profile Photo
           </p>
           <AvatarUpload
@@ -109,7 +114,12 @@ export default async function ProfileEditPage() {
         </div>
 
         {/* ── Profile form ─────────────────────────────────────────────── */}
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6">
+          <div
+            className="absolute top-0 left-0 right-0 h-px"
+            style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.3), rgba(59,130,246,0.2), transparent)" }}
+            aria-hidden
+          />
           <EditFormWrapper
             playerId={player.id}
             initialValues={{
@@ -121,10 +131,15 @@ export default async function ProfileEditPage() {
         </div>
 
         {/* ── Linked accounts ──────────────────────────────────────────── */}
-        <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-card">
+          <div
+            className="absolute top-0 left-0 right-0 h-px"
+            style={{ background: "linear-gradient(90deg, rgba(59,130,246,0.4), rgba(196,28,53,0.2), transparent)" }}
+            aria-hidden
+          />
           <div className="flex items-center gap-2 px-6 py-4 border-b border-border">
-            <Link2 className="h-4 w-4 text-muted-foreground" />
-            <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+            <Link2 className="h-4 w-4 text-muted-foreground/50" />
+            <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground/70">
               Linked Accounts
             </h2>
           </div>

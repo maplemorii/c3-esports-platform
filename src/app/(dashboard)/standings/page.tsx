@@ -139,9 +139,15 @@ async function getMyStandings(userId: string) {
 // ---------------------------------------------------------------------------
 
 const TIER_LABEL: Record<DivisionTier, string> = {
-  PREMIER:    "Premier",
+  PREMIER:     "Premier",
   CHALLENGERS: "Open Challengers",
-  CONTENDERS: "Open Contenders",
+  CONTENDERS:  "Open Contenders",
+}
+
+const TIER_ACCENT: Record<DivisionTier, { topBorder: string; badge: string }> = {
+  PREMIER:     { topBorder: "linear-gradient(90deg, rgba(251,191,36,0.7), rgba(196,28,53,0.3), transparent)", badge: "text-amber-400 border-amber-400/30 bg-amber-400/8" },
+  CHALLENGERS: { topBorder: "linear-gradient(90deg, rgba(59,130,246,0.7), rgba(196,28,53,0.3), transparent)", badge: "text-blue-400 border-blue-400/30 bg-blue-400/8"   },
+  CONTENDERS:  { topBorder: "linear-gradient(90deg, rgba(52,211,153,0.5), rgba(59,130,246,0.3), transparent)", badge: "text-emerald-400 border-emerald-400/30 bg-emerald-400/8" },
 }
 
 function StreakBadge({ streak }: { streak: number }) {
@@ -173,24 +179,40 @@ export default async function DashboardStandingsPage() {
     <div className="mx-auto max-w-4xl space-y-8">
 
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-bold uppercase tracking-wide">
-            My Standings
-          </h1>
+      <div
+        className="relative overflow-hidden rounded-2xl p-6"
+        style={{
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.07)",
+        }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="mb-1 font-sans text-[10px] font-semibold uppercase tracking-[0.28em] text-brand/70">
+              Dashboard
+            </p>
+            <h1 className="font-display text-3xl font-bold uppercase tracking-wide text-foreground">
+              My Standings
+            </h1>
+            {activeSeason && (
+              <p className="mt-1 text-sm text-muted-foreground">{activeSeason.name}</p>
+            )}
+          </div>
           {activeSeason && (
-            <p className="mt-0.5 text-sm text-muted-foreground">{activeSeason.name}</p>
+            <Link
+              href={`/seasons/${activeSeason.slug}/standings`}
+              className="flex items-center gap-1.5 text-xs text-brand/70 hover:text-brand transition-colors duration-150"
+            >
+              Full standings
+              <ExternalLink className="h-3 w-3" />
+            </Link>
           )}
         </div>
-        {activeSeason && (
-          <Link
-            href={`/seasons/${activeSeason.slug}/standings`}
-            className="flex items-center gap-1.5 text-xs text-brand hover:underline"
-          >
-            Full standings
-            <ExternalLink className="h-3 w-3" />
-          </Link>
-        )}
       </div>
 
       {/* No active season / no registrations */}
@@ -215,14 +237,47 @@ export default async function DashboardStandingsPage() {
         const entries = division.standingEntries
         const myRank  = entries.findIndex((e) => myTeamSet.has(e.teamId)) + 1
 
+        const accent = TIER_ACCENT[division.tier]
+
         return (
-          <section key={division.id} className="rounded-xl border border-border bg-card overflow-hidden">
+          <section key={division.id} className="relative rounded-2xl overflow-hidden border border-border bg-card">
+            {/* Tier-colored top accent */}
+            <div
+              className="absolute top-0 left-0 right-0 h-px"
+              style={{ background: accent.topBorder }}
+              aria-hidden
+            />
+
+            {/* My rank callout if in top half */}
+            {myRank > 0 && (
+              <div
+                className="flex items-center justify-between px-5 pt-5 pb-0"
+              >
+                <div
+                  className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-semibold"
+                  style={{ background: "rgba(196,28,53,0.08)", border: "1px solid rgba(196,28,53,0.15)" }}
+                >
+                  <BarChart2 className="h-3.5 w-3.5 text-brand" />
+                  <span className="text-foreground/75">
+                    Your team is ranked{" "}
+                    <span
+                      className="font-bold"
+                      style={{ color: myRank <= 3 ? "rgba(251,191,36,0.9)" : "rgba(255,255,255,0.85)" }}
+                    >
+                      #{myRank}
+                    </span>
+                    {" "}of {entries.length}
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* Section header */}
-            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+            <div className="flex items-center justify-between border-b border-border px-5 py-4 mt-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest mb-1", accent.badge)}>
                   {TIER_LABEL[division.tier]}
-                </p>
+                </span>
                 <h2 className="font-display text-base font-bold uppercase tracking-wide">
                   {division.name}
                 </h2>
@@ -230,7 +285,7 @@ export default async function DashboardStandingsPage() {
               {activeSeason && (
                 <Link
                   href={`/seasons/${activeSeason.slug}/standings?division=${division.id}`}
-                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-brand transition-colors"
+                  className="flex items-center gap-1 text-xs text-muted-foreground/60 hover:text-brand transition-colors duration-150"
                 >
                   Full table <ChevronRight className="h-3.5 w-3.5" />
                 </Link>
@@ -324,12 +379,6 @@ export default async function DashboardStandingsPage() {
               </table>
             </div>
 
-            {/* My rank callout */}
-            {myRank > 0 && (
-              <div className="border-t border-border px-4 py-2.5 text-xs text-muted-foreground">
-                Your team is ranked <span className="font-semibold text-foreground">#{myRank}</span> of {entries.length}
-              </div>
-            )}
           </section>
         )
       })}

@@ -18,7 +18,6 @@
 import Link from "next/link"
 import { CheckCircle2, Circle, ChevronRight, Rocket } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button-variants"
 
 interface OnboardingChecklistProps {
   hasProfile:      boolean
@@ -63,7 +62,18 @@ export function OnboardingChecklist({
   const doneCount = steps.filter((s) => s.done).length
 
   return (
-    <section className="rounded-xl border border-brand/20 bg-brand/5 p-6">
+    <section
+      className="relative overflow-hidden rounded-2xl p-6"
+      style={{
+        background: "rgba(196,28,53,0.04)",
+        border: "1px solid rgba(196,28,53,0.12)",
+      }}
+    >
+      <div
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.5), rgba(59,130,246,0.3), transparent)" }}
+        aria-hidden
+      />
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           <Rocket className="h-4 w-4 text-brand" />
@@ -71,20 +81,18 @@ export function OnboardingChecklist({
             Getting Started
           </h2>
         </div>
-        {/* Progress indicator */}
-        <div className="flex items-center gap-1.5">
-          {steps.map((s, i) => (
+        {/* Progress bar */}
+        <div className="flex items-center gap-2">
+          <div className="relative h-1.5 w-20 rounded-full overflow-hidden bg-white/10">
             <div
-              key={i}
-              className={cn(
-                "h-1.5 w-6 rounded-full transition-colors",
-                s.done ? "bg-brand" : "bg-brand/20"
-              )}
+              className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
+              style={{
+                width: `${(doneCount / steps.length) * 100}%`,
+                background: "linear-gradient(90deg, rgba(196,28,53,0.8), rgba(59,130,246,0.8))",
+              }}
             />
-          ))}
-          <span className="ml-1 text-xs text-brand font-semibold">
-            {doneCount}/{steps.length}
-          </span>
+          </div>
+          <span className="text-xs font-bold text-brand">{doneCount}/{steps.length}</span>
         </div>
       </div>
 
@@ -92,12 +100,12 @@ export function OnboardingChecklist({
         {steps.map((step, i) => (
           <li
             key={i}
-            className={cn(
-              "flex items-start gap-3 rounded-lg border p-4 transition-colors",
-              step.done
-                ? "border-emerald-500/20 bg-emerald-500/5 opacity-60"
-                : "border-border bg-card"
-            )}
+            className="flex items-start gap-3 rounded-xl p-4"
+            style={{
+              background: step.done ? "rgba(52,211,153,0.04)" : "rgba(255,255,255,0.03)",
+              border: `1px solid ${step.done ? "rgba(52,211,153,0.12)" : "rgba(255,255,255,0.06)"}`,
+              opacity: step.done ? 0.55 : 1,
+            }}
           >
             <div className="mt-0.5 shrink-0">
               {step.done ? (
@@ -122,10 +130,12 @@ export function OnboardingChecklist({
             {!step.done && (
               <Link
                 href={step.href}
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "sm" }),
-                  "shrink-0 text-xs gap-1"
-                )}
+                className="shrink-0 inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors duration-150"
+                style={{
+                  background: "rgba(196,28,53,0.15)",
+                  border: "1px solid rgba(196,28,53,0.25)",
+                  color: "rgba(252,165,165,0.85)",
+                }}
               >
                 {step.cta}
                 <ChevronRight className="h-3 w-3" />

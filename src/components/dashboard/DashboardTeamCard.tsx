@@ -55,7 +55,7 @@ export function DashboardTeamCard({
   return (
     <Link
       href={`/team/${team.id}`}
-      className="group flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-brand/40"
+      className="group relative flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition-all duration-150 hover:border-brand/40 overflow-hidden"
     >
       <TeamLogo
         name={team.name}

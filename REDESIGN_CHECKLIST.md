@@ -55,12 +55,12 @@ Track every file that needs a visual update for a full redesign. Check off each 
 
 ## Dashboard Pages (authenticated)
 
-- [ ] **Dashboard home** — `src/app/(dashboard)/dashboard/page.tsx` → `/dashboard`
-- [ ] **Dashboard matches** — `src/app/(dashboard)/dashboard/matches/page.tsx` → `/dashboard/matches`
-- [ ] **Standings** — `src/app/(dashboard)/standings/page.tsx` → `/standings`
-- [ ] **My profile** — `src/app/(dashboard)/profile/page.tsx` → `/profile`
-- [ ] **Edit profile** — `src/app/(dashboard)/profile/edit/page.tsx` → `/profile/edit`
-- [ ] **Profile setup** — `src/app/(dashboard)/profile/setup/page.tsx` → `/profile/setup`
+- [x] **Dashboard home** — `src/app/(dashboard)/dashboard/page.tsx` → `/dashboard`
+- [x] **Dashboard matches** — `src/app/(dashboard)/dashboard/matches/page.tsx` → `/dashboard/matches`
+- [x] **Standings** — `src/app/(dashboard)/standings/page.tsx` → `/standings`
+- [x] **My profile** — `src/app/(dashboard)/profile/page.tsx` → `/profile`
+- [x] **Edit profile** — `src/app/(dashboard)/profile/edit/page.tsx` → `/profile/edit`
+- [x] **Profile setup** — `src/app/(dashboard)/profile/setup/page.tsx` → `/profile/setup`
 
 ---
 

@@ -32,15 +32,22 @@ export default async function ProfileSetupPage() {
 
         {/* ── Header ───────────────────────────────────────────────────── */}
         <div className="mb-10 text-center">
-          {/* Icon badge */}
-          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-brand/30 bg-brand/10">
-            <Rocket className="h-7 w-7 text-brand" />
+          {/* Icon badge with gradient ring */}
+          <div
+            className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl"
+            style={{
+              background: "rgba(196,28,53,0.1)",
+              border: "1px solid rgba(196,28,53,0.25)",
+              boxShadow: "0 0 0 4px rgba(196,28,53,0.08), 0 0 20px rgba(196,28,53,0.15)",
+            }}
+          >
+            <Rocket className="h-8 w-8 text-brand" />
           </div>
 
-          <h1 className="font-display text-2xl font-bold uppercase tracking-wider text-foreground">
+          <h1 className="font-display text-3xl font-bold uppercase tracking-wide text-foreground">
             Set Up Your Profile
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground max-w-sm mx-auto">
+          <p className="mt-2 text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
             Create your player identity for the Carolina Collegiate Clash. Your display name
             and Epic username help coaches and teammates find you.
           </p>
@@ -63,7 +70,12 @@ export default async function ProfileSetupPage() {
         </div>
 
         {/* ── Form card ────────────────────────────────────────────────── */}
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6">
+          <div
+            className="absolute top-0 left-0 right-0 h-px"
+            style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.5), rgba(59,130,246,0.3), transparent)" }}
+            aria-hidden
+          />
           <SetupFormWrapper />
         </div>
 
@@ -84,15 +96,27 @@ function Step({ num, label, active }: { num: number; label: string; active?: boo
   return (
     <div className="flex flex-col items-center gap-1">
       <div
-        className={
+        className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold"
+        style={
           active
-            ? "flex h-7 w-7 items-center justify-center rounded-full bg-brand text-xs font-bold text-white"
-            : "flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card text-xs font-medium text-muted-foreground"
+            ? {
+                background: "linear-gradient(135deg, rgba(196,28,53,0.9), rgba(59,130,246,0.9))",
+                color: "white",
+                boxShadow: "0 0 10px rgba(196,28,53,0.3)",
+              }
+            : {
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                color: "rgba(255,255,255,0.3)",
+              }
         }
       >
         {num}
       </div>
-      <span className={`text-[10px] font-semibold uppercase tracking-widest ${active ? "text-brand" : "text-muted-foreground/50"}`}>
+      <span
+        className="text-[10px] font-semibold uppercase tracking-widest"
+        style={{ color: active ? "rgba(196,28,53,0.85)" : "rgba(255,255,255,0.25)" }}
+      >
         {label}
       </span>
     </div>
@@ -107,9 +131,24 @@ function Connector() {
 
 function BenefitTile({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <div className="flex flex-col items-center gap-1.5 rounded-lg border border-border bg-card/50 px-3 py-3 text-center">
-      <span className="text-brand">{icon}</span>
-      <span className="text-[11px] text-muted-foreground leading-snug">{label}</span>
+    <div
+      className="flex flex-col items-center gap-2 rounded-xl px-3 py-4 text-center"
+      style={{
+        background: "rgba(255,255,255,0.02)",
+        border: "1px solid rgba(255,255,255,0.06)",
+      }}
+    >
+      <div
+        className="flex h-8 w-8 items-center justify-center rounded-lg"
+        style={{
+          background: "rgba(196,28,53,0.12)",
+          border: "1px solid rgba(196,28,53,0.2)",
+          color: "rgba(196,28,53,0.85)",
+        }}
+      >
+        {icon}
+      </div>
+      <span className="text-[11px] text-muted-foreground/70 leading-snug">{label}</span>
     </div>
   )
 }

@@ -379,37 +379,69 @@ export default async function DashboardMatchesPage() {
     <div className="mx-auto max-w-4xl space-y-8">
 
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-bold uppercase tracking-wide">
-            My Matches
-          </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            Upcoming and recent matches across all your teams
-          </p>
-        </div>
-        {checkInCount > 0 && (
-          <div className="flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1.5 text-sm font-medium text-amber-400">
-            <AlertCircle className="h-4 w-4" />
-            {checkInCount} check-in{checkInCount !== 1 ? "s" : ""} required
+      <div
+        className="relative overflow-hidden rounded-2xl p-6"
+        style={{
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.07)",
+        }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="mb-1 font-sans text-[10px] font-semibold uppercase tracking-[0.28em] text-brand/70">
+              Dashboard
+            </p>
+            <h1 className="font-display text-3xl font-bold uppercase tracking-wide text-foreground">
+              My Matches
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Upcoming and recent matches across all your teams
+            </p>
           </div>
-        )}
+          {checkInCount > 0 && (
+            <div
+              className="flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-sm font-semibold shrink-0"
+              style={{
+                background: "rgba(251,191,36,0.08)",
+                border: "1px solid rgba(251,191,36,0.25)",
+                color: "rgba(251,191,36,0.9)",
+              }}
+            >
+              <AlertCircle className="h-4 w-4" />
+              {checkInCount} check-in{checkInCount !== 1 ? "s" : ""} required
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── Upcoming & Active ──────────────────────────────────────── */}
       <section>
-        <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-4">
-          Upcoming &amp; Active
-        </h2>
+        <div className="flex items-center gap-3 mb-4">
+          <h2 className="font-sans text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground/60 shrink-0">
+            Upcoming &amp; Active
+          </h2>
+          <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.05)" }} />
+        </div>
 
         {sortedUpcoming.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card py-16 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-muted">
-              <Swords className="h-5 w-5 text-muted-foreground/40" />
+          <div
+            className="flex flex-col items-center gap-3 rounded-2xl py-16 text-center"
+            style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(255,255,255,0.06)" }}
+          >
+            <div
+              className="flex h-12 w-12 items-center justify-center rounded-xl"
+              style={{ border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.03)" }}
+            >
+              <Swords className="h-5 w-5 text-muted-foreground/20" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">No upcoming matches.</p>
-              <p className="text-xs text-muted-foreground/60 mt-0.5">
+              <p className="text-sm text-muted-foreground/50">No upcoming matches.</p>
+              <p className="text-xs text-muted-foreground/30 mt-0.5">
                 Matches will appear here once they&apos;re scheduled.
               </p>
             </div>
@@ -426,9 +458,12 @@ export default async function DashboardMatchesPage() {
       {/* ── Recent ──────────────────────────────────────────────────── */}
       {recent.length > 0 && (
         <section>
-          <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-4">
-            Recent Results
-          </h2>
+          <div className="flex items-center gap-3 mb-4">
+            <h2 className="font-sans text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground/60 shrink-0">
+              Recent Results
+            </h2>
+            <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.05)" }} />
+          </div>
 
           <div className="flex flex-col gap-3">
             {recent.map((match) => (
