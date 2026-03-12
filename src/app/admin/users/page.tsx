@@ -23,11 +23,11 @@ export const metadata: Metadata = { title: "Users — Admin" }
 
 const PAGE_SIZE = 30
 
-const ROLE_META: Record<Role, { label: string; cls: string }> = {
-  USER:         { label: "User",         cls: "bg-muted text-muted-foreground" },
-  TEAM_MANAGER: { label: "Team Manager", cls: "bg-sky-500/15 text-sky-400" },
-  STAFF:        { label: "Staff",        cls: "bg-blue-500/15 text-blue-400" },
-  ADMIN:        { label: "Admin",        cls: "bg-destructive/15 text-destructive" },
+const ROLE_META: Record<Role, { label: string; bg: string; color: string }> = {
+  USER:         { label: "User",         bg: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)" },
+  TEAM_MANAGER: { label: "Team Manager", bg: "rgba(14,165,233,0.12)",  color: "rgba(56,189,248,0.9)" },
+  STAFF:        { label: "Staff",        bg: "rgba(59,130,246,0.12)",  color: "rgba(96,165,250,0.9)" },
+  ADMIN:        { label: "Admin",        bg: "rgba(196,28,53,0.12)",   color: "rgba(220,60,80,0.9)" },
 }
 
 // ---------------------------------------------------------------------------
@@ -120,16 +120,29 @@ export default async function AdminUsersPage({
   return (
     <div className="mx-auto max-w-5xl space-y-6">
 
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-bold uppercase tracking-wide">Users</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{total.toLocaleString()} total</p>
+      {/* Page header card */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(196,28,53,0.8)" }}>
+          Staff Panel
+        </p>
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <h1 className="font-display text-3xl font-black uppercase tracking-wide">Users</h1>
+            <p className="mt-1 text-sm text-muted-foreground">{total.toLocaleString()} total accounts</p>
+          </div>
         </div>
       </div>
 
       {/* Role tabs */}
-      <div className="flex gap-1 border-b border-border overflow-x-auto">
+      <div className="flex gap-1 overflow-x-auto" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         {ROLE_FILTERS.map(({ label, value }) => (
           <Link
             key={value}
@@ -155,25 +168,35 @@ export default async function AdminUsersPage({
           name="search"
           defaultValue={search}
           placeholder="Search by name, email, or display name…"
-          className="w-full rounded-xl border border-border bg-card pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
+          className="w-full rounded-xl pl-10 pr-4 py-2.5 text-sm bg-card focus:outline-none focus:ring-2 focus:ring-brand/40"
+          style={{ border: "1px solid rgba(255,255,255,0.08)" }}
         />
       </form>
 
       {/* User list */}
       {users.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-10 text-center">
+        <div
+          className="rounded-2xl p-10 text-center"
+          style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+        >
           <Users className="mx-auto h-8 w-8 text-muted-foreground/30 mb-3" />
           <p className="text-muted-foreground">No users found.</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-border bg-card divide-y divide-border overflow-hidden">
+        <div
+          className="relative overflow-hidden rounded-2xl divide-y"
+          style={{ border: "1px solid rgba(255,255,255,0.07)", divideColor: "rgba(255,255,255,0.04)" }}
+        >
           {users.map((user) => {
             const roleMeta = ROLE_META[user.role]
             const eduVerified = !!(user.eduEmailVerified || user.eduVerifyOverride)
 
             return (
-              <div key={user.id} className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-
+              <div
+                key={user.id}
+                className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+              >
                 {/* User info */}
                 <div className="flex items-center gap-3 min-w-0">
                   {user.image ? (
@@ -181,10 +204,14 @@ export default async function AdminUsersPage({
                     <img
                       src={user.image}
                       alt={user.name ?? ""}
-                      className="h-9 w-9 shrink-0 rounded-full object-cover bg-muted"
+                      className="h-9 w-9 shrink-0 rounded-full object-cover"
+                      style={{ border: "1px solid rgba(255,255,255,0.08)" }}
                     />
                   ) : (
-                    <div className="h-9 w-9 shrink-0 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-muted-foreground">
+                    <div
+                      className="h-9 w-9 shrink-0 rounded-full flex items-center justify-center text-sm font-semibold text-white"
+                      style={{ background: "rgba(196,28,53,0.15)", border: "1px solid rgba(196,28,53,0.2)" }}
+                    >
                       {(user.name ?? user.email ?? "?")[0].toUpperCase()}
                     </div>
                   )}
@@ -196,11 +223,17 @@ export default async function AdminUsersPage({
                       {user.player?.displayName && (
                         <span className="text-xs text-muted-foreground">({user.player.displayName})</span>
                       )}
-                      <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase", roleMeta.cls)}>
+                      <span
+                        className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase"
+                        style={{ background: roleMeta.bg, color: roleMeta.color }}
+                      >
                         {roleMeta.label}
                       </span>
                       {eduVerified && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                        <span
+                          className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold text-emerald-400"
+                          style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.15)" }}
+                        >
                           <GraduationCap className="h-2.5 w-2.5" />
                           College
                         </span>
@@ -244,13 +277,21 @@ export default async function AdminUsersPage({
           <span>{total} users total</span>
           <div className="flex items-center gap-2">
             {page > 1 && (
-              <Link href={buildUrl({ page: String(page - 1) })} className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted/30 transition-colors">
+              <Link
+                href={buildUrl({ page: String(page - 1) })}
+                className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+              >
                 Previous
               </Link>
             )}
             <span className="text-xs">Page {page} of {totalPages}</span>
             {page < totalPages && (
-              <Link href={buildUrl({ page: String(page + 1) })} className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted/30 transition-colors">
+              <Link
+                href={buildUrl({ page: String(page + 1) })}
+                className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+              >
                 Next
               </Link>
             )}

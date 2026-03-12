@@ -157,9 +157,9 @@ export default async function DisputeDetailPage({
 
       {/* Status banner */}
       <div className={cn(
-        "rounded-xl border px-5 py-4 flex items-center gap-3",
-        meta.cls, meta.borderCls,
-      )}>
+        "rounded-xl px-5 py-4 flex items-center gap-3",
+        meta.cls,
+      )} style={{ border: `1px solid ${dispute.status === "OPEN" ? "rgba(196,28,53,0.3)" : dispute.status === "UNDER_REVIEW" ? "rgba(245,158,11,0.3)" : dispute.status === "RESOLVED" ? "rgba(52,211,153,0.3)" : "rgba(255,255,255,0.08)"}` }}>
         {meta.icon}
         <div className="flex-1 min-w-0">
           <span className="font-semibold text-sm">{meta.label}</span>
@@ -183,8 +183,11 @@ export default async function DisputeDetailPage({
         <div className="space-y-6">
 
           {/* Match context */}
-          <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <div className="px-5 py-3 border-b border-border">
+          <div
+            className="relative overflow-hidden rounded-xl"
+            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+          >
+            <div className="px-5 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
               <p className="text-xs text-muted-foreground mb-2">
                 {match.division.season.name} · {match.division.name}
                 {match.leagueWeek && ` · Week ${match.leagueWeek.weekNumber}`}
@@ -259,7 +262,10 @@ export default async function DisputeDetailPage({
           </div>
 
           {/* Dispute reason */}
-          <div className="rounded-xl border border-border bg-card p-5 space-y-3">
+          <div
+            className="rounded-xl p-5 space-y-3"
+            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+          >
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <h2 className="font-semibold text-sm">Dispute Reason</h2>
               <p className="text-xs text-muted-foreground">
@@ -284,7 +290,10 @@ export default async function DisputeDetailPage({
 
           {/* Resolution notes (if already resolved/dismissed) */}
           {dispute.resolution && (
-            <div className="rounded-xl border border-border bg-card p-5 space-y-2">
+            <div
+              className="rounded-xl p-5 space-y-2"
+              style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+            >
               <h2 className="font-semibold text-sm">Resolution Notes</h2>
               <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
                 {dispute.resolution}
@@ -314,7 +323,10 @@ export default async function DisputeDetailPage({
         <div className="space-y-4">
           <DisputeActions disputeId={disputeId} currentStatus={dispute.status} />
 
-          <div className="rounded-xl border border-border bg-card p-4 space-y-2">
+          <div
+            className="rounded-xl p-4 space-y-2"
+            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+          >
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Quick Links</p>
             <Link
               href={`/admin/matches/${match.id}`}

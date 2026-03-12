@@ -7,7 +7,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
-import { cn } from "@/lib/utils"
 import { formatRelative } from "@/lib/utils/dates"
 import {
   Users,
@@ -17,8 +16,8 @@ import {
   ClipboardList,
   ChevronRight,
   AlertTriangle,
+  CheckCircle2,
 } from "lucide-react"
-import type { SeasonStatus } from "@prisma/client"
 
 export const metadata: Metadata = {
   title: "Admin Overview — C3 Esports",
@@ -103,19 +102,6 @@ async function getRecentActivity() {
 }
 
 // ---------------------------------------------------------------------------
-// Status helpers
-// ---------------------------------------------------------------------------
-
-const STATUS_BADGE: Record<SeasonStatus, { label: string; cls: string }> = {
-  DRAFT:        { label: "Draft",        cls: "bg-muted text-muted-foreground" },
-  REGISTRATION: { label: "Registration", cls: "bg-sky-500/15 text-sky-400" },
-  ACTIVE:       { label: "Active",       cls: "bg-brand/15 text-brand" },
-  PLAYOFFS:     { label: "Playoffs",     cls: "bg-amber-500/15 text-amber-400" },
-  COMPLETED:    { label: "Completed",    cls: "bg-muted text-muted-foreground" },
-  CANCELLED:    { label: "Cancelled",    cls: "bg-muted/50 text-muted-foreground/50" },
-}
-
-// ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
 
@@ -132,35 +118,43 @@ function StatCard({
   href?: string
   alert?: boolean
 }) {
+  const isAlert = alert && value > 0
+
   const inner = (
     <div
-      className={cn(
-        "flex items-center gap-4 rounded-xl border bg-card p-5 transition-colors",
-        href && "hover:border-brand/40 group",
-        alert && value > 0 ? "border-amber-500/30" : "border-border"
-      )}
+      className="relative overflow-hidden flex items-center gap-4 rounded-2xl p-5 transition-all duration-150 group"
+      style={{
+        background: isAlert ? "rgba(245,158,11,0.04)" : "rgba(255,255,255,0.03)",
+        border: `1px solid ${isAlert ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.07)"}`,
+      }}
     >
       <div
-        className={cn(
-          "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border",
-          alert && value > 0
-            ? "border-amber-500/30 bg-amber-500/10"
-            : "border-brand/30 bg-brand/10"
-        )}
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{
+          background: isAlert
+            ? "linear-gradient(90deg, rgba(245,158,11,0.5), transparent)"
+            : "linear-gradient(90deg, rgba(196,28,53,0.4), rgba(59,130,246,0.2), transparent)",
+        }}
+        aria-hidden
+      />
+      <div
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+        style={{
+          background: isAlert ? "rgba(245,158,11,0.1)" : "rgba(196,28,53,0.1)",
+          border: `1px solid ${isAlert ? "rgba(245,158,11,0.25)" : "rgba(196,28,53,0.2)"}`,
+        }}
       >
         <Icon
-          className={cn(
-            "h-5 w-5",
-            alert && value > 0 ? "text-amber-400" : "text-brand"
-          )}
+          className="h-5 w-5"
+          style={{ color: isAlert ? "rgba(251,191,36,0.9)" : "rgba(196,28,53,0.9)" }}
         />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-2xl font-bold font-display">{value.toLocaleString()}</p>
+        <p className="text-2xl font-black font-display tabular-nums">{value.toLocaleString()}</p>
         <p className="text-xs text-muted-foreground uppercase tracking-widest mt-0.5">{label}</p>
       </div>
       {href && (
-        <ChevronRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-foreground/60 transition-colors shrink-0" />
+        <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-muted-foreground/60 transition-colors shrink-0" />
       )}
     </div>
   )
@@ -178,32 +172,60 @@ export default async function AdminOverviewPage() {
 
   const { recentRegistrations, recentMatches, recentAuditEntries } = activity
 
-  return (
-    <div className="mx-auto max-w-5xl px-4 py-8 space-y-10">
+  const actionRequired = stats.pendingRegistrations + stats.openDisputes
 
-      {/* Header */}
-      <div>
-        <h1 className="font-display text-2xl font-bold uppercase tracking-wide">Overview</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Platform at a glance.</p>
+  return (
+    <div className="mx-auto max-w-5xl px-4 py-8 space-y-8">
+
+      {/* Header card */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(196,28,53,0.8)" }}>
+              Staff Panel
+            </p>
+            <h1 className="font-display text-3xl font-black uppercase tracking-wide">Overview</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Platform health at a glance.</p>
+          </div>
+          {actionRequired > 0 && (
+            <div
+              className="flex items-center gap-2 rounded-xl px-4 py-2.5"
+              style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)" }}
+            >
+              <AlertTriangle className="h-4 w-4 text-amber-400" />
+              <span className="text-sm font-semibold text-amber-400">
+                {actionRequired} item{actionRequired !== 1 ? "s" : ""} need attention
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Stat cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <StatCard label="Total Users"      value={stats.totalUsers}           icon={Users}         href="/admin/users" />
-        <StatCard label="Total Teams"      value={stats.totalTeams}           icon={Shield}        href="/admin/teams" />
-        <StatCard label="Active Seasons"   value={stats.activeSeasons}        icon={Calendar}      href="/admin/seasons" />
-        <StatCard label="Pending Reviews"  value={stats.pendingRegistrations} icon={ClipboardList} href="/admin/seasons" alert />
-        <StatCard label="Total Matches"    value={stats.totalMatches}         icon={Swords}        href="/admin/matches" />
-        <StatCard label="Completed"        value={stats.completedMatches}     icon={Swords} />
-        <StatCard label="Open Disputes"    value={stats.openDisputes}         icon={AlertTriangle} href="/admin/disputes" alert />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard label="Total Users"     value={stats.totalUsers}           icon={Users}         href="/admin/users" />
+        <StatCard label="Total Teams"     value={stats.totalTeams}           icon={Shield}        href="/admin/teams" />
+        <StatCard label="Active Seasons"  value={stats.activeSeasons}        icon={Calendar}      href="/admin/seasons" />
+        <StatCard label="Pending Reviews" value={stats.pendingRegistrations} icon={ClipboardList} href="/admin/seasons" alert />
+        <StatCard label="Total Matches"   value={stats.totalMatches}         icon={Swords}        href="/admin/matches" />
+        <StatCard label="Completed"       value={stats.completedMatches}     icon={CheckCircle2} />
+        <StatCard label="Open Disputes"   value={stats.openDisputes}         icon={AlertTriangle} href="/admin/disputes" alert />
       </div>
 
       {/* Activity columns */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-5 lg:grid-cols-2">
 
         {/* Pending registrations */}
-        <section>
-          <div className="mb-3 flex items-center justify-between">
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
             <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Pending Registrations
             </h2>
@@ -213,39 +235,51 @@ export default async function AdminOverviewPage() {
           </div>
 
           {recentRegistrations.length === 0 ? (
-            <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
-              No pending registrations.
-            </p>
+            <div
+              className="flex items-center gap-3 rounded-2xl px-4 py-4"
+              style={{ background: "rgba(52,211,153,0.04)", border: "1px solid rgba(52,211,153,0.12)" }}
+            >
+              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+              <p className="text-sm text-emerald-400 font-medium">All caught up — no pending registrations.</p>
+            </div>
           ) : (
-            <ul className="space-y-2">
+            <div className="space-y-2">
               {recentRegistrations.map((reg) => (
-                <li key={reg.id}>
-                  <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{reg.team.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{reg.season.name}</p>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                      <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-400">
-                        {reg.status === "WAITLISTED" ? "Waitlisted" : "Pending"}
-                      </span>
-                      <Link
-                        href={`/admin/seasons/${reg.season.id}/registrations`}
-                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        Review →
-                      </Link>
-                    </div>
+                <div
+                  key={reg.id}
+                  className="flex items-center justify-between gap-3 rounded-xl px-4 py-3"
+                  style={{ border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold truncate">{reg.team.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{reg.season.name}</p>
                   </div>
-                </li>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span
+                      className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase"
+                      style={{
+                        background: reg.status === "WAITLISTED" ? "rgba(59,130,246,0.12)" : "rgba(245,158,11,0.12)",
+                        color: reg.status === "WAITLISTED" ? "rgba(96,165,250,0.9)" : "rgba(251,191,36,0.9)",
+                      }}
+                    >
+                      {reg.status === "WAITLISTED" ? "Waitlisted" : "Pending"}
+                    </span>
+                    <Link
+                      href={`/admin/seasons/${reg.season.id}/registrations`}
+                      className="text-xs text-brand hover:text-brand/80 font-medium transition-colors"
+                    >
+                      Review →
+                    </Link>
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </section>
 
         {/* Recent completed matches */}
-        <section>
-          <div className="mb-3 flex items-center justify-between">
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
             <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Recent Matches
             </h2>
@@ -255,36 +289,41 @@ export default async function AdminOverviewPage() {
           </div>
 
           {recentMatches.length === 0 ? (
-            <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
+            <div
+              className="rounded-2xl px-4 py-4 text-sm text-muted-foreground"
+              style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+            >
               No completed matches yet.
-            </p>
+            </div>
           ) : (
-            <ul className="space-y-2">
+            <div className="space-y-2">
               {recentMatches.map((match) => (
-                <li key={match.id}>
-                  <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate">
-                        {match.homeTeam.name}
-                        <span className="mx-1.5 text-muted-foreground font-normal">vs</span>
-                        {match.awayTeam.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{match.division.name}</p>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <p className="text-sm font-bold font-display tabular-nums">
-                        {match.homeScore ?? "—"} – {match.awayScore ?? "—"}
-                      </p>
-                      {match.completedAt && (
-                        <p className="text-xs text-muted-foreground">
-                          {formatRelative(match.completedAt)}
-                        </p>
-                      )}
-                    </div>
+                <div
+                  key={match.id}
+                  className="flex items-center justify-between gap-3 rounded-xl px-4 py-3"
+                  style={{ border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold truncate">
+                      {match.homeTeam.name}
+                      <span className="mx-1.5 text-muted-foreground font-normal">vs</span>
+                      {match.awayTeam.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{match.division.name}</p>
                   </div>
-                </li>
+                  <div className="shrink-0 text-right">
+                    <p className="text-sm font-black font-display tabular-nums">
+                      {match.homeScore ?? "—"} – {match.awayScore ?? "—"}
+                    </p>
+                    {match.completedAt && (
+                      <p className="text-[10px] text-muted-foreground/60">
+                        {formatRelative(match.completedAt)}
+                      </p>
+                    )}
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </section>
 
@@ -292,8 +331,8 @@ export default async function AdminOverviewPage() {
 
       {/* Audit log preview */}
       {recentAuditEntries.length > 0 && (
-        <section>
-          <div className="mb-3 flex items-center justify-between">
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
             <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Recent Staff Activity
             </h2>
@@ -301,21 +340,36 @@ export default async function AdminOverviewPage() {
               Full audit log
             </Link>
           </div>
-          <div className="rounded-xl border border-border bg-card divide-y divide-border overflow-hidden">
-            {recentAuditEntries.map((entry) => {
+          <div
+            className="relative overflow-hidden rounded-2xl"
+            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+          >
+            <div
+              className="absolute top-0 left-0 right-0 h-px"
+              style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.4), rgba(59,130,246,0.2), transparent)" }}
+              aria-hidden
+            />
+            {recentAuditEntries.map((entry, i) => {
               const actorName =
                 entry.actor.player?.displayName ?? entry.actor.name ?? "Unknown"
               return (
-                <div key={entry.id} className="flex items-center justify-between gap-4 px-4 py-2.5">
+                <div
+                  key={entry.id}
+                  className="flex items-center justify-between gap-4 px-4 py-2.5"
+                  style={i > 0 ? { borderTop: "1px solid rgba(255,255,255,0.04)" } : undefined}
+                >
                   <div className="min-w-0 flex items-center gap-3">
-                    <code className="shrink-0 text-xs font-mono text-brand bg-brand/10 rounded px-1.5 py-0.5">
+                    <code
+                      className="shrink-0 text-xs font-mono rounded-md px-2 py-0.5"
+                      style={{ background: "rgba(196,28,53,0.1)", color: "rgba(252,165,165,0.8)" }}
+                    >
                       {entry.action}
                     </code>
                     <span className="text-xs text-muted-foreground truncate">
                       {entry.entityType} · by {actorName}
                     </span>
                   </div>
-                  <span className="shrink-0 text-xs text-muted-foreground/60 tabular-nums">
+                  <span className="shrink-0 text-xs text-muted-foreground/50 tabular-nums">
                     {formatRelative(entry.createdAt)}
                   </span>
                 </div>

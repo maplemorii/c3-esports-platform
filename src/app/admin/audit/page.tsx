@@ -130,12 +130,21 @@ export default async function AdminAuditPage({
   return (
     <div className="mx-auto max-w-5xl space-y-6">
 
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-bold uppercase tracking-wide">Audit Log</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{total.toLocaleString()} entries</p>
-        </div>
+      {/* Page header card */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(196,28,53,0.8)" }}>
+          Staff Panel · Admin Only
+        </p>
+        <h1 className="font-display text-3xl font-black uppercase tracking-wide">Audit Log</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{total.toLocaleString()} entries</p>
       </div>
 
       {/* Filters */}
@@ -153,7 +162,8 @@ export default async function AdminAuditPage({
           <select
             name="entityType"
             defaultValue={entityType ?? ""}
-            className="rounded-lg border border-border bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
+            className="rounded-lg px-3 py-2 text-sm bg-card focus:outline-none focus:ring-2 focus:ring-brand/40"
+            style={{ border: "1px solid rgba(255,255,255,0.08)" }}
           >
             <option value="">All entities</option>
             {["Match", "Team", "User", "Season", "Division", "Registration", "Dispute"].map((t) => (
@@ -165,7 +175,8 @@ export default async function AdminAuditPage({
         {(action || entityType) && (
           <Link
             href="/admin/audit"
-            className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:bg-muted/30 transition-colors"
+            className="rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            style={{ border: "1px solid rgba(255,255,255,0.08)" }}
           >
             Clear filters
           </Link>
@@ -174,18 +185,28 @@ export default async function AdminAuditPage({
 
       {/* Log entries */}
       {entries.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-10 text-center">
+        <div
+          className="rounded-2xl p-10 text-center"
+          style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+        >
           <ClipboardList className="mx-auto h-8 w-8 text-muted-foreground/30 mb-3" />
           <p className="text-muted-foreground">No audit log entries found.</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-border bg-card divide-y divide-border overflow-hidden">
+        <div
+          className="relative overflow-hidden rounded-2xl"
+          style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+        >
           {entries.map((entry) => {
             const link = entityLink(entry.entityType, entry.entityId)
             const label = ACTION_LABELS[entry.action] ?? entry.action
 
             return (
-              <div key={entry.id} className="flex items-start gap-4 px-5 py-4">
+              <div
+                key={entry.id}
+                className="flex items-start gap-4 px-5 py-4"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+              >
                 {/* Timestamp + actor */}
                 <div className="shrink-0 w-36 text-right">
                   <p className="text-xs text-muted-foreground">
@@ -257,13 +278,21 @@ export default async function AdminAuditPage({
           <span>{total} entries total</span>
           <div className="flex items-center gap-2">
             {page > 1 && (
-              <Link href={buildUrl({ page: String(page - 1) })} className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted/30 transition-colors">
+              <Link
+                href={buildUrl({ page: String(page - 1) })}
+                className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+              >
                 Previous
               </Link>
             )}
             <span className="text-xs">Page {page} of {totalPages}</span>
             {page < totalPages && (
-              <Link href={buildUrl({ page: String(page + 1) })} className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted/30 transition-colors">
+              <Link
+                href={buildUrl({ page: String(page + 1) })}
+                className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+              >
                 Next
               </Link>
             )}

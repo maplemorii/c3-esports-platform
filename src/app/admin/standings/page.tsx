@@ -128,16 +128,27 @@ export default async function AdminStandingsPage({
   return (
     <div className="mx-auto max-w-5xl space-y-6">
 
-      {/* Header */}
-      <div>
-        <h1 className="font-display text-2xl font-bold uppercase tracking-wide">Standings</h1>
+      {/* Page header card */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(196,28,53,0.8)" }}>
+          Staff Panel
+        </p>
+        <h1 className="font-display text-3xl font-black uppercase tracking-wide">Standings</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           View and recalculate standings per division.
         </p>
       </div>
 
       {/* Season tabs */}
-      <div className="flex gap-1 border-b border-border overflow-x-auto">
+      <div className="flex gap-1 overflow-x-auto" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         {seasons.map((s) => (
           <Link
             key={s.id}
@@ -180,7 +191,10 @@ export default async function AdminStandingsPage({
 
       {/* Empty state — no division selected */}
       {!division && (
-        <div className="rounded-xl border border-border bg-card p-10 text-center">
+        <div
+          className="rounded-2xl p-10 text-center"
+          style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+        >
           <BarChart3 className="mx-auto h-8 w-8 text-muted-foreground/30 mb-3" />
           <p className="text-muted-foreground">Select a division above to view standings.</p>
         </div>
@@ -204,13 +218,22 @@ export default async function AdminStandingsPage({
           </div>
 
           {division.standingEntries.length === 0 ? (
-            <div className="rounded-xl border border-border bg-card p-8 text-center">
+            <div
+              className="rounded-xl p-8 text-center"
+              style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+            >
               <p className="text-muted-foreground text-sm">No standing entries yet for this division.</p>
             </div>
           ) : (
-            <div className="rounded-xl border border-border bg-card overflow-hidden">
+            <div
+              className="relative overflow-hidden rounded-xl"
+              style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+            >
               {/* Table header */}
-              <div className="grid grid-cols-[2rem_1fr_repeat(8,_minmax(3rem,_auto))] gap-2 px-4 py-2.5 border-b border-border text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <div
+                className="grid grid-cols-[2rem_1fr_repeat(8,minmax(3rem,auto))] gap-2 px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+              >
                 <span>#</span>
                 <span>Team</span>
                 <span className="text-center">MP</span>
@@ -224,11 +247,12 @@ export default async function AdminStandingsPage({
               </div>
 
               {/* Rows */}
-              <div className="divide-y divide-border">
+              <div>
                 {division.standingEntries.map((entry, idx) => (
                   <div
                     key={entry.id}
-                    className="grid grid-cols-[2rem_1fr_repeat(8,_minmax(3rem,_auto))] gap-2 px-4 py-3 items-center hover:bg-muted/20 transition-colors"
+                    className="grid grid-cols-[2rem_1fr_repeat(8,minmax(3rem,auto))] gap-2 px-4 py-3 items-center hover:bg-white/3 transition-colors"
+                    style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
                   >
                     <span className="text-xs font-bold text-muted-foreground tabular-nums">{idx + 1}</span>
 

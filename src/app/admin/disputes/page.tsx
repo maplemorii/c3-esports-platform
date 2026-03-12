@@ -94,16 +94,45 @@ export default async function DisputesPage({
   return (
     <div className="mx-auto max-w-5xl space-y-6">
 
-      {/* Header */}
-      <div>
-        <h1 className="font-display text-2xl font-bold uppercase tracking-wide">Disputes</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {openCount} open · {reviewCount} under review
+      {/* Page header card */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(196,28,53,0.8)" }}>
+          Staff Panel
         </p>
+        <h1 className="font-display text-3xl font-black uppercase tracking-wide">Disputes</h1>
+        <div className="flex items-center gap-3 mt-1">
+          {openCount > 0 && (
+            <span
+              className="rounded-full px-2 py-0.5 text-xs font-medium text-destructive"
+              style={{ background: "rgba(196,28,53,0.1)", border: "1px solid rgba(196,28,53,0.2)" }}
+            >
+              {openCount} open
+            </span>
+          )}
+          {reviewCount > 0 && (
+            <span
+              className="rounded-full px-2 py-0.5 text-xs font-medium text-amber-400"
+              style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)" }}
+            >
+              {reviewCount} under review
+            </span>
+          )}
+          {openCount === 0 && reviewCount === 0 && (
+            <p className="text-sm text-muted-foreground">No active disputes</p>
+          )}
+        </div>
       </div>
 
       {/* Status tabs */}
-      <div className="flex gap-1 border-b border-border">
+      <div className="flex gap-1" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         {STATUS_FILTERS.map(({ label, value }) => (
           <Link
             key={value}
@@ -122,12 +151,18 @@ export default async function DisputesPage({
 
       {/* Disputes list */}
       {disputes.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-10 text-center">
+        <div
+          className="rounded-2xl p-10 text-center"
+          style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+        >
           <AlertTriangle className="mx-auto h-8 w-8 text-muted-foreground/30 mb-3" />
           <p className="text-muted-foreground">No disputes found.</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-border bg-card divide-y divide-border overflow-hidden">
+        <div
+          className="relative overflow-hidden rounded-2xl"
+          style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+        >
           {disputes.map((dispute) => {
             const meta = STATUS_META[dispute.status]
             // Derive filing team name from match participants
@@ -140,7 +175,8 @@ export default async function DisputesPage({
               <Link
                 key={dispute.id}
                 href={`/admin/disputes/${dispute.id}`}
-                className="group flex items-start gap-4 px-5 py-4 hover:bg-muted/30 transition-colors"
+                className="group flex items-start gap-4 px-5 py-4 hover:bg-white/3 transition-colors"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
               >
                 {/* Status icon */}
                 <div className={cn(
@@ -195,7 +231,8 @@ export default async function DisputesPage({
             {page > 1 && (
               <Link
                 href={`/admin/disputes?${status ? `status=${status}&` : ""}page=${page - 1}`}
-                className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted/30 transition-colors"
+                className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                style={{ border: "1px solid rgba(255,255,255,0.08)" }}
               >
                 Previous
               </Link>
@@ -204,7 +241,8 @@ export default async function DisputesPage({
             {page < totalPages && (
               <Link
                 href={`/admin/disputes?${status ? `status=${status}&` : ""}page=${page + 1}`}
-                className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted/30 transition-colors"
+                className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                style={{ border: "1px solid rgba(255,255,255,0.08)" }}
               >
                 Next
               </Link>

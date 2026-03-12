@@ -188,46 +188,69 @@ export default async function AdminTeamDetailPage({
         <span className="text-foreground">{team.name}</span>
       </div>
 
-      {/* Header */}
-      <div className="flex items-start gap-4">
-        {team.logoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={team.logoUrl}
-            alt={team.name}
-            className="h-16 w-16 rounded-xl object-cover bg-muted shrink-0"
-          />
-        ) : (
-          <div className="h-16 w-16 rounded-xl bg-muted flex items-center justify-center shrink-0">
-            <Shield className="h-8 w-8 text-muted-foreground/40" />
-          </div>
-        )}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="font-display text-2xl font-bold uppercase tracking-wide">{team.name}</h1>
-            <Link
-              href={`/teams/${team.slug}`}
-              target="_blank"
-              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-brand transition-colors"
+      {/* Header card */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <div className="flex items-start gap-4">
+          {team.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={team.logoUrl}
+              alt={team.name}
+              className="h-16 w-16 rounded-xl object-cover shrink-0"
+              style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+            />
+          ) : (
+            <div
+              className="h-16 w-16 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: "rgba(196,28,53,0.1)", border: "1px solid rgba(196,28,53,0.15)" }}
             >
-              <ExternalLink className="h-3.5 w-3.5" /> Public profile
-            </Link>
+              <Shield className="h-8 w-8" style={{ color: "rgba(196,28,53,0.7)" }} />
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(196,28,53,0.8)" }}>
+              Staff Panel · Team Detail
+            </p>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="font-display text-2xl font-black uppercase tracking-wide">{team.name}</h1>
+              <Link
+                href={`/teams/${team.slug}`}
+                target="_blank"
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-brand transition-colors"
+              >
+                <ExternalLink className="h-3.5 w-3.5" /> Public profile
+              </Link>
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">
+              <span className="font-mono text-muted-foreground/60">{team.slug}</span>
+              {" · Owner: "}
+              <span className="text-foreground">{team.owner.name ?? team.owner.email}</span>
+              {" · Created "}
+              {formatRelative(team.createdAt)}
+            </p>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            <span className="font-mono text-muted-foreground/60">{team.slug}</span>
-            {" · Owner: "}
-            <span className="text-foreground">{team.owner.name ?? team.owner.email}</span>
-            {" · Created "}
-            {formatRelative(team.createdAt)}
-          </p>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
 
         {/* Roster */}
-        <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <div className="flex items-center gap-2 px-5 py-3.5 border-b border-border">
+        <div
+          className="relative overflow-hidden rounded-2xl"
+          style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+        >
+          <div
+            className="flex items-center gap-2 px-5 py-3.5"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+          >
             <Users className="h-4 w-4 text-muted-foreground" />
             <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Active Roster ({team.memberships.length})
@@ -236,9 +259,13 @@ export default async function AdminTeamDetailPage({
           {team.memberships.length === 0 ? (
             <p className="px-5 py-4 text-sm text-muted-foreground">No active members.</p>
           ) : (
-            <div className="divide-y divide-border">
+            <div>
               {team.memberships.map((m) => (
-                <div key={m.id} className="flex items-center justify-between gap-3 px-5 py-3">
+                <div
+                  key={m.id}
+                  className="flex items-center justify-between gap-3 px-5 py-3"
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                >
                   <div className="min-w-0">
                     <p className="text-sm font-medium truncate">{m.player.displayName}</p>
                     <p className="text-xs text-muted-foreground truncate">
@@ -256,8 +283,14 @@ export default async function AdminTeamDetailPage({
         </div>
 
         {/* Registration history */}
-        <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <div className="flex items-center gap-2 px-5 py-3.5 border-b border-border">
+        <div
+          className="relative overflow-hidden rounded-2xl"
+          style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+        >
+          <div
+            className="flex items-center gap-2 px-5 py-3.5"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+          >
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Registrations ({team.registrations.length})
@@ -266,11 +299,15 @@ export default async function AdminTeamDetailPage({
           {team.registrations.length === 0 ? (
             <p className="px-5 py-4 text-sm text-muted-foreground">No registrations.</p>
           ) : (
-            <div className="divide-y divide-border">
+            <div>
               {team.registrations.map((reg) => {
                 const meta = REG_STATUS_META[reg.status]
                 return (
-                  <div key={reg.id} className="flex items-center justify-between gap-3 px-5 py-3">
+                  <div
+                    key={reg.id}
+                    className="flex items-center justify-between gap-3 px-5 py-3"
+                    style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                  >
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">{reg.season.name}</p>
                       <p className="text-xs text-muted-foreground">
@@ -301,19 +338,26 @@ export default async function AdminTeamDetailPage({
 
       {/* Recent matches */}
       {recentMatches.length > 0 && (
-        <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <div className="flex items-center gap-2 px-5 py-3.5 border-b border-border">
+        <div
+          className="relative overflow-hidden rounded-2xl"
+          style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+        >
+          <div
+            className="flex items-center gap-2 px-5 py-3.5"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+          >
             <Swords className="h-4 w-4 text-muted-foreground" />
             <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Recent Matches
             </h2>
           </div>
-          <div className="divide-y divide-border">
+          <div>
             {recentMatches.map((m) => (
               <Link
                 key={m.id}
                 href={`/admin/matches/${m.id}`}
-                className="group flex items-center justify-between gap-4 px-5 py-3 hover:bg-muted/30 transition-colors"
+                className="group flex items-center justify-between gap-4 px-5 py-3 hover:bg-white/3 transition-colors"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
               >
                 <div className="min-w-0">
                   <p className="text-sm font-medium truncate">

@@ -179,41 +179,57 @@ export default async function AdminMatchDetailPage({
         </span>
       </div>
 
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="font-display text-2xl font-bold uppercase tracking-wide">
-              {match.homeTeam.name}
-              <span className="mx-3 text-muted-foreground font-normal text-xl">vs</span>
-              {match.awayTeam.name}
-            </h1>
-            <span className={cn(
-              "rounded-full px-3 py-1 text-xs font-semibold uppercase",
-              meta.cls,
-            )}>
-              {meta.label}
-            </span>
-          </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {match.division.season.name} · {match.division.name}
-            {match.leagueWeek && ` · Week ${match.leagueWeek.weekNumber}`}
-          </p>
-        </div>
-
-        {match.homeScore !== null && match.awayScore !== null && (
-          <div className="rounded-xl border border-border bg-card px-6 py-3 text-center">
-            <p className="font-display text-3xl font-bold tabular-nums">
-              {match.homeScore} – {match.awayScore}
+      {/* Header card */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(196,28,53,0.8)" }}>
+          Staff Panel · Match Detail
+        </p>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="font-display text-2xl font-black uppercase tracking-wide">
+                {match.homeTeam.name}
+                <span className="mx-3 text-muted-foreground font-normal text-xl">vs</span>
+                {match.awayTeam.name}
+              </h1>
+              <span className={cn(
+                "rounded-full px-3 py-1 text-xs font-semibold uppercase",
+                meta.cls,
+              )}>
+                {meta.label}
+              </span>
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {match.division.season.name} · {match.division.name}
+              {match.leagueWeek && ` · Week ${match.leagueWeek.weekNumber}`}
             </p>
-            {match.winner && (
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                <Trophy className="inline h-3 w-3 mr-1 text-amber-400" />
-                {match.winner.name} wins
-              </p>
-            )}
           </div>
-        )}
+
+          {match.homeScore !== null && match.awayScore !== null && (
+            <div
+              className="rounded-xl px-6 py-3 text-center shrink-0"
+              style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+            >
+              <p className="font-display text-3xl font-bold tabular-nums">
+                {match.homeScore} – {match.awayScore}
+              </p>
+              {match.winner && (
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  <Trophy className="inline h-3 w-3 mr-1 text-amber-400" />
+                  {match.winner.name} wins
+                </p>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
@@ -222,7 +238,10 @@ export default async function AdminMatchDetailPage({
         <div className="space-y-6">
 
           {/* Match info */}
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div
+            className="rounded-xl p-5"
+            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+          >
             <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
               Match Info
             </h2>
@@ -238,19 +257,29 @@ export default async function AdminMatchDetailPage({
           </div>
 
           {/* Check-in status */}
-          <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <div className="flex items-center gap-2 px-5 py-3.5 border-b border-border">
+          <div
+            className="relative overflow-hidden rounded-xl"
+            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+          >
+            <div
+              className="flex items-center gap-2 px-5 py-3.5"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+            >
               <Clock className="h-4 w-4 text-muted-foreground" />
               <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Check-In Status
               </h2>
             </div>
-            <div className="divide-y divide-border">
+            <div>
               {[
                 { team: match.homeTeam, checkIn: homeCheckIn, checkedIn: homeCheckedIn },
                 { team: match.awayTeam, checkIn: awayCheckIn, checkedIn: awayCheckedIn },
               ].map(({ team, checkIn, checkedIn }) => (
-                <div key={team.id} className="flex items-center justify-between gap-4 px-5 py-3.5">
+                <div
+                  key={team.id}
+                  className="flex items-center justify-between gap-4 px-5 py-3.5"
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                >
                   <span className="text-sm font-medium">{team.name}</span>
                   <div className="flex items-center gap-2">
                     {checkedIn ? (
@@ -277,8 +306,14 @@ export default async function AdminMatchDetailPage({
 
           {/* Games */}
           {match.games.length > 0 && (
-            <div className="rounded-xl border border-border bg-card overflow-hidden">
-              <div className="flex items-center gap-2 px-5 py-3.5 border-b border-border">
+            <div
+              className="relative overflow-hidden rounded-xl"
+              style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+            >
+              <div
+                className="flex items-center gap-2 px-5 py-3.5"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+              >
                 <Swords className="h-4 w-4 text-muted-foreground" />
                 <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Games

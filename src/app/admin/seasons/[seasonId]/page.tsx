@@ -186,31 +186,44 @@ export default async function AdminSeasonHubPage({
         <span className="text-foreground">{season.name}</span>
       </div>
 
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="font-display text-2xl font-bold uppercase tracking-wide">{season.name}</h1>
-            <span className={cn("rounded-full px-3 py-1 text-xs font-semibold uppercase", statusMeta.cls)}>
-              {statusMeta.label}
-            </span>
-            {!season.isVisible && (
-              <span className="rounded-full px-2.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground">
-                Hidden
+      {/* Header card */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(196,28,53,0.8)" }}>
+          Staff Panel · Season Hub
+        </p>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="font-display text-3xl font-black uppercase tracking-wide">{season.name}</h1>
+              <span className={cn("rounded-full px-3 py-1 text-xs font-semibold uppercase", statusMeta.cls)}>
+                {statusMeta.label}
               </span>
+              {!season.isVisible && (
+                <span className="rounded-full px-2.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground">
+                  Hidden
+                </span>
+              )}
+            </div>
+            {season.description && (
+              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{season.description}</p>
             )}
           </div>
-          {season.description && (
-            <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{season.description}</p>
-          )}
+          <Link
+            href={`/seasons/${season.slug}`}
+            target="_blank"
+            className="text-xs text-muted-foreground hover:text-brand transition-colors shrink-0"
+          >
+            Public page →
+          </Link>
         </div>
-        <Link
-          href={`/seasons/${season.slug}`}
-          target="_blank"
-          className="text-xs text-muted-foreground hover:text-brand transition-colors"
-        >
-          Public page →
-        </Link>
       </div>
 
       {/* Date info */}
@@ -221,7 +234,11 @@ export default async function AdminSeasonHubPage({
           { label: "Season Start",value: season.startDate },
           { label: "Season End",  value: season.endDate },
         ].map(({ label, value }) => (
-          <div key={label} className="rounded-xl border border-border bg-card p-4">
+          <div
+            key={label}
+            className="rounded-xl p-4"
+            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+          >
             <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
             <p className="mt-1 text-sm font-medium">
               {value ? formatDate(new Date(value)) : <span className="text-muted-foreground/50">—</span>}
@@ -236,7 +253,8 @@ export default async function AdminSeasonHubPage({
           <Link
             key={href}
             href={href}
-            className="group flex items-center gap-4 rounded-xl border border-border bg-card p-4 hover:border-brand/40 transition-colors"
+            className="group flex items-center gap-4 rounded-xl p-4 transition-colors hover:bg-white/3"
+            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
           >
             <div className={cn(
               "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border",

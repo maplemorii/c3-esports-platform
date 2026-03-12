@@ -88,7 +88,10 @@ function SeasonRow({ season }: { season: Season }) {
   )
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-5 hover:border-brand/30 transition-colors sm:flex-row sm:items-center">
+    <div
+      className="flex flex-col gap-3 rounded-2xl p-5 transition-colors sm:flex-row sm:items-center hover:bg-white/3"
+      style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+    >
 
       {/* Season info */}
       <div className="flex-1 min-w-0">
@@ -151,7 +154,8 @@ function SeasonRow({ season }: { season: Season }) {
       <div className="flex shrink-0 items-center gap-2">
         <Link
           href={`/admin/seasons/${season.id}/registrations`}
-          className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:border-brand/40 hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+          style={{ border: "1px solid rgba(255,255,255,0.08)" }}
         >
           <ClipboardList className="h-3.5 w-3.5" />
           Registrations
@@ -163,7 +167,8 @@ function SeasonRow({ season }: { season: Season }) {
         </Link>
         <Link
           href={`/admin/seasons/${season.id}/settings`}
-          className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:border-brand/40 hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+          style={{ border: "1px solid rgba(255,255,255,0.08)" }}
         >
           <Settings className="h-3.5 w-3.5" />
           Settings
@@ -199,27 +204,47 @@ export default async function AdminSeasonsPage() {
   const hasSeasons = seasons.length > 0
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
+    <div className="mx-auto max-w-4xl space-y-6">
 
-      {/* Header */}
-      <div className="mb-8 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-bold uppercase tracking-wide">Seasons</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {seasons.length} season{seasons.length !== 1 ? "s" : ""} total
-          </p>
+      {/* Page header card */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(196,28,53,0.8)" }}>
+          Staff Panel
+        </p>
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <h1 className="font-display text-3xl font-black uppercase tracking-wide">Seasons</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {seasons.length} season{seasons.length !== 1 ? "s" : ""} total
+            </p>
+          </div>
+          <Link
+            href="/admin/seasons/create"
+            className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-white shrink-0 transition-opacity hover:opacity-90"
+            style={{
+              background: "linear-gradient(135deg, rgba(196,28,53,0.9), rgba(59,130,246,0.9))",
+              boxShadow: "0 0 16px rgba(196,28,53,0.15)",
+            }}
+          >
+            <Plus className="h-4 w-4" />
+            New Season
+          </Link>
         </div>
-        <Link
-          href="/admin/seasons/create"
-          className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand/90 transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          New Season
-        </Link>
       </div>
 
       {!hasSeasons ? (
-        <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card py-20 text-center">
+        <div
+          className="flex flex-col items-center gap-4 rounded-2xl py-20 text-center"
+          style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+        >
           <Calendar className="h-10 w-10 text-muted-foreground/30" />
           <div>
             <p className="font-medium">No seasons yet</p>
@@ -227,7 +252,11 @@ export default async function AdminSeasonsPage() {
           </div>
           <Link
             href="/admin/seasons/create"
-            className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand/90 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            style={{
+              background: "linear-gradient(135deg, rgba(196,28,53,0.9), rgba(59,130,246,0.9))",
+              boxShadow: "0 0 16px rgba(196,28,53,0.15)",
+            }}
           >
             <Plus className="h-4 w-4" />
             New Season

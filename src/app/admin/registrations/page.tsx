@@ -134,25 +134,45 @@ export default async function AdminRegistrationsPage({
   return (
     <div className="mx-auto max-w-5xl space-y-6">
 
-      {/* Header */}
-      <div>
-        <h1 className="font-display text-2xl font-bold uppercase tracking-wide">Registrations</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+      {/* Page header card */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(196,28,53,0.8)" }}>
+          Staff Panel
+        </p>
+        <h1 className="font-display text-3xl font-black uppercase tracking-wide">Registrations</h1>
+        <div className="flex items-center gap-2 mt-1">
           {pendingCount > 0 && (
-            <span className="mr-3 inline-flex items-center rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-medium text-amber-400">
+            <span
+              className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium text-amber-400"
+              style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)" }}
+            >
               {pendingCount} pending
             </span>
           )}
           {waitlistedCount > 0 && (
-            <span className="inline-flex items-center rounded-full bg-sky-500/15 px-2.5 py-0.5 text-xs font-medium text-sky-400">
+            <span
+              className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium text-sky-400"
+              style={{ background: "rgba(14,165,233,0.1)", border: "1px solid rgba(14,165,233,0.2)" }}
+            >
               {waitlistedCount} waitlisted
             </span>
           )}
-        </p>
+          {pendingCount === 0 && waitlistedCount === 0 && (
+            <p className="text-sm text-muted-foreground">All caught up</p>
+          )}
+        </div>
       </div>
 
       {/* Status tabs */}
-      <div className="flex gap-1 border-b border-border">
+      <div className="flex gap-1" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         {STATUS_FILTERS.map(({ label, value }) => (
           <Link
             key={value}
@@ -197,16 +217,26 @@ export default async function AdminRegistrationsPage({
 
       {/* Registration list */}
       {registrations.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-10 text-center">
+        <div
+          className="rounded-2xl p-10 text-center"
+          style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+        >
           <ClipboardList className="mx-auto h-8 w-8 text-muted-foreground/30 mb-3" />
           <p className="text-muted-foreground">No registrations found.</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-border bg-card divide-y divide-border overflow-hidden">
+        <div
+          className="relative overflow-hidden rounded-2xl"
+          style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+        >
           {registrations.map((reg) => {
             const meta = STATUS_META[reg.status]
             return (
-              <div key={reg.id} className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div
+                key={reg.id}
+                className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+              >
 
                 {/* Team info */}
                 <div className="flex items-center gap-3 min-w-0">
@@ -269,13 +299,21 @@ export default async function AdminRegistrationsPage({
           <span>{total} registrations total</span>
           <div className="flex items-center gap-2">
             {page > 1 && (
-              <Link href={buildUrl({ page: String(page - 1) })} className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted/30 transition-colors">
+              <Link
+                href={buildUrl({ page: String(page - 1) })}
+                className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+              >
                 Previous
               </Link>
             )}
             <span className="text-xs">Page {page} of {totalPages}</span>
             {page < totalPages && (
-              <Link href={buildUrl({ page: String(page + 1) })} className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted/30 transition-colors">
+              <Link
+                href={buildUrl({ page: String(page + 1) })}
+                className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+              >
                 Next
               </Link>
             )}

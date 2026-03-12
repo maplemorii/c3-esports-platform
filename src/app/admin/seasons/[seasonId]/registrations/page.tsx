@@ -121,7 +121,10 @@ function RegistrationRow({
   seasonId: string
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div
+      className="flex flex-col gap-3 rounded-xl p-4 sm:flex-row sm:items-center sm:justify-between"
+      style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+    >
       {/* Team info */}
       <div className="flex items-center gap-3 min-w-0">
         {reg.team.logoUrl ? (
@@ -201,10 +204,10 @@ export default async function RegistrationsPage({
   const pendingCount = grouped.PENDING.length + grouped.WAITLISTED.length
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
+    <div className="mx-auto max-w-4xl space-y-6">
 
       {/* Breadcrumb */}
-      <div className="mb-6 flex items-center gap-2 text-xs text-muted-foreground">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Link href="/admin/seasons" className="hover:text-brand transition-colors">
           Seasons
         </Link>
@@ -219,20 +222,30 @@ export default async function RegistrationsPage({
         <span className="text-foreground">Registrations</span>
       </div>
 
-      {/* Header */}
-      <div className="mb-8 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-bold uppercase tracking-wide">
-            Registrations
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {registrations.length} total
-            {pendingCount > 0 && (
-              <span className="ml-2 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-400">
-                {pendingCount} pending
-              </span>
-            )}
-          </p>
+      {/* Header card */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(196,28,53,0.8)" }}>
+          Staff Panel · {season.name}
+        </p>
+        <h1 className="font-display text-3xl font-black uppercase tracking-wide">Registrations</h1>
+        <div className="flex items-center gap-2 mt-1">
+          <p className="text-sm text-muted-foreground">{registrations.length} total</p>
+          {pendingCount > 0 && (
+            <span
+              className="rounded-full px-2 py-0.5 text-xs font-medium text-amber-400"
+              style={{ background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.2)" }}
+            >
+              {pendingCount} pending
+            </span>
+          )}
         </div>
       </div>
 

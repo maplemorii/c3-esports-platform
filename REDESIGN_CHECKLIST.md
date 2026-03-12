@@ -95,24 +95,25 @@ Track every file that needs a visual update for a full redesign. Check off each 
 
 ## Admin Pages
 
-- [ ] **Admin dashboard** — `src/app/admin/page.tsx` → `/admin`
+- [x] **Admin dashboard** — `src/app/admin/page.tsx` → `/admin`
+- [x] **Admin error/loading** — `src/app/admin/error.tsx` + `loading.tsx`
 - [ ] **Admin layout** — `src/app/admin/layout.tsx`
-- [ ] **Users** — `src/app/admin/users/page.tsx`
-- [ ] **Teams list** — `src/app/admin/teams/page.tsx`
-- [ ] **Team detail** — `src/app/admin/teams/[teamId]/page.tsx`
-- [ ] **Seasons list** — `src/app/admin/seasons/page.tsx`
+- [x] **Users** — `src/app/admin/users/page.tsx`
+- [x] **Teams list** — `src/app/admin/teams/page.tsx`
+- [x] **Team detail** — `src/app/admin/teams/[teamId]/page.tsx`
+- [x] **Seasons list** — `src/app/admin/seasons/page.tsx`
 - [ ] **Create season** — `src/app/admin/seasons/create/page.tsx`
-- [ ] **Season detail** — `src/app/admin/seasons/[seasonId]/page.tsx`
+- [x] **Season detail** — `src/app/admin/seasons/[seasonId]/page.tsx`
 - [ ] **Season settings** — `src/app/admin/seasons/[seasonId]/settings/page.tsx`
-- [ ] **Registrations (per season)** — `src/app/admin/seasons/[seasonId]/registrations/page.tsx`
-- [ ] **Matches list** — `src/app/admin/matches/page.tsx`
+- [x] **Registrations (per season)** — `src/app/admin/seasons/[seasonId]/registrations/page.tsx`
+- [x] **Matches list** — `src/app/admin/matches/page.tsx`
 - [ ] **Create match** — `src/app/admin/matches/create/page.tsx`
-- [ ] **Match detail** — `src/app/admin/matches/[matchId]/page.tsx`
-- [ ] **Registrations (global)** — `src/app/admin/registrations/page.tsx`
-- [ ] **Standings** — `src/app/admin/standings/page.tsx`
-- [ ] **Disputes list** — `src/app/admin/disputes/page.tsx`
-- [ ] **Dispute detail** — `src/app/admin/disputes/[disputeId]/page.tsx`
-- [ ] **Audit log** — `src/app/admin/audit/page.tsx`
+- [x] **Match detail** — `src/app/admin/matches/[matchId]/page.tsx`
+- [x] **Registrations (global)** — `src/app/admin/registrations/page.tsx`
+- [x] **Standings** — `src/app/admin/standings/page.tsx`
+- [x] **Disputes list** — `src/app/admin/disputes/page.tsx`
+- [x] **Dispute detail** — `src/app/admin/disputes/[disputeId]/page.tsx`
+- [x] **Audit log** — `src/app/admin/audit/page.tsx`
 
 ---
 
