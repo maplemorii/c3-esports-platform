@@ -60,17 +60,40 @@ export function NotificationPrefs({ initial }: Props) {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
-      <div className="flex items-center gap-2 px-6 py-4 border-b border-border">
-        <Bell className="h-4 w-4 text-muted-foreground" />
-        <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+    <div
+      className="relative overflow-hidden rounded-2xl"
+      style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+    >
+      {/* Top accent line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.4), transparent)" }}
+        aria-hidden
+      />
+
+      {/* Header */}
+      <div
+        className="flex items-center gap-2.5 px-6 py-4"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+      >
+        <div
+          className="flex h-7 w-7 items-center justify-center rounded-lg"
+          style={{ background: "rgba(196,28,53,0.12)", border: "1px solid rgba(196,28,53,0.2)" }}
+        >
+          <Bell className="h-3.5 w-3.5" style={{ color: "rgba(196,28,53,0.9)" }} />
+        </div>
+        <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-foreground">
           Email Notifications
         </h2>
       </div>
 
-      <div className="divide-y divide-border">
-        {LABELS.map(({ key, label, description }) => (
-          <div key={key} className="flex items-start justify-between gap-4 p-5">
+      <div style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+        {LABELS.map(({ key, label, description }, i) => (
+          <div
+            key={key}
+            className="flex items-start justify-between gap-4 px-6 py-4"
+            style={i > 0 ? { borderTop: "1px solid rgba(255,255,255,0.04)" } : undefined}
+          >
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground">{label}</p>
               <p className="text-xs text-muted-foreground/60 mt-0.5">{description}</p>
@@ -81,12 +104,12 @@ export function NotificationPrefs({ initial }: Props) {
               aria-checked={prefs[key]}
               disabled={isPending}
               onClick={() => toggle(key)}
-              className={[
-                "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent",
-                "transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2",
-                "focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-                prefs[key] ? "bg-blue-600" : "bg-muted",
-              ].join(" ")}
+              className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              style={{
+                background: prefs[key]
+                  ? "linear-gradient(135deg, rgba(196,28,53,0.85), rgba(59,130,246,0.7))"
+                  : "rgba(255,255,255,0.08)",
+              }}
             >
               <span
                 className={[
@@ -101,7 +124,7 @@ export function NotificationPrefs({ initial }: Props) {
       </div>
 
       {error && (
-        <p className="px-6 pb-4 text-xs text-destructive">{error}</p>
+        <p className="px-6 py-3 text-xs text-destructive">{error}</p>
       )}
     </div>
   )

@@ -117,7 +117,7 @@ export function AvatarUpload({ playerId, currentAvatarUrl, hasDiscordOAuth }: Av
   }
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center gap-4">
       {/* Avatar button */}
       <button
         type="button"
@@ -127,11 +127,18 @@ export function AvatarUpload({ playerId, currentAvatarUrl, hasDiscordOAuth }: Av
         onDragOver={(e) => e.preventDefault()}
         aria-label="Change profile photo"
         className={cn(
-          "group relative flex h-24 w-24 shrink-0 items-center justify-center",
-          "rounded-2xl border-2 border-border bg-muted overflow-hidden shadow-lg",
-          "transition-all duration-150",
-          busy ? "cursor-wait opacity-70" : "cursor-pointer hover:border-brand/50"
+          "group relative flex h-28 w-28 shrink-0 items-center justify-center",
+          "rounded-full overflow-hidden",
+          "transition-all duration-200",
+          busy ? "cursor-wait" : "cursor-pointer"
         )}
+        style={{
+          boxShadow: busy
+            ? "0 0 0 3px rgba(196,28,53,0.15), 0 0 0 5px rgba(59,130,246,0.08)"
+            : "0 0 0 3px rgba(196,28,53,0.25), 0 0 0 5px rgba(59,130,246,0.12)",
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.08)",
+        }}
       >
         {/* Current/preview image */}
         {preview ? (
@@ -142,21 +149,30 @@ export function AvatarUpload({ playerId, currentAvatarUrl, hasDiscordOAuth }: Av
             className="h-full w-full object-cover"
           />
         ) : (
-          <UserRound className="h-12 w-12 text-muted-foreground/40" />
+          <UserRound className="h-12 w-12 text-muted-foreground/30" />
         )}
 
         {/* Hover / busy overlay */}
         <div
           className={cn(
-            "absolute inset-0 flex items-center justify-center rounded-2xl",
-            "bg-black/50 transition-opacity",
+            "absolute inset-0 flex flex-col items-center justify-center gap-1",
+            "transition-opacity duration-150",
             busy ? "opacity-100" : "opacity-0 group-hover:opacity-100"
           )}
+          style={{ background: "rgba(0,0,0,0.55)" }}
         >
           {busy ? (
-            <Loader2 className="h-6 w-6 animate-spin text-white" />
+            <>
+              <Loader2 className="h-6 w-6 animate-spin text-white" />
+              <span className="text-[10px] font-medium text-white/70">
+                {phase === "uploading" ? "Uploading…" : "Saving…"}
+              </span>
+            </>
           ) : (
-            <Camera className="h-6 w-6 text-white" />
+            <>
+              <Camera className="h-6 w-6 text-white" />
+              <span className="text-[10px] font-medium text-white/70">Change</span>
+            </>
           )}
         </div>
       </button>
@@ -177,15 +193,13 @@ export function AvatarUpload({ playerId, currentAvatarUrl, hasDiscordOAuth }: Av
           type="button"
           disabled={busy}
           onClick={() => inputRef.current?.click()}
-          className="text-sm font-medium text-brand hover:underline disabled:opacity-50 disabled:cursor-wait"
+          className="text-sm font-semibold text-brand hover:underline disabled:opacity-50 disabled:cursor-wait"
         >
-          {busy
-            ? phase === "uploading" ? "Uploading…" : "Saving…"
-            : preview ? "Change photo" : "Upload photo"}
+          {preview ? "Change photo" : "Upload photo"}
         </button>
-        <p className="mt-0.5 text-xs text-muted-foreground/60">
+        <p className="mt-0.5 text-xs text-muted-foreground/50">
           {hasDiscordOAuth
-            ? "Override your Discord avatar · JPEG, PNG, WebP · max 5 MB"
+            ? "Overrides your Discord avatar · JPEG, PNG, WebP · max 5 MB"
             : "JPEG, PNG, or WebP · max 5 MB"}
         </p>
       </div>

@@ -15,7 +15,6 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button-variants"
-import { Button } from "@/components/ui/button"
 import {
   User,
   MessageSquare,
@@ -227,11 +226,14 @@ export function PlayerProfileForm({
         <button
           type="submit"
           disabled={saving || saved}
-          className={cn(
-            buttonVariants({ variant: "default", size: "default" }),
-            "min-w-35 gap-2",
-            saved && "bg-emerald-600 hover:bg-emerald-600"
-          )}
+          className="inline-flex items-center justify-center min-w-35 gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-all duration-150 disabled:opacity-70 disabled:cursor-not-allowed"
+          style={saved ? {
+            background: "rgba(52,211,153,0.85)",
+            boxShadow: "0 0 12px rgba(52,211,153,0.2)",
+          } : {
+            background: "linear-gradient(135deg, rgba(196,28,53,0.9), rgba(59,130,246,0.9))",
+            boxShadow: "0 0 16px rgba(196,28,53,0.2)",
+          }}
         >
           {saved ? (
             <>

@@ -13,8 +13,6 @@ import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Loader2, Link2, Link2Off } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button-variants"
 
 interface SteamLinkButtonProps {
   steamId: string | null
@@ -40,10 +38,8 @@ export function SteamLinkButton({ steamId }: SteamLinkButtonProps) {
       <button
         onClick={handleUnlink}
         disabled={busy}
-        className={cn(
-          buttonVariants({ variant: "ghost", size: "sm" }),
-          "mt-2 gap-1.5 text-xs text-muted-foreground hover:text-destructive"
-        )}
+        className="mt-2 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-destructive disabled:opacity-50 disabled:cursor-wait"
+        style={{ border: "1px solid rgba(255,255,255,0.08)" }}
       >
         {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <Link2Off className="h-3 w-3" />}
         Unlink
@@ -54,10 +50,11 @@ export function SteamLinkButton({ steamId }: SteamLinkButtonProps) {
   return (
     <Link
       href="/api/auth/steam"
-      className={cn(
-        buttonVariants({ variant: "outline", size: "sm" }),
-        "mt-2 gap-1.5 text-xs border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
-      )}
+      className="mt-2 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-blue-400 transition-colors hover:text-blue-300"
+      style={{
+        background: "rgba(59,130,246,0.06)",
+        border: "1px solid rgba(59,130,246,0.2)",
+      }}
     >
       <Link2 className="h-3 w-3" />
       Link via Steam

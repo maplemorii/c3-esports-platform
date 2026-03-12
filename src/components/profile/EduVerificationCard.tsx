@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { useSearchParams } from "next/navigation"
-import { GraduationCap, CheckCircle2, XCircle, Loader2, AlertCircle, MailCheck } from "lucide-react"
+import { GraduationCap, CheckCircle2, Loader2, AlertCircle, MailCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface EduVerificationCardProps {
@@ -64,15 +64,35 @@ export function EduVerificationCard({
   const isVerified = verified && !sent
 
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+    <div
+      className="relative overflow-hidden rounded-2xl"
+      style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+    >
+      {/* Top accent line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.4), transparent)" }}
+        aria-hidden
+      />
+
       {/* Header */}
-      <div className="flex items-center gap-2 px-6 py-4 border-b border-border">
-        <GraduationCap className="h-4 w-4 text-muted-foreground" />
-        <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+      <div
+        className="flex items-center gap-2.5 px-6 py-4"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+      >
+        <div
+          className="flex h-7 w-7 items-center justify-center rounded-lg"
+          style={{ background: "rgba(196,28,53,0.12)", border: "1px solid rgba(196,28,53,0.2)" }}
+        >
+          <GraduationCap className="h-3.5 w-3.5" style={{ color: "rgba(196,28,53,0.9)" }} />
+        </div>
+        <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-foreground">
           College Verification
         </h2>
         {isVerified && (
-          <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
+          <span className="ml-auto inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400"
+            style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.2)" }}
+          >
             <CheckCircle2 className="h-3 w-3" />
             {isOverride ? "Staff Approved" : "Verified"}
           </span>
@@ -82,13 +102,16 @@ export function EduVerificationCard({
       <div className="p-6 space-y-4">
         {/* Description */}
         <p className="text-sm text-muted-foreground leading-relaxed">
-          To compete in C3 Esports you must verify a <strong>.edu email address</strong> issued
+          To compete in C3 Esports you must verify a <strong className="text-foreground/80">.edu email address</strong> issued
           by your college or university. Your account email can be anything — this is separate.
         </p>
 
         {/* Current verified state */}
         {isVerified && eduEmail && (
-          <div className="flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-3">
+          <div
+            className="flex items-center gap-3 rounded-xl px-4 py-3"
+            style={{ background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.15)" }}
+          >
             <MailCheck className="h-4 w-4 text-emerald-400 shrink-0" />
             <div className="min-w-0">
               <p className="text-sm font-medium text-emerald-400 truncate">{eduEmail}</p>
@@ -103,7 +126,10 @@ export function EduVerificationCard({
 
         {/* Sent confirmation */}
         {sent && !isVerified && (
-          <div className="flex items-start gap-3 rounded-lg border border-blue-500/20 bg-blue-500/5 px-4 py-3">
+          <div
+            className="flex items-start gap-3 rounded-xl px-4 py-3"
+            style={{ background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.15)" }}
+          >
             <MailCheck className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-blue-300">Verification email sent!</p>
@@ -116,7 +142,10 @@ export function EduVerificationCard({
 
         {/* Error */}
         {error && (
-          <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
+          <div
+            className="flex items-start gap-3 rounded-xl px-4 py-3"
+            style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)" }}
+          >
             <AlertCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
             <p className="text-sm text-destructive">{error}</p>
           </div>
@@ -137,22 +166,21 @@ export function EduVerificationCard({
                 placeholder="you@university.edu"
                 required
                 className={cn(
-                  "flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm",
+                  "flex-1 rounded-lg border bg-input px-3 py-2 text-sm",
                   "placeholder:text-muted-foreground/50",
-                  "focus:outline-none focus:ring-2 focus:ring-ring/40",
-                  "disabled:opacity-50"
+                  "focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand/60",
+                  "disabled:opacity-50 border-border transition-colors"
                 )}
                 disabled={isPending}
               />
               <button
                 type="submit"
                 disabled={isPending || !input}
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium",
-                  "bg-primary text-primary-foreground",
-                  "hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed",
-                  "transition-colors"
-                )}
+                className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-white"
+                style={{
+                  background: "linear-gradient(135deg, rgba(196,28,53,0.85), rgba(59,130,246,0.85))",
+                  boxShadow: "0 0 12px rgba(196,28,53,0.15)",
+                }}
               >
                 {isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -165,7 +193,7 @@ export function EduVerificationCard({
             </div>
           </div>
 
-          <p className="text-xs text-muted-foreground/60">
+          <p className="text-xs text-muted-foreground/50">
             We&apos;ll send a one-time verification link to this address.
             If your school uses a non-.edu domain, contact staff for a manual review.
           </p>
@@ -173,11 +201,14 @@ export function EduVerificationCard({
 
         {/* Not a .edu? */}
         {!isVerified && (
-          <p className="text-xs text-muted-foreground/50 border-t border-border pt-4">
+          <p
+            className="text-xs text-muted-foreground/50 pt-4"
+            style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+          >
             Don&apos;t have a .edu email?{" "}
             <a
               href="https://discord.gg/c3esports"
-              className="text-blue-400 hover:underline"
+              className="text-brand/70 hover:text-brand hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >

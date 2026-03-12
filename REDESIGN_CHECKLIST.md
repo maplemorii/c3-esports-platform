@@ -66,12 +66,12 @@ Track every file that needs a visual update for a full redesign. Check off each 
 
 ## Profile Components
 
-- [ ] `src/components/profile/AvatarUpload.tsx`
-- [ ] `src/components/profile/EduVerificationCard.tsx`
-- [ ] `src/components/profile/NotificationPrefs.tsx`
-- [ ] `src/components/player/PlayerProfileForm.tsx`
-- [ ] `src/components/player/EpicLinkButton.tsx`
-- [ ] `src/components/player/SteamLinkButton.tsx`
+- [x] `src/components/profile/AvatarUpload.tsx`
+- [x] `src/components/profile/EduVerificationCard.tsx`
+- [x] `src/components/profile/NotificationPrefs.tsx`
+- [x] `src/components/player/PlayerProfileForm.tsx`
+- [x] `src/components/player/EpicLinkButton.tsx`
+- [x] `src/components/player/SteamLinkButton.tsx`
 
 ---
 
