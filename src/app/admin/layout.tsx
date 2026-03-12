@@ -1,9 +1,10 @@
 /**
- * Admin layout
+ * Admin layout — /admin/*
  *
- * Wraps all /admin/* pages with authentication + the DashboardShell
- * (which renders AdminSidebar for STAFF/ADMIN roles).
- * Redirects to signin if unauthenticated; 403 page if insufficient role.
+ * Auth gate: redirects to sign-in if unauthenticated.
+ * Role gate: redirects to /dashboard if the user is below STAFF.
+ * Wraps all admin pages in DashboardShell, which renders AdminSidebar
+ * for STAFF and ADMIN roles.
  */
 
 import { redirect } from "next/navigation"

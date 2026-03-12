@@ -98,17 +98,17 @@ Track every file that needs a visual update for a full redesign. Check off each 
 
 - [x] **Admin dashboard** — `src/app/admin/page.tsx` → `/admin`
 - [x] **Admin error/loading** — `src/app/admin/error.tsx` + `loading.tsx`
-- [ ] **Admin layout** — `src/app/admin/layout.tsx`
+- [x] **Admin layout** — `src/app/admin/layout.tsx`
 - [x] **Users** — `src/app/admin/users/page.tsx`
 - [x] **Teams list** — `src/app/admin/teams/page.tsx`
 - [x] **Team detail** — `src/app/admin/teams/[teamId]/page.tsx`
 - [x] **Seasons list** — `src/app/admin/seasons/page.tsx`
-- [ ] **Create season** — `src/app/admin/seasons/create/page.tsx`
+- [x] **Create season** — `src/app/admin/seasons/create/page.tsx`
 - [x] **Season detail** — `src/app/admin/seasons/[seasonId]/page.tsx`
-- [ ] **Season settings** — `src/app/admin/seasons/[seasonId]/settings/page.tsx`
+- [x] **Season settings** — `src/app/admin/seasons/[seasonId]/settings/page.tsx`
 - [x] **Registrations (per season)** — `src/app/admin/seasons/[seasonId]/registrations/page.tsx`
 - [x] **Matches list** — `src/app/Type error: Object literal may only specify known properties, and 'divideColor' does not exist in type 'Properties<string | number, string & {}>'.admin/matches/page.tsx`
-- [ ] **Create match** — `src/app/admin/matches/create/page.tsx`
+- [x] **Create match** — `src/app/admin/matches/create/page.tsx`
 - [x] **Match detail** — `src/app/admin/matches/[matchId]/page.tsx`
 - [x] **Registrations (global)** — `src/app/admin/registrations/page.tsx`
 - [x] **Standings** — `src/app/admin/standings/page.tsx`
@@ -120,9 +120,9 @@ Track every file that needs a visual update for a full redesign. Check off each 
 
 ## Layouts
 
-- [ ] `src/app/(dashboard)/layout.tsx` — dashboard shell, auth gate
-- [ ] `src/app/(public)/layout.tsx` — public wrapper
-- [ ] `src/app/admin/layout.tsx` — admin shell, role gate
+- [x] `src/app/(dashboard)/layout.tsx` — dashboard shell, auth gate
+- [x] `src/app/(public)/layout.tsx` — public wrapper
+- [x] `src/app/admin/layout.tsx` — admin shell, role gate
 
 ---
 
