@@ -13,6 +13,7 @@ import { formatRelative } from "@/lib/utils/dates";
 import { Users, GraduationCap, CheckCircle2, Search } from "lucide-react";
 import { UserRoleSelect } from "./_components/UserRoleSelect";
 import { EduOverrideButton } from "./_components/EduOverrideButton";
+import { getSession } from "@/lib/session";
 import type { Role } from "@prisma/client";
 
 export const metadata: Metadata = { title: "Users — Admin" };
@@ -43,6 +44,16 @@ const ROLE_META: Record<Role, { label: string; bg: string; color: string }> = {
     label: "Admin",
     bg: "rgba(196,28,53,0.12)",
     color: "rgba(220,60,80,0.9)",
+  },
+  OWNER: {
+    label: "Owner",
+    bg: "rgba(245,158,11,0.12)",
+    color: "rgba(251,191,36,0.9)",
+  },
+  DEVELOPER: {
+    label: "Developer",
+    bg: "rgba(168,85,247,0.12)",
+    color: "rgba(192,132,252,0.9)",
   },
 };
 
@@ -105,6 +116,8 @@ const ROLE_FILTERS: { label: string; value: string }[] = [
   { label: "Team Managers", value: "TEAM_MANAGER" },
   { label: "Staff", value: "STAFF" },
   { label: "Admins", value: "ADMIN" },
+  { label: "Owners", value: "OWNER" },
+  { label: "Developers", value: "DEVELOPER" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -119,6 +132,9 @@ export default async function AdminUsersPage({
   const { search, role: roleParam, page: pageParam } = await searchParams;
   const role = (roleParam as Role | undefined) || undefined;
   const page = pageParam ? Math.max(1, parseInt(pageParam, 10)) : 1;
+
+  const session = await getSession();
+  const viewerRole: Role = (session?.user?.role as Role) ?? "ADMIN";
 
   const { users, total, totalPages } = await getData({ search, role, page });
 
@@ -313,7 +329,7 @@ export default async function AdminUsersPage({
 
                 {/* Actions */}
                 <div className="flex items-start gap-3 shrink-0 flex-wrap justify-end">
-                  <UserRoleSelect userId={user.id} currentRole={user.role} />
+                  <UserRoleSelect userId={user.id} currentRole={user.role} viewerRole={viewerRole} />
                   <EduOverrideButton
                     userId={user.id}
                     currentOverride={user.eduVerifyOverride ?? false}

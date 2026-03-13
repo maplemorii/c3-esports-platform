@@ -5,26 +5,46 @@ import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Role } from "@prisma/client"
+import { ROLE_HIERARCHY } from "@/lib/roles"
 
-const ROLES: Role[] = ["USER", "TEAM_MANAGER", "STAFF", "ADMIN"]
+// Assignable via API (DEVELOPER is injected via env var, never set in DB)
+const ASSIGNABLE_ROLES: Role[] = ["USER", "TEAM_MANAGER", "STAFF", "ADMIN", "OWNER"]
 
 const ROLE_CLS: Record<Role, string> = {
   USER:         "text-muted-foreground",
   TEAM_MANAGER: "text-sky-400",
   STAFF:        "text-blue-400",
   ADMIN:        "text-destructive",
+  OWNER:        "text-amber-400",
+  DEVELOPER:    "text-purple-400",
+}
+
+function roleLabel(r: Role): string {
+  if (r === "TEAM_MANAGER") return "Team Manager"
+  return r.charAt(0) + r.slice(1).toLowerCase()
 }
 
 export function UserRoleSelect({
   userId,
   currentRole,
+  viewerRole,
 }: {
-  userId: string
+  userId:      string
   currentRole: Role
+  viewerRole:  Role
 }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
+
+  const viewerRank  = ROLE_HIERARCHY[viewerRole]
+  const targetRank  = ROLE_HIERARCHY[currentRole]
+  const canEdit     = targetRank < viewerRank
+
+  // Options the viewer is allowed to assign
+  const availableRoles = ASSIGNABLE_ROLES.filter(
+    (r) => ROLE_HIERARCHY[r] < viewerRank
+  )
 
   async function changeRole(role: Role) {
     if (role === currentRole) return
@@ -49,6 +69,20 @@ export function UserRoleSelect({
     }
   }
 
+  // Read-only badge for users whose rank >= viewer's rank
+  if (!canEdit) {
+    return (
+      <span
+        className={cn(
+          "rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium select-none",
+          ROLE_CLS[currentRole],
+        )}
+      >
+        {roleLabel(currentRole)}
+      </span>
+    )
+  }
+
   return (
     <div className="flex flex-col items-end gap-1">
       <div className="relative">
@@ -66,9 +100,9 @@ export function UserRoleSelect({
             ROLE_CLS[currentRole],
           )}
         >
-          {ROLES.map((r) => (
+          {availableRoles.map((r) => (
             <option key={r} value={r} className="text-foreground bg-card">
-              {r === "TEAM_MANAGER" ? "Team Manager" : r.charAt(0) + r.slice(1).toLowerCase()}
+              {roleLabel(r)}
             </option>
           ))}
         </select>

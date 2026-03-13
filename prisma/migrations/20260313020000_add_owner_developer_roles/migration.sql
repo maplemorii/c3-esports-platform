@@ -1,0 +1,3 @@
+-- Add OWNER and DEVELOPER values to the Role enum
+ALTER TYPE "Role" ADD VALUE 'OWNER';
+ALTER TYPE "Role" ADD VALUE 'DEVELOPER';

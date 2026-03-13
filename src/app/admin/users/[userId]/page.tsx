@@ -26,6 +26,7 @@ import {
 import { UserRoleSelect } from "../_components/UserRoleSelect"
 import { EduOverrideButton } from "../_components/EduOverrideButton"
 import { DisableUserButton } from "../_components/DisableUserButton"
+import { getSession } from "@/lib/session"
 import type { Role, MembershipRole } from "@prisma/client"
 
 // ---------------------------------------------------------------------------
@@ -52,6 +53,16 @@ const ROLE_META: Record<Role, { label: string; bg: string; color: string }> = {
     label: "Admin",
     bg: "rgba(196,28,53,0.12)",
     color: "rgba(220,60,80,0.9)",
+  },
+  OWNER: {
+    label: "Owner",
+    bg: "rgba(245,158,11,0.12)",
+    color: "rgba(251,191,36,0.9)",
+  },
+  DEVELOPER: {
+    label: "Developer",
+    bg: "rgba(168,85,247,0.12)",
+    color: "rgba(192,132,252,0.9)",
   },
 }
 
@@ -140,8 +151,9 @@ export default async function AdminUserDetailPage({
   params: Promise<{ userId: string }>
 }) {
   const { userId } = await params
-  const user = await getData(userId)
+  const [user, session] = await Promise.all([getData(userId), getSession()])
   if (!user) notFound()
+  const viewerRole: Role = (session?.user?.role as Role) ?? "ADMIN"
 
   const roleMeta = ROLE_META[user.role]
   const eduVerified = !!(user.eduEmailVerified || user.eduVerifyOverride)
@@ -254,7 +266,7 @@ export default async function AdminUserDetailPage({
         <Row
           label="Role"
           value={
-            <UserRoleSelect userId={user.id} currentRole={user.role} />
+            <UserRoleSelect userId={user.id} currentRole={user.role} viewerRole={viewerRole} />
           }
         />
         <Row label="User ID" value={user.id} mono dim />

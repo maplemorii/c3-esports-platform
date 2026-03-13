@@ -20,6 +20,8 @@ export const ROLE_HIERARCHY: Record<Role, number> = {
   TEAM_MANAGER: 1,
   STAFF:        2,
   ADMIN:        3,
+  OWNER:        4,
+  DEVELOPER:    5,
 }
 
 // ---------------------------------------------------------------------------

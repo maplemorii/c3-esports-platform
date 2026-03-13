@@ -22,6 +22,8 @@ enum Role {
   TEAM_MANAGER  // Owns or captains at least one team
   STAFF         // League staff — can manage seasons, matches, divisions
   ADMIN         // Full platform access including user management
+  OWNER         // Platform owner — can manage admins
+  DEVELOPER     // Highest privilege — injected via DEVELOPER_USER_ID env var, not stored in DB
 }
 
 enum SeasonStatus {

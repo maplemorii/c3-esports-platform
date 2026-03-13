@@ -59,6 +59,10 @@ export const authOptions: NextAuthOptions = {
           token.role    = dbUser.role
         }
       }
+      // Inject DEVELOPER role for the designated account (not stored in DB)
+      if (process.env.DEVELOPER_USER_ID && token.id === process.env.DEVELOPER_USER_ID) {
+        token.role = "DEVELOPER" as Role
+      }
       return token
     },
     async session({ session, token }) {
