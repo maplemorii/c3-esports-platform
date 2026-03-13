@@ -31,6 +31,8 @@ export async function POST(req: Request) {
   await prisma.$transaction([
     prisma.user.update({ where: { id: record.userId }, data: { password: hashed } }),
     prisma.passwordResetToken.update({ where: { id: record.id }, data: { usedAt: new Date() } }),
+    // Invalidate all active sessions so old devices are logged out
+    prisma.session.deleteMany({ where: { userId: record.userId } }),
   ])
 
   return NextResponse.json({ ok: true })

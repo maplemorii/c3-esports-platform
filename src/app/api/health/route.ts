@@ -1,5 +1,21 @@
+/**
+ * GET /api/health
+ *
+ * Public health check used by uptime monitors (UptimeRobot, Better Uptime, etc.).
+ * Returns 200 + { ok: true, db: "up" } when healthy.
+ * Returns 503 + { ok: false, db: "down" } when the DB is unreachable.
+ */
+
 import { NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
+
+export const dynamic = "force-dynamic"
 
 export async function GET() {
-  return NextResponse.json({ ok: true })
+  try {
+    await prisma.$queryRaw`SELECT 1`
+    return NextResponse.json({ ok: true, db: "up" })
+  } catch {
+    return NextResponse.json({ ok: false, db: "down" }, { status: 503 })
+  }
 }

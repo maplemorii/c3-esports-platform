@@ -140,6 +140,17 @@ export default function SignInPage() {
                 onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(59,130,246,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.12)" }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none" }}
               />
+              <div className="flex justify-end mt-0.5">
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-[11px] transition-colors duration-150"
+                  style={{ color: "rgba(96,165,250,0.6)" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(147,197,253,0.9)" }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(96,165,250,0.6)" }}
+                >
+                  Forgot password?
+                </Link>
+              </div>
             </Field>
 
             {error && (

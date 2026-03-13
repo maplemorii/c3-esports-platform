@@ -25,6 +25,7 @@ import {
 } from "lucide-react"
 import { UserRoleSelect } from "../_components/UserRoleSelect"
 import { EduOverrideButton } from "../_components/EduOverrideButton"
+import { DisableUserButton } from "../_components/DisableUserButton"
 import type { Role, MembershipRole } from "@prisma/client"
 
 // ---------------------------------------------------------------------------
@@ -66,7 +67,7 @@ const MEMBERSHIP_ROLE_LABEL: Record<MembershipRole, string> = {
 
 async function getData(userId: string) {
   return prisma.user.findUnique({
-    where: { id: userId, deletedAt: null },
+    where: { id: userId },
     select: {
       id: true,
       name: true,
@@ -75,6 +76,7 @@ async function getData(userId: string) {
       image: true,
       createdAt: true,
       updatedAt: true,
+      deletedAt: true,
       eduEmail: true,
       eduEmailVerified: true,
       eduVerifyOverride: true,
@@ -224,6 +226,14 @@ export default async function AdminUserDetailPage({
                 {player.displayName}
               </p>
             )}
+            {user.deletedAt && (
+              <span
+                className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase text-destructive mt-1"
+                style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}
+              >
+                Disabled
+              </span>
+            )}
             <p className="text-xs text-muted-foreground/60 mt-1 flex items-center gap-1.5">
               <Calendar className="h-3 w-3" />
               Joined {formatRelative(user.createdAt)}
@@ -249,6 +259,17 @@ export default async function AdminUserDetailPage({
         />
         <Row label="User ID" value={user.id} mono dim />
         {player?.id && <Row label="Player ID" value={player.id} mono dim />}
+        <Row
+          label="Account Status"
+          value={
+            <div className="flex items-center gap-3">
+              <span className={user.deletedAt ? "text-destructive" : "text-emerald-400"}>
+                {user.deletedAt ? "Disabled" : "Active"}
+              </span>
+              <DisableUserButton userId={user.id} isDisabled={!!user.deletedAt} />
+            </div>
+          }
+        />
       </Section>
 
       {/* Edu verification */}

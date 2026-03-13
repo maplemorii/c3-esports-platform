@@ -20,6 +20,7 @@ import {
   Swords,
 } from "lucide-react"
 import type { DivisionTier, RegistrationStatus } from "@prisma/client"
+import { AdminTeamControls } from "./_components/AdminTeamControls"
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -228,6 +229,13 @@ export default async function AdminTeamDetailPage({
               >
                 <ExternalLink className="h-3.5 w-3.5" /> Public profile
               </Link>
+            </div>
+            <div className="mt-3">
+              <AdminTeamControls
+                teamId={team.id}
+                currentName={team.name}
+                hasLogo={!!team.logoUrl}
+              />
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
               <span className="font-mono text-muted-foreground/60">{team.slug}</span>

@@ -55,24 +55,43 @@ export async function PATCH(
       }
     }
 
-    const updated = await prisma.seasonRegistration.update({
-      where: { id: regId },
-      data:  {
-        status:     data.status,
-        divisionId: data.status === "APPROVED" ? data.divisionId : undefined,
-        notes:      data.notes,
-        reviewedAt: new Date(),
-      },
-      select: {
-        id:         true,
-        status:     true,
-        divisionId: true,
-        notes:      true,
-        reviewedAt: true,
-        team:   { select: { id: true, name: true, slug: true } },
-        season: { select: { id: true, name: true } },
-      },
-    })
+    const divisionId = data.status === "APPROVED" ? data.divisionId : undefined
+
+    const [updated] = await prisma.$transaction([
+      prisma.seasonRegistration.update({
+        where: { id: regId },
+        data:  {
+          status:     data.status,
+          divisionId: divisionId ?? undefined,
+          notes:      data.notes,
+          reviewedAt: new Date(),
+        },
+        select: {
+          id:         true,
+          status:     true,
+          divisionId: true,
+          notes:      true,
+          reviewedAt: true,
+          team:   { select: { id: true, name: true, slug: true } },
+          season: { select: { id: true, name: true } },
+        },
+      }),
+      // When approving, stamp activeDivisionId on all current members so the
+      // uniqueness constraint (one team per division per player) is enforced.
+      ...(data.status === "APPROVED" && divisionId
+        ? [prisma.teamMembership.updateMany({
+            where: { teamId: reg.teamId, leftAt: null },
+            data:  { activeDivisionId: divisionId },
+          })]
+        : []),
+      // When un-approving (reject/waitlist), clear the activeDivisionId.
+      ...(data.status !== "APPROVED" && reg.status === "APPROVED"
+        ? [prisma.teamMembership.updateMany({
+            where: { teamId: reg.teamId, leftAt: null },
+            data:  { activeDivisionId: null },
+          })]
+        : []),
+    ])
 
     return NextResponse.json(updated)
   } catch (err) {
