@@ -318,7 +318,6 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [x] Monitoring: Sentry + Railway Analytics(?)
 - [x] Redis cache layer: standings cache, rate limit counters
 
-
 ## PHASE 9 — MATCH SCHEDULING
 
 > Staff must be able to auto-generate a fair schedule for any combination of team count and week count. Example: 16 teams, 7-week regular season — full round-robin (15 rounds) is impossible, so the generator must produce a **partial round-robin** where each team plays exactly 7 opponents, and no team gets a skewed schedule of all top-seeds or all bottom-seeds.
@@ -329,11 +328,11 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 Three modes to support (staff picks per division):
 
-| Mode | When to use | Rounds produced |
-|------|-------------|-----------------|
-| `FULL_RR` | Small divisions (≤ 8 teams, weeks ≥ N-1) | N-1 rounds, every pair plays once |
-| `PARTIAL_RR` | Most common — 10–16 teams, 6–8 weeks | W rounds (W < N-1), pairs chosen for balance |
-| `DOUBLE_RR` | Small divisions where you want home + away | 2*(N-1) rounds |
+| Mode         | When to use                                | Rounds produced                              |
+| ------------ | ------------------------------------------ | -------------------------------------------- |
+| `FULL_RR`    | Small divisions (≤ 8 teams, weeks ≥ N-1)   | N-1 rounds, every pair plays once            |
+| `PARTIAL_RR` | Most common — 10–16 teams, 6–8 weeks       | W rounds (W < N-1), pairs chosen for balance |
+| `DOUBLE_RR`  | Small divisions where you want home + away | 2\*(N-1) rounds                              |
 
 The generator auto-selects `PARTIAL_RR` if `weeks < N-1`, `FULL_RR` if `weeks >= N-1`, `DOUBLE_RR` only if explicitly chosen.
 
@@ -342,6 +341,7 @@ The generator auto-selects `PARTIAL_RR` if `weeks < N-1`, `FULL_RR` if `weeks >=
 ### 9b — Partial round-robin algorithm (the hard part)
 
 **Problem:** Given N teams seeded 1..N and W weeks (W < N-1), select W rounds of N/2 matchups each such that:
+
 1. Every team plays exactly once per round (no byes unless N is odd)
 2. No pair plays each other more than once
 3. Every team's set of opponents spans the seeding spectrum fairly — no team only plays bottom seeds or only plays top seeds
@@ -447,6 +447,7 @@ Step 5 — Assign rounds to LeagueWeeks
 > The Resend infrastructure and email helpers exist. Nothing triggers notifications for the key lifecycle events.
 
 ### Emails to implement
+
 - [ ] **Registration reviewed** — send to team owner when registration is approved, rejected, or waitlisted
   - Trigger: `PATCH /api/seasons/:seasonId/registrations/:regId` on status change
   - Content: season name, division, status, staff notes if rejected
@@ -462,6 +463,7 @@ Step 5 — Assign rounds to LeagueWeeks
   - Trigger: `PATCH /api/disputes/:disputeId`
 
 ### Infrastructure
+
 - [ ] Create `src/lib/email/notifications.ts` exporting one function per notification type
 - [ ] Each function: fetch relevant data (match, teams, users), call Resend send, fire-and-forget (`.catch(() => undefined)`)
 - [ ] Respect `user.emailNotifications` preference field (skip send if false)
@@ -474,40 +476,21 @@ Step 5 — Assign rounds to LeagueWeeks
 > Prevent teams from adding or removing players after a configured date per season to stop mid-season roster manipulation.
 
 ### Schema
+
 - [ ] Add `rosterLockAt DateTime?` field to `Season` model
 - [ ] Run `npx prisma migrate dev --name add_season_roster_lock`
 
 ### API enforcement
+
 - [ ] In `POST /api/teams/:teamId/roster` — check if the team has an APPROVED registration for the active season and `season.rosterLockAt < now()`; return 403 if locked
 - [ ] In `DELETE /api/teams/:teamId/roster/:entryId` — same check
 - [ ] STAFF+ bypass: skip the lock check if requester has STAFF role
 
 ### Admin UI
+
 - [ ] Add "Roster Lock Date" datetime field to the season create and settings forms (`/admin/seasons/create`, `/admin/seasons/[seasonId]/settings`)
 - [ ] Show roster lock status on the admin season detail page
 - [ ] Show a "Roster is locked" notice on the team roster page (`/(dashboard)/team/[teamId]/roster`) when lock is active
-
----
-
-## PHASE 12 — PUBLIC TEAM INVITE LINKS
-
-> Team managers generate a shareable link. Anyone who opens it and is signed in gets added to the team's pending roster queue instead of requiring staff to search by email.
-
-### Schema
-- [ ] Add `inviteToken String? @unique` and `inviteExpiresAt DateTime?` to `Team` model
-- [ ] Run `npx prisma migrate dev --name add_team_invite_token`
-
-### API
-- [ ] `POST /api/teams/:teamId/invite` — generate a new random token (32-byte hex), set `inviteExpiresAt = now + 7 days`; TEAM_MANAGER+ only
-- [ ] `DELETE /api/teams/:teamId/invite` — revoke the current token (set both fields null)
-- [ ] `POST /api/invite/[token]` — public endpoint; requester must be authenticated + have a player profile; adds them to the roster (same logic as `/api/teams/:teamId/roster` POST); returns 410 if token expired
-
-### UI
-- [ ] Add "Invite Link" panel to `/dashboard/team/[teamId]/roster`
-  - Shows current link with copy button
-  - "Generate New Link" / "Revoke" buttons
-  - Shows expiry date
-- [ ] Create `/invite/[token]` page — shows team name + logo, "Join Team" button; redirects to dashboard on success; shows error if token invalid/expired
 
 ---
 
@@ -516,14 +499,17 @@ Step 5 — Assign rounds to LeagueWeeks
 > After a season ends, display a dedicated summary page: final champion, standings snapshot, top stats, all results.
 
 ### Schema
+
 - [ ] Add `archivedAt DateTime?` to `Season` model (set when status → COMPLETED)
 - [ ] Run `npx prisma migrate dev --name add_season_archived_at`
 
 ### API
+
 - [ ] `GET /api/seasons/:seasonId/archive` — returns final standings snapshot, champion per division, top goal scorers from `ReplayPlayerStat`, total matches played
 - [ ] `PATCH /api/seasons/:seasonId` already handles status → COMPLETED; add side effect to set `archivedAt = now()`
 
 ### Public UI
+
 - [ ] Create `/(public)/seasons/[seasonSlug]/archive` page
   - Header: season name, dates, "Season Complete" badge
   - Per division: champion team card (logo, name, record), final standings table
