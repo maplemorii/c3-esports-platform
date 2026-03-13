@@ -2,18 +2,27 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function ProfileLoading() {
   return (
-    <div className="mx-auto max-w-4xl space-y-8">
+    <div className="mx-auto max-w-4xl space-y-6 px-4 py-8">
+
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <Skeleton className="h-4 w-20" />
-          <Skeleton className="h-10 w-36" />
+        <div className="space-y-1.5">
+          <Skeleton className="h-3 w-16" />
+          <Skeleton className="h-9 w-32" />
         </div>
-        <Skeleton className="h-9 w-28 rounded-lg" />
+        <Skeleton className="h-9 w-28 rounded-xl" />
       </div>
 
       {/* Hero card */}
-      <div className="rounded-2xl border border-border bg-card p-8">
+      <div
+        className="relative overflow-hidden rounded-2xl p-8"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.5), rgba(59,130,246,0.3), transparent)" }}
+          aria-hidden
+        />
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
           <Skeleton className="h-24 w-24 rounded-2xl shrink-0" />
           <div className="flex-1 space-y-3">
@@ -28,14 +37,22 @@ export default function ProfileLoading() {
       </div>
 
       {/* Linked accounts */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div
+        className="relative overflow-hidden rounded-2xl"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(59,130,246,0.4), rgba(196,28,53,0.2), transparent)" }}
+          aria-hidden
+        />
         <div className="px-6 py-4 border-b border-border">
-          <Skeleton className="h-4 w-36" />
+          <Skeleton className="h-3.5 w-36" />
         </div>
         <div className="grid sm:grid-cols-3 divide-y divide-border sm:divide-x sm:divide-y-0">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="flex items-start gap-3 p-5">
-              <Skeleton className="h-9 w-9 rounded-lg shrink-0" />
+              <Skeleton className="h-9 w-9 rounded-xl shrink-0" />
               <div className="space-y-1.5">
                 <Skeleton className="h-3 w-20" />
                 <Skeleton className="h-4 w-28" />
@@ -48,25 +65,32 @@ export default function ProfileLoading() {
       {/* My teams */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-3.5 w-24" />
+          <Skeleton className="h-3.5 w-16" />
         </div>
         {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className="rounded-xl border border-border bg-card p-5 flex items-center gap-4">
+          <div
+            key={i}
+            className="rounded-2xl p-5 flex items-center gap-4"
+            style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+          >
             <Skeleton className="h-12 w-12 rounded-xl shrink-0" />
             <div className="flex-1 space-y-2">
               <Skeleton className="h-5 w-36" />
-              <Skeleton className="h-4 w-48" />
+              <Skeleton className="h-3.5 w-48" />
             </div>
-            <Skeleton className="h-8 w-20 rounded-lg" />
+            <Skeleton className="h-8 w-20 rounded-xl" />
           </div>
         ))}
       </div>
 
       {/* Account info */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div
+        className="relative overflow-hidden rounded-2xl"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
         <div className="px-6 py-4 border-b border-border">
-          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-3.5 w-20" />
         </div>
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="flex items-center justify-between px-6 py-3 border-b border-border last:border-0">
@@ -75,6 +99,7 @@ export default function ProfileLoading() {
           </div>
         ))}
       </div>
+
     </div>
   )
 }

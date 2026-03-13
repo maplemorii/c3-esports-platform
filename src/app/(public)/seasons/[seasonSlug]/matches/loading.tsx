@@ -1,61 +1,45 @@
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default function MatchScheduleLoading() {
+export default function SeasonMatchesLoading() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 space-y-6">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2">
-        <Skeleton className="h-4 w-16" />
-        <Skeleton className="h-4 w-3" />
-        <Skeleton className="h-4 w-32" />
-        <Skeleton className="h-4 w-3" />
-        <Skeleton className="h-4 w-20" />
+    <div className="mx-auto max-w-5xl px-4 py-12 space-y-8">
+
+      {/* Header */}
+      <div className="space-y-2">
+        <Skeleton className="h-3.5 w-28" />
+        <Skeleton className="h-9 w-36" />
       </div>
 
-      {/* Title + filters */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Skeleton className="h-10 w-48" />
-        <div className="flex gap-2">
-          <Skeleton className="h-9 w-36 rounded-lg" />
-          <Skeleton className="h-9 w-28 rounded-lg" />
-        </div>
+      {/* Filter row */}
+      <div className="flex gap-2 flex-wrap">
+        <Skeleton className="h-9 w-28 rounded-xl" />
+        <Skeleton className="h-9 w-32 rounded-xl" />
       </div>
 
-      {/* Week groups */}
-      {Array.from({ length: 3 }).map((_, w) => (
-        <div key={w} className="space-y-2">
-          {/* Week header */}
-          <div className="flex items-center gap-3 py-2">
-            <Skeleton className="h-5 w-24 rounded-full" />
-            <Skeleton className="h-px flex-1 bg-muted/60" />
-            <Skeleton className="h-4 w-28" />
-          </div>
-
-          {/* Match rows */}
-          {Array.from({ length: 3 }).map((__, i) => (
-            <div
-              key={i}
-              className="rounded-xl border border-border bg-card px-5 py-4 flex items-center gap-4"
-            >
-              {/* Team A */}
-              <div className="flex items-center gap-2 flex-1 justify-end">
-                <Skeleton className="h-4 w-24 hidden sm:block" />
-                <Skeleton className="h-8 w-8 rounded-lg" />
-              </div>
-              {/* Score / status */}
-              <div className="flex flex-col items-center gap-1 w-20 shrink-0">
-                <Skeleton className="h-5 w-16 rounded-full" />
-                <Skeleton className="h-3 w-14" />
-              </div>
-              {/* Team B */}
-              <div className="flex items-center gap-2 flex-1">
-                <Skeleton className="h-8 w-8 rounded-lg" />
-                <Skeleton className="h-4 w-24 hidden sm:block" />
-              </div>
+      {/* Match rows */}
+      <div className="space-y-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div
+            key={i}
+            className="relative overflow-hidden rounded-2xl px-5 py-4 flex items-center gap-5"
+            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+          >
+            <div className="flex items-center gap-3 flex-1">
+              <Skeleton className="h-10 w-10 rounded-lg shrink-0" />
+              <Skeleton className="h-4 w-28" />
             </div>
-          ))}
-        </div>
-      ))}
+            <div className="flex flex-col items-center gap-1 shrink-0">
+              <Skeleton className="h-6 w-16" />
+              <Skeleton className="h-3 w-12" />
+            </div>
+            <div className="flex items-center justify-end gap-3 flex-1">
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-10 w-10 rounded-lg shrink-0" />
+            </div>
+          </div>
+        ))}
+      </div>
+
     </div>
   )
 }

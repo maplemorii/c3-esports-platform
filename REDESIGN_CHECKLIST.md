@@ -128,5 +128,10 @@ Track every file that needs a visual update for a full redesign. Check off each 
 
 ## Loading / Error States
 
-- [ ] `src/app/(dashboard)/profile/loading.tsx` — profile skeleton
-- [ ] Add/update any other `loading.tsx` or `error.tsx` files to match new design
+- [x] `src/app/(dashboard)/profile/loading.tsx` — profile skeleton
+- [x] `src/app/(dashboard)/dashboard/loading.tsx` — dashboard skeleton
+- [x] `src/app/(dashboard)/matches/[matchId]/loading.tsx` — match detail skeleton
+- [x] `src/app/(public)/seasons/loading.tsx` + `[seasonSlug]/loading.tsx` + standings + matches
+- [x] `src/app/(public)/teams/loading.tsx` + `[teamSlug]/loading.tsx`
+- [x] `src/app/error.tsx` — global error page (brand glow + gradient button)
+- [x] `src/app/(dashboard)/error.tsx` — dashboard error page (matches admin error style)
