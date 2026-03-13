@@ -208,21 +208,34 @@ export default function RosterPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
 
-      {/* Header */}
-      <div>
-        <Link
-          href={`/team/${teamId}`}
-          className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "w-fit -ml-2 gap-1.5 text-muted-foreground mb-2")}
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Back to {team.name}
-        </Link>
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <Link href="/team" className="hover:text-brand transition-colors">My Teams</Link>
+        <span className="opacity-40">/</span>
+        <Link href={`/team/${teamId}`} className="hover:text-brand transition-colors truncate max-w-40">{team.name}</Link>
+        <span className="opacity-40">/</span>
+        <span className="text-foreground">Roster</span>
+      </div>
+
+      {/* Header card */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Roster</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">
+            <p className="text-xs font-semibold uppercase tracking-widest mb-0.5" style={{ color: "rgba(196,28,53,0.8)" }}>
+              {team.name}
+            </p>
+            <h1 className="font-display text-2xl font-black uppercase tracking-wide">Roster</h1>
+            <p className="mt-0.5 text-sm text-muted-foreground">
               {roster.length} active member{roster.length !== 1 ? "s" : ""}
-              <span className="text-muted-foreground/50"> · max 8</span>
+              <span className="opacity-50"> · max 8</span>
             </p>
           </div>
           {!showAdd && roster.length < 8 && (

@@ -227,7 +227,15 @@ export default async function MatchDetailPage({ params }: Params) {
       </Link>
 
       {/* Hero card */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div
+        className="relative overflow-hidden rounded-2xl"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px pointer-events-none z-10"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.35), transparent)" }}
+          aria-hidden
+        />
         {/* Top bar — breadcrumb + status */}
         <div className="flex items-center justify-between gap-4 px-5 py-3 border-b border-border">
           <p className="text-xs text-muted-foreground truncate">
@@ -398,7 +406,15 @@ export default async function MatchDetailPage({ params }: Params) {
 
       {/* Games grid */}
       {showGames && (
-        <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div
+          className="relative overflow-hidden rounded-2xl"
+          style={{ border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)" }}
+        >
+          <div
+            className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+            style={{ background: "linear-gradient(90deg, rgba(59,130,246,0.4), rgba(196,28,53,0.2), transparent)" }}
+            aria-hidden
+          />
           <div className="px-5 py-3 border-b border-border flex items-center justify-between">
             <h2 className="font-semibold text-sm">Games</h2>
             <span className="text-xs text-muted-foreground">

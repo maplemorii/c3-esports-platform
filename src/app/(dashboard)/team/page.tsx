@@ -32,6 +32,7 @@ import { prisma } from "@/lib/prisma"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button-variants"
 import { TeamLogo } from "@/components/team/TeamLogo"
+import { hasMinRole } from "@/lib/roles"
 import type { MembershipRole, RegistrationStatus, DivisionTier } from "@prisma/client"
 
 export const metadata: Metadata = { title: "My Teams" }
@@ -169,9 +170,9 @@ export default async function MyTeamsPage() {
   if (!session) redirect("/auth/signin")
 
   const { teams, activeSeason } = await getMyTeams(session.user.id)
+  const isStaff = hasMinRole(session.user.role, "STAFF")
 
-  const ownedCount    = teams.filter((t) => t.isOwner).length
-  const memberCount   = teams.filter((t) => !t.isOwner).length
+  const ownedCount      = teams.filter((t) => t.isOwner).length
   const registeredCount = teams.filter(
     (t) => t.registrations[0]?.status === "APPROVED"
   ).length
@@ -204,10 +205,15 @@ export default async function MyTeamsPage() {
 
       {/* ── Stats strip ──────────────────────────────────────────────── */}
       {teams.length > 0 && (
-        <div className="grid grid-cols-3 divide-x divide-border rounded-xl border border-border bg-card overflow-hidden">
-          <StatCell value={teams.length}       label="Total Teams" />
-          <StatCell value={ownedCount}          label="Owned" />
-          <StatCell value={registeredCount}     label="Registered" />
+        <div className="relative overflow-hidden grid grid-cols-3 divide-x divide-border rounded-xl border border-border bg-card">
+          <div
+            className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+            style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.5), rgba(59,130,246,0.3), transparent)" }}
+            aria-hidden
+          />
+          <StatCell value={teams.length}    label="Total Teams" />
+          <StatCell value={ownedCount}      label="Owned" />
+          <StatCell value={registeredCount} label="Registered" />
         </div>
       )}
 
@@ -251,7 +257,7 @@ export default async function MyTeamsPage() {
 
       {/* ── Teams ────────────────────────────────────────────────────── */}
       {teams.length === 0 ? (
-        <EmptyState />
+        <EmptyState isStaff={isStaff} />
       ) : (
         <div className="grid gap-5 lg:grid-cols-2">
           {teams.map((team) => (
@@ -262,10 +268,11 @@ export default async function MyTeamsPage() {
             />
           ))}
 
-          {/* Create another team CTA card */}
+          {/* Create another team CTA card — hidden for staff/admin */}
+          {!isStaff && (
           <Link
             href="/team/create"
-            className="group flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border bg-card/50 p-8 text-center transition-colors hover:border-brand/40 hover:bg-brand/5 min-h-[200px]"
+            className="group flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border bg-card/50 p-8 text-center transition-colors hover:border-brand/40 hover:bg-brand/5 min-h-50"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-dashed border-border bg-muted group-hover:border-brand/30 group-hover:bg-brand/10 transition-colors">
               <Plus className="h-5 w-5 text-muted-foreground/50 group-hover:text-brand transition-colors" />
@@ -279,6 +286,7 @@ export default async function MyTeamsPage() {
               </p>
             </div>
           </Link>
+          )}
         </div>
       )}
     </div>
@@ -562,7 +570,7 @@ function StatCell({ value, label }: { value: number; label: string }) {
 // EmptyState
 // ---------------------------------------------------------------------------
 
-function EmptyState() {
+function EmptyState({ isStaff }: { isStaff?: boolean }) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-dashed border-border bg-card">
       {/* Glow */}
@@ -581,26 +589,30 @@ function EmptyState() {
             No Teams Yet
           </h2>
           <p className="mt-2 text-sm text-muted-foreground max-w-xs">
-            Create your own team or ask a team captain to add you to their roster.
+            {isStaff
+              ? "No teams exist on this platform yet."
+              : "Create your own team or ask a team captain to add you to their roster."}
           </p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-3">
-          <Link
-            href="/team/create"
-            className={cn(buttonVariants({ size: "lg" }), "gap-2 px-8")}
-          >
-            <Plus className="h-4 w-4" />
-            Create a Team
-          </Link>
-          <Link
-            href="/teams"
-            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "gap-2 px-8")}
-          >
-            <Users className="h-4 w-4" />
-            Browse Teams
-          </Link>
-        </div>
+        {!isStaff && (
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link
+              href="/team/create"
+              className={cn(buttonVariants({ size: "lg" }), "gap-2 px-8")}
+            >
+              <Plus className="h-4 w-4" />
+              Create a Team
+            </Link>
+            <Link
+              href="/teams"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "gap-2 px-8")}
+            >
+              <Users className="h-4 w-4" />
+              Browse Teams
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   )

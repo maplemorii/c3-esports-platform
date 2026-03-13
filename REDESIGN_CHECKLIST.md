@@ -77,20 +77,20 @@ Track every file that needs a visual update for a full redesign. Check off each 
 
 ## Team Pages
 
-- [ ] **My team** — `src/app/(dashboard)/team/page.tsx` → `/team`
-- [ ] **Create team** — `src/app/(dashboard)/team/create/page.tsx` → `/team/create`
-- [ ] **Team detail** — `src/app/(dashboard)/team/[teamId]/page.tsx` → `/team/[id]`
-- [ ] **Team roster** — `src/app/(dashboard)/team/[teamId]/roster/page.tsx`
-- [ ] **Team settings** — `src/app/(dashboard)/team/[teamId]/settings/page.tsx`
-- [ ] **Team registration** — `src/app/(dashboard)/team/[teamId]/register/page.tsx`
-- [ ] add functionality so that if you are an admin, you dont get tips to create a team or register for a season like the "getting started" stuff.
+- [x] **My team** — `src/app/(dashboard)/team/page.tsx` → `/team`
+- [x] **Create team** — `src/app/(dashboard)/team/create/page.tsx` → `/team/create`
+- [x] **Team detail** — `src/app/(dashboard)/team/[teamId]/page.tsx` → `/team/[id]`
+- [x] **Team roster** — `src/app/(dashboard)/team/[teamId]/roster/page.tsx`
+- [x] **Team settings** — `src/app/(dashboard)/team/[teamId]/settings/page.tsx`
+- [x] **Team registration** — `src/app/(dashboard)/team/[teamId]/register/page.tsx`
+- [x] Staff/admin users no longer see "create a team" or "register for a season" tips
 
 ---
 
 ## Match Pages
 
-- [ ] **Match detail** — `src/app/(dashboard)/matches/[matchId]/page.tsx` → `/matches/[id]`
-- [ ] **Match report / score submission** — `src/app/(dashboard)/matches/[matchId]/report/page.tsx`
+- [x] **Match detail** — `src/app/(dashboard)/matches/[matchId]/page.tsx` → `/matches/[id]`
+- [x] **Match report / score submission** — `src/app/(dashboard)/matches/[matchId]/report/page.tsx`
 
 ---
 

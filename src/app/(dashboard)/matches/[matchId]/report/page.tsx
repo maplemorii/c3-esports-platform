@@ -83,31 +83,51 @@ export default async function ReportPage({ params }: Params) {
   )
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6 px-4 py-8">
 
-      {/* Back */}
-      <Link
-        href={`/matches/${matchId}`}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        Back to match
-      </Link>
-
-      {/* Header */}
-      <div>
-        <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">
-          {match.division.season.name} · {match.division.name}
-        </p>
-        <h1 className="font-display text-2xl font-bold uppercase tracking-wide mt-1">
-          Submit Scores
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {match.homeTeam.name} vs {match.awayTeam.name} — {FORMAT_LABEL[match.format] ?? match.format}
-        </p>
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <Link href="/matches" className="hover:text-brand transition-colors">Matches</Link>
+        <span className="opacity-40">/</span>
+        <Link href={`/matches/${matchId}`} className="hover:text-brand transition-colors">Match Detail</Link>
+        <span className="opacity-40">/</span>
+        <span className="text-foreground">Submit Scores</span>
       </div>
 
-      {/* Form */}
+      {/* Header card */}
+      <div
+        className="relative overflow-hidden rounded-2xl px-6 py-5"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.4), transparent)" }}
+          aria-hidden
+        />
+        <div className="flex items-center gap-4">
+          <div
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+            style={{ background: "rgba(196,28,53,0.1)", border: "1px solid rgba(196,28,53,0.2)" }}
+          >
+            <ChevronLeft className="h-5 w-5 rotate-180" style={{ color: "rgba(196,28,53,0.9)" }} />
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-widest mb-0.5" style={{ color: "rgba(196,28,53,0.8)" }}>
+              {match.division.season.name} · {match.division.name}
+            </p>
+            <h1 className="font-display text-2xl font-black uppercase tracking-wide">Submit Scores</h1>
+            <p className="mt-0.5 text-sm text-muted-foreground truncate">
+              {match.homeTeam.name} vs {match.awayTeam.name} — {FORMAT_LABEL[match.format] ?? match.format}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Form card */}
+      <div
+        className="relative overflow-hidden rounded-2xl p-6"
+        style={{ border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)" }}
+      >
       <ScoreForm
         matchId={matchId}
         gamesExpected={gamesExpected}
@@ -123,6 +143,7 @@ export default async function ReportPage({ params }: Params) {
         preFill={preFill}
         isStaff={isStaff}
       />
+      </div>
 
     </div>
   )

@@ -132,11 +132,14 @@ export default async function TeamHubPage({
     <div className="mx-auto max-w-4xl space-y-6">
 
       {/* ── Team header ───────────────────────────────────────────── */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        {/* Color accent bar */}
+      <div
+        className="relative overflow-hidden rounded-2xl"
+        style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        {/* Team color accent bar */}
         <div
-          className="h-2 w-full"
-          style={{ backgroundColor: team.primaryColor ?? "oklch(0.50 0.20 15)" }}
+          className="h-1.5 w-full"
+          style={{ backgroundColor: team.primaryColor ?? "rgba(196,28,53,0.9)" }}
         />
 
         <div className="p-6">
@@ -321,7 +324,15 @@ export default async function TeamHubPage({
       )}
 
       {/* ── Roster ───────────────────────────────────────────────── */}
-      <section className="rounded-xl border border-border bg-card">
+      <section
+        className="relative overflow-hidden rounded-2xl"
+        style={{ border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)" }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.4), rgba(59,130,246,0.2), transparent)" }}
+          aria-hidden
+        />
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
             Active Roster
@@ -394,7 +405,15 @@ export default async function TeamHubPage({
 
       {/* ── Season registrations ─────────────────────────────────── */}
       {team.registrations.length > 0 && (
-        <section className="rounded-xl border border-border bg-card">
+        <section
+          className="relative overflow-hidden rounded-2xl"
+          style={{ border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)" }}
+        >
+          <div
+            className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+            style={{ background: "linear-gradient(90deg, rgba(59,130,246,0.4), rgba(196,28,53,0.2), transparent)" }}
+            aria-hidden
+          />
           <div className="px-6 py-4 border-b border-border">
             <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
               Season History
