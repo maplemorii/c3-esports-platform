@@ -53,9 +53,6 @@ export const metadata: Metadata = {
     },
     description: "The premier collegiate Rocket League platform in the Carolinas.",
   },
-  icons: {
-    icon: "/icon.jpg",
-  },
 }
 
 export default async function RootLayout({
