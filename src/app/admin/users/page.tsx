@@ -229,7 +229,10 @@ export default async function AdminUsersPage({
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
               >
                 {/* User info */}
-                <div className="flex items-center gap-3 min-w-0">
+                <Link
+                  href={`/admin/users/${user.id}`}
+                  className="flex items-center gap-3 min-w-0 hover:opacity-80 transition-opacity"
+                >
                   {user.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -306,7 +309,7 @@ export default async function AdminUsersPage({
                       </p>
                     )}
                   </div>
-                </div>
+                </Link>
 
                 {/* Actions */}
                 <div className="flex items-start gap-3 shrink-0 flex-wrap justify-end">
