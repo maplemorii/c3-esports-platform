@@ -321,24 +321,124 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 
 ## PHASE 9 — MATCH SCHEDULING
 
-> Staff needs a way to bulk-create or auto-generate the full round-robin schedule for a division. Right now matches must be created one by one.
+> Staff must be able to auto-generate a fair schedule for any combination of team count and week count. Example: 16 teams, 7-week regular season — full round-robin (15 rounds) is impossible, so the generator must produce a **partial round-robin** where each team plays exactly 7 opponents, and no team gets a skewed schedule of all top-seeds or all bottom-seeds.
 
-### Schema
-- [ ] No schema changes needed — `Match` model is sufficient
+---
 
-### API
+### 9a — Scheduling modes
+
+Three modes to support (staff picks per division):
+
+| Mode | When to use | Rounds produced |
+|------|-------------|-----------------|
+| `FULL_RR` | Small divisions (≤ 8 teams, weeks ≥ N-1) | N-1 rounds, every pair plays once |
+| `PARTIAL_RR` | Most common — 10–16 teams, 6–8 weeks | W rounds (W < N-1), pairs chosen for balance |
+| `DOUBLE_RR` | Small divisions where you want home + away | 2*(N-1) rounds |
+
+The generator auto-selects `PARTIAL_RR` if `weeks < N-1`, `FULL_RR` if `weeks >= N-1`, `DOUBLE_RR` only if explicitly chosen.
+
+---
+
+### 9b — Partial round-robin algorithm (the hard part)
+
+**Problem:** Given N teams seeded 1..N and W weeks (W < N-1), select W rounds of N/2 matchups each such that:
+1. Every team plays exactly once per round (no byes unless N is odd)
+2. No pair plays each other more than once
+3. Every team's set of opponents spans the seeding spectrum fairly — no team only plays bottom seeds or only plays top seeds
+
+**Algorithm: Interleaved seed-balanced scheduling**
+
+```
+Step 1 — Seed the teams
+  Assign seed 1..N based on:
+  - Previous season final standings (imported manually or from DB)
+  - If no prior season: registration order, then alphabetical
+  - Staff can override any seed manually before generating
+
+Step 2 — Generate the full candidate pool
+  Enumerate all N*(N-1)/2 possible matchups.
+  Score each matchup: seedSpread = |seed_a - seed_b|
+  A spread near N/2 is "balanced" (e.g. 1v9 for N=16).
+  A spread near 1 is "mirror" (e.g. 1v2, or 15v16).
+  A spread near N-1 is "extreme" (e.g. 1v16).
+
+Step 3 — Build W rounds using round-robin rotation base + rebalance
+  3a. Start with standard circle-method rotation (fixes team N in place,
+      rotates the other N-1 across rounds). This gives N-1 complete rounds
+      where every pair plays exactly once.
+  3b. Take the first W rounds from the rotation.
+  3c. Score the draft schedule: for each team, compute the distribution of
+      opponent seeds they face across their W games.
+      Ideal: each team's opponents are spread evenly — roughly W/N per
+      "seed quartile". Variance across teams should be minimised.
+  3d. If variance is acceptable (threshold: max per-team seed-quartile
+      imbalance ≤ 1 game), accept. Otherwise:
+      Run up to 50 swap iterations:
+        - Pick the team with the worst quartile imbalance
+        - Find a round where swapping two matchups (same round, different
+          pairs, no duplicate opponents introduced) reduces that team's
+          imbalance without worsening another team's imbalance by more
+        - Apply the swap if it improves global variance
+
+Step 4 — Handle odd team counts
+  If N is odd, add a virtual "BYE" team. Any team matched against BYE
+  gets a bye week. Distribute byes as evenly as possible across seeds
+  (no team should bye more than once; top seeds and bottom seeds should
+  bye in different weeks).
+
+Step 5 — Assign rounds to LeagueWeeks
+  Distribute the W rounds across the W existing LeagueWeek rows for the
+  season. One round per week. If a round has a BYE team, that week's
+  match count is N/2 - 1 (floor).
+```
+
+**Why not Swiss?** Swiss re-pairs each round based on current standings, which is great for tournaments but means the schedule can't be generated upfront. For a league where teams need to know their schedule weeks in advance, pre-generated partial RR is better.
+
+---
+
+### 9c — Schema changes
+
+- [ ] Add `scheduleMode` enum to `Division`: `FULL_RR | PARTIAL_RR | DOUBLE_RR`
+- [ ] Add `seedingSource` enum to `Division`: `MANUAL | REGISTRATION_ORDER | PREV_SEASON`
+- [ ] Add `TeamSeed` model: `{ id, divisionId, teamId, seed Int }` — one row per team per division for the scheduling run
+- [ ] Add `scheduledGeneratedAt DateTime?` to `Division` — null means no schedule generated yet
+- [ ] Run `npx prisma migrate dev --name add_division_scheduling`
+
+---
+
+### 9d — API
+
+- [ ] `POST /api/admin/seasons/[seasonId]/divisions/[divisionId]/seeds`
+  - Body: `[{ teamId, seed }]` — staff sets or overrides seeds
+  - Auto-populates from registration order if no seeds exist yet
+- [ ] `GET /api/admin/seasons/[seasonId]/divisions/[divisionId]/seeds`
+  - Returns current seed assignments + team names for the drag-to-reorder UI
 - [ ] `POST /api/admin/seasons/[seasonId]/divisions/[divisionId]/schedule/generate`
-  - Reads all APPROVED team registrations for the division
-  - Generates a round-robin fixture list (every team plays every other team once, or twice if configured)
-  - Creates `Match` rows with `status=SCHEDULED`, assigns `weekId` by distributing matchups across existing `LeagueWeek` rows
-  - Returns count of matches created; idempotent (skip if match between same pair already exists in the season)
-- [ ] `DELETE /api/admin/seasons/[seasonId]/divisions/[divisionId]/schedule` — wipe generated schedule (only SCHEDULED matches, not completed ones)
+  - Body: `{ mode?: "FULL_RR" | "PARTIAL_RR" | "DOUBLE_RR" }`
+  - Runs the algorithm above
+  - Returns `{ matchesCreated, rounds, fairnessScore, byeDistribution }`
+  - Idempotent: skips any matchup pair that already has a SCHEDULED/active match in this season
+  - Rejects if `scheduledGeneratedAt` is already set (must clear first)
+- [ ] `GET /api/admin/seasons/[seasonId]/divisions/[divisionId]/schedule/preview`
+  - Dry-run: returns the same payload as generate but creates no DB rows
+  - Used to power the admin preview UI before confirming
+- [ ] `DELETE /api/admin/seasons/[seasonId]/divisions/[divisionId]/schedule`
+  - Deletes only `SCHEDULED` (not started) matches for this division
+  - Clears `scheduledGeneratedAt`
 
-### Admin UI
-- [ ] Add "Generate Schedule" button to `/admin/seasons/[seasonId]` division section
-  - Shows team count + projected match count before confirming
-  - Calls the generate endpoint, refreshes page on success
-- [ ] Add "Clear Schedule" danger button (only visible when all matches are SCHEDULED)
+---
+
+### 9e — Admin UI
+
+- [ ] **Seed management panel** on `/admin/seasons/[seasonId]` division section
+  - Drag-to-reorder list of teams with their seed number
+  - "Auto-seed from registration order" button
+  - "Import from last season" button (if prior season exists)
+- [ ] **Schedule preview modal** — triggered by "Generate Schedule" button
+  - Shows: mode auto-selected (with override dropdown), projected rounds table (week → matchups), fairness heatmap (each team's opponents by seed quartile — should be even color distribution)
+  - "Confirm & Generate" button calls generate endpoint
+- [ ] **Fairness heatmap** (key feature): N×W grid, rows = teams, columns = weeks, cell color = opponent seed quartile (Q1 = blue, Q2 = teal, Q3 = orange, Q4 = red). A fair schedule looks like each row has a random mix of colors, not one color dominating.
+- [ ] **Clear Schedule** danger button — only visible when `scheduledGeneratedAt` is set and all matches are still `SCHEDULED`
 
 ---
 
