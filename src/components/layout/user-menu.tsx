@@ -15,17 +15,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { LayoutDashboard, ShieldCheck, ShieldAlert, LogOut } from "lucide-react"
+import { hasMinRole } from "@/lib/roles"
 
 const ROLE_LABEL: Record<string, string> = {
-  ADMIN:  "Admin",
-  STAFF:  "Staff",
-  PLAYER: "Player",
+  DEVELOPER:    "Developer",
+  OWNER:        "Owner",
+  ADMIN:        "Admin",
+  STAFF:        "Staff",
+  TEAM_MANAGER: "Team Manager",
+  USER:         "User",
 }
 
 const ROLE_COLOR: Record<string, string> = {
-  ADMIN:  "rgba(220,38,38,0.85)",
-  STAFF:  "rgba(96,165,250,0.85)",
-  PLAYER: "rgba(255,255,255,0.28)",
+  DEVELOPER:    "rgba(192,132,252,0.9)",
+  OWNER:        "rgba(251,191,36,0.9)",
+  ADMIN:        "rgba(220,38,38,0.85)",
+  STAFF:        "rgba(96,165,250,0.85)",
+  TEAM_MANAGER: "rgba(56,189,248,0.85)",
+  USER:         "rgba(255,255,255,0.28)",
 }
 
 export function UserMenu({ session }: { session: Session }) {
@@ -121,7 +128,7 @@ export function UserMenu({ session }: { session: Session }) {
             label="Dashboard"
             onClick={() => { setOpen(false); router.push("/dashboard") }}
           />
-          {(role === "STAFF" || role === "ADMIN") && (
+          {hasMinRole(role, "STAFF") && !hasMinRole(role, "ADMIN") && (
             <MenuItem
               icon={ShieldCheck}
               label="Staff Panel"
@@ -129,7 +136,7 @@ export function UserMenu({ session }: { session: Session }) {
               accent="blue"
             />
           )}
-          {role === "ADMIN" && (
+          {hasMinRole(role, "ADMIN") && (
             <MenuItem
               icon={ShieldAlert}
               label="Admin Panel"

@@ -21,6 +21,7 @@ import {
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet"
+import { hasMinRole } from "@/lib/roles"
 import type { Role } from "@/lib/roles"
 
 interface NavItem {
@@ -53,7 +54,7 @@ function AdminNavItems({
   onNavigate?: () => void
 }) {
   const pathname = usePathname()
-  const isAdmin = role === "ADMIN"
+  const isAdmin = hasMinRole(role, "ADMIN")
 
   return (
     <nav className="flex flex-col gap-1 p-3">
@@ -102,7 +103,7 @@ export function AdminSidebar({ role }: { role: Role }) {
     <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-border bg-sidebar min-h-full">
       <div className="relative flex h-14 items-center px-4 border-b border-sidebar-border">
         <span className="font-display text-sm font-semibold uppercase tracking-wider text-sidebar-foreground/60">
-          {role === "ADMIN" ? "Admin Panel" : "Staff Panel"}
+          {hasMinRole(role, "ADMIN") ? "Admin Panel" : "Staff Panel"}
         </span>
         <div
           className="absolute bottom-0 left-4 w-8 h-px"
@@ -127,7 +128,7 @@ export function MobileAdminSidebarTrigger({ role }: { role: Role }) {
       </SheetTrigger>
       <SheetContent side="left" className="w-56 p-0 bg-sidebar border-sidebar-border">
         <SheetTitle className="flex h-14 items-center px-4 border-b border-sidebar-border font-display text-sm font-semibold uppercase tracking-wider text-sidebar-foreground/60">
-          {role === "ADMIN" ? "Admin Panel" : "Staff Panel"}
+          {hasMinRole(role, "ADMIN") ? "Admin Panel" : "Staff Panel"}
         </SheetTitle>
         <AdminNavItems role={role} />
       </SheetContent>

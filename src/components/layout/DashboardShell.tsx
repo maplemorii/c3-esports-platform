@@ -1,5 +1,6 @@
 import { Sidebar, MobileSidebarTrigger } from "./Sidebar"
 import { AdminSidebar, MobileAdminSidebarTrigger } from "./AdminSidebar"
+import { hasMinRole } from "@/lib/roles"
 import type { Role } from "@/lib/roles"
 
 interface DashboardShellProps {
@@ -31,7 +32,7 @@ interface DashboardShellProps {
  *   }
  */
 export function DashboardShell({ children, role, heading }: DashboardShellProps) {
-  const isStaff = role === "STAFF" || role === "ADMIN"
+  const isStaff = hasMinRole(role, "STAFF")
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)]">
