@@ -318,16 +318,6 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [x] Monitoring: Sentry + Railway Analytics(?)
 - [x] Redis cache layer: standings cache, rate limit counters
 
----
-
-## PHASE 8 — FUTURE FEATURES
-
-- [ ] Live match score ticker (WebSocket / Server-Sent Events)
-- [ ] Discord bot integration (post results to server)
-- [ ] Player stats aggregation across seasons
-- [ ] Public API (read-only) for community tools
-
----
 
 ## PHASE 9 — MATCH SCHEDULING
 
