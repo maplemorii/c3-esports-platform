@@ -326,3 +326,118 @@ Legend: `[x]` = done · `[~]` = partial · `[ ]` = not started
 - [ ] Discord bot integration (post results to server)
 - [ ] Player stats aggregation across seasons
 - [ ] Public API (read-only) for community tools
+
+---
+
+## PHASE 9 — MATCH SCHEDULING
+
+> Staff needs a way to bulk-create or auto-generate the full round-robin schedule for a division. Right now matches must be created one by one.
+
+### Schema
+- [ ] No schema changes needed — `Match` model is sufficient
+
+### API
+- [ ] `POST /api/admin/seasons/[seasonId]/divisions/[divisionId]/schedule/generate`
+  - Reads all APPROVED team registrations for the division
+  - Generates a round-robin fixture list (every team plays every other team once, or twice if configured)
+  - Creates `Match` rows with `status=SCHEDULED`, assigns `weekId` by distributing matchups across existing `LeagueWeek` rows
+  - Returns count of matches created; idempotent (skip if match between same pair already exists in the season)
+- [ ] `DELETE /api/admin/seasons/[seasonId]/divisions/[divisionId]/schedule` — wipe generated schedule (only SCHEDULED matches, not completed ones)
+
+### Admin UI
+- [ ] Add "Generate Schedule" button to `/admin/seasons/[seasonId]` division section
+  - Shows team count + projected match count before confirming
+  - Calls the generate endpoint, refreshes page on success
+- [ ] Add "Clear Schedule" danger button (only visible when all matches are SCHEDULED)
+
+---
+
+## PHASE 10 — EMAIL NOTIFICATIONS
+
+> The Resend infrastructure and email helpers exist. Nothing triggers notifications for the key lifecycle events.
+
+### Emails to implement
+- [ ] **Registration reviewed** — send to team owner when registration is approved, rejected, or waitlisted
+  - Trigger: `PATCH /api/seasons/:seasonId/registrations/:regId` on status change
+  - Content: season name, division, status, staff notes if rejected
+- [ ] **Match scheduled** — send to both team owners when a match is created
+  - Trigger: `POST /api/matches` (and schedule generate endpoint above)
+  - Content: opponent name, scheduled date/time, check-in window, match detail link
+- [ ] **Result submitted against your team** — send to opposing team owner when scores are submitted
+  - Trigger: `POST /api/matches/:matchId/result`
+  - Content: submitted scores, link to confirm or dispute
+- [ ] **Match disputed** — send to both team owners + staff when a dispute is filed
+  - Trigger: `POST /api/disputes`
+- [ ] **Dispute resolved** — send to both team owners when staff resolves a dispute
+  - Trigger: `PATCH /api/disputes/:disputeId`
+
+### Infrastructure
+- [ ] Create `src/lib/email/notifications.ts` exporting one function per notification type
+- [ ] Each function: fetch relevant data (match, teams, users), call Resend send, fire-and-forget (`.catch(() => undefined)`)
+- [ ] Respect `user.emailNotifications` preference field (skip send if false)
+- [ ] Add email template files under `src/lib/email/templates/` (plain HTML or React Email components)
+
+---
+
+## PHASE 11 — ROSTER LOCK
+
+> Prevent teams from adding or removing players after a configured date per season to stop mid-season roster manipulation.
+
+### Schema
+- [ ] Add `rosterLockAt DateTime?` field to `Season` model
+- [ ] Run `npx prisma migrate dev --name add_season_roster_lock`
+
+### API enforcement
+- [ ] In `POST /api/teams/:teamId/roster` — check if the team has an APPROVED registration for the active season and `season.rosterLockAt < now()`; return 403 if locked
+- [ ] In `DELETE /api/teams/:teamId/roster/:entryId` — same check
+- [ ] STAFF+ bypass: skip the lock check if requester has STAFF role
+
+### Admin UI
+- [ ] Add "Roster Lock Date" datetime field to the season create and settings forms (`/admin/seasons/create`, `/admin/seasons/[seasonId]/settings`)
+- [ ] Show roster lock status on the admin season detail page
+- [ ] Show a "Roster is locked" notice on the team roster page (`/(dashboard)/team/[teamId]/roster`) when lock is active
+
+---
+
+## PHASE 12 — PUBLIC TEAM INVITE LINKS
+
+> Team managers generate a shareable link. Anyone who opens it and is signed in gets added to the team's pending roster queue instead of requiring staff to search by email.
+
+### Schema
+- [ ] Add `inviteToken String? @unique` and `inviteExpiresAt DateTime?` to `Team` model
+- [ ] Run `npx prisma migrate dev --name add_team_invite_token`
+
+### API
+- [ ] `POST /api/teams/:teamId/invite` — generate a new random token (32-byte hex), set `inviteExpiresAt = now + 7 days`; TEAM_MANAGER+ only
+- [ ] `DELETE /api/teams/:teamId/invite` — revoke the current token (set both fields null)
+- [ ] `POST /api/invite/[token]` — public endpoint; requester must be authenticated + have a player profile; adds them to the roster (same logic as `/api/teams/:teamId/roster` POST); returns 410 if token expired
+
+### UI
+- [ ] Add "Invite Link" panel to `/dashboard/team/[teamId]/roster`
+  - Shows current link with copy button
+  - "Generate New Link" / "Revoke" buttons
+  - Shows expiry date
+- [ ] Create `/invite/[token]` page — shows team name + logo, "Join Team" button; redirects to dashboard on success; shows error if token invalid/expired
+
+---
+
+## PHASE 13 — SEASON ARCHIVE
+
+> After a season ends, display a dedicated summary page: final champion, standings snapshot, top stats, all results.
+
+### Schema
+- [ ] Add `archivedAt DateTime?` to `Season` model (set when status → COMPLETED)
+- [ ] Run `npx prisma migrate dev --name add_season_archived_at`
+
+### API
+- [ ] `GET /api/seasons/:seasonId/archive` — returns final standings snapshot, champion per division, top goal scorers from `ReplayPlayerStat`, total matches played
+- [ ] `PATCH /api/seasons/:seasonId` already handles status → COMPLETED; add side effect to set `archivedAt = now()`
+
+### Public UI
+- [ ] Create `/(public)/seasons/[seasonSlug]/archive` page
+  - Header: season name, dates, "Season Complete" badge
+  - Per division: champion team card (logo, name, record), final standings table
+  - Top stats strip: most goals, most saves, most MVPs (from replay stats)
+  - Full results: collapsible list of all completed matches
+- [ ] On the season overview page (`/(public)/seasons/[seasonSlug]`), show "View Season Archive →" banner when `archivedAt` is set
+- [ ] Link to archive from the public seasons list for completed seasons
