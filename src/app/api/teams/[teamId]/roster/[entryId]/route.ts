@@ -10,7 +10,20 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireAuth } from "@/lib/session"
 import { assertCanManageTeam } from "@/lib/auth/permissions"
-import { apiNotFound, apiBadRequest, apiInternalError } from "@/lib/utils/errors"
+import { hasMinRole } from "@/lib/roles"
+import { apiNotFound, apiBadRequest, apiForbidden, apiInternalError } from "@/lib/utils/errors"
+
+async function getRosterLockStatus(teamId: string): Promise<boolean> {
+  const reg = await prisma.seasonRegistration.findFirst({
+    where: {
+      teamId,
+      status: "APPROVED",
+      season: { rosterLockAt: { lte: new Date() } },
+    },
+    select: { id: true },
+  })
+  return reg !== null
+}
 
 export async function DELETE(
   _req: NextRequest,
@@ -27,6 +40,12 @@ export async function DELETE(
   if (denied) return denied
 
   try {
+    // Roster lock check — STAFF+ may bypass
+    if (!hasMinRole(session.user.role, "STAFF")) {
+      const locked = await getRosterLockStatus(teamId)
+      if (locked) return apiForbidden("Roster is locked for the current season")
+    }
+
     // Team must exist
     const team = await prisma.team.findUnique({
       where:  { id: teamId, deletedAt: null },

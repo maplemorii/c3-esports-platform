@@ -70,6 +70,7 @@ const BaseSeasonSchema = z.object({
   pointsConfig:      PointsConfigSchema,
   maxTeamsTotal:     z.number().int().min(1).max(512).optional(),
   isVisible:         z.boolean().default(false),
+  rosterLockAt:      isoDatetime.optional().nullable(),
 })
 
 export const CreateSeasonSchema = BaseSeasonSchema

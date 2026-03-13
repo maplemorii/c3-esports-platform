@@ -17,6 +17,7 @@ interface FormState {
   endDate:           string
   registrationStart: string
   registrationEnd:   string
+  rosterLockAt:      string
   leagueWeeks:       number
   isVisible:         boolean
 }
@@ -27,6 +28,7 @@ const INITIAL: FormState = {
   endDate:           "",
   registrationStart: "",
   registrationEnd:   "",
+  rosterLockAt:      "",
   leagueWeeks:       8,
   isVisible:         false,
 }
@@ -85,6 +87,7 @@ export function SeasonCreateForm() {
     if (form.endDate)           payload.endDate           = new Date(form.endDate).toISOString()
     if (form.registrationStart) payload.registrationStart = new Date(form.registrationStart).toISOString()
     if (form.registrationEnd)   payload.registrationEnd   = new Date(form.registrationEnd).toISOString()
+    if (form.rosterLockAt)      payload.rosterLockAt      = new Date(form.rosterLockAt).toISOString()
 
     try {
       const res = await fetch("/api/seasons", {
@@ -159,6 +162,15 @@ export function SeasonCreateForm() {
             type="datetime-local"
             value={form.registrationEnd}
             onChange={(e) => set("registrationEnd", e.target.value)}
+            disabled={saving}
+            className={INPUT_CLS}
+          />
+        </Field>
+        <Field label="Roster Lock" hint="After this time, approved teams cannot add or remove players.">
+          <input
+            type="datetime-local"
+            value={form.rosterLockAt}
+            onChange={(e) => set("rosterLockAt", e.target.value)}
             disabled={saving}
             className={INPUT_CLS}
           />

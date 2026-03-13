@@ -97,6 +97,7 @@ export async function PATCH(
         ...(data.resultWindowHours    !== undefined && { resultWindowHours:    data.resultWindowHours }),
         ...(data.pointsConfig         !== undefined && { pointsConfig:         data.pointsConfig as object }),
         ...(data.maxTeamsTotal        !== undefined && { maxTeamsTotal:        data.maxTeamsTotal }),
+        ...(data.rosterLockAt         !== undefined && { rosterLockAt:         data.rosterLockAt }),
       },
       select: SEASON_SELECT,
     })

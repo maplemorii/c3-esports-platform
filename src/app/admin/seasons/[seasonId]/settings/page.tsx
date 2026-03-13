@@ -27,6 +27,7 @@ async function getSeason(seasonId: string) {
       endDate:              true,
       registrationStart:    true,
       registrationEnd:      true,
+      rosterLockAt:         true,
       leagueWeeks:          true,
       checkInWindowMinutes: true,
       checkInGraceMinutes:  true,
@@ -54,6 +55,7 @@ export default async function SeasonSettingsPage({ params }: Params) {
     endDate:           season.endDate?.toISOString()           ?? null,
     registrationStart: season.registrationStart?.toISOString() ?? null,
     registrationEnd:   season.registrationEnd?.toISOString()   ?? null,
+    rosterLockAt:      season.rosterLockAt?.toISOString()      ?? null,
   }
 
   return (

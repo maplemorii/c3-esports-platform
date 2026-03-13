@@ -11,6 +11,7 @@ import {
   Link2,
   Link2Off,
   Loader2,
+  Lock,
   Plus,
   RefreshCw,
   Trash2,
@@ -78,10 +79,11 @@ export default function RosterPage() {
   const teamId   = params.teamId
   const router   = useRouter()
 
-  const [team,    setTeam]    = useState<TeamInfo | null>(null)
-  const [roster,  setRoster]  = useState<Member[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error,   setError]   = useState<string | null>(null)
+  const [team,          setTeam]          = useState<TeamInfo | null>(null)
+  const [roster,        setRoster]        = useState<Member[]>([])
+  const [rosterLocked,  setRosterLocked]  = useState(false)
+  const [loading,       setLoading]       = useState(true)
+  const [error,         setError]         = useState<string | null>(null)
 
   // Add-player panel state
   const [showAdd,      setShowAdd]      = useState(false)
@@ -123,6 +125,7 @@ export default function RosterPage() {
       const rosterData = await rosterRes.json()
       setTeam({ id: teamData.id, name: teamData.name, ownerId: teamData.ownerId })
       setRoster(rosterData.data)
+      setRosterLocked(rosterData.rosterLocked ?? false)
     } catch {
       setError("An unexpected error occurred")
     } finally {
@@ -290,6 +293,16 @@ export default function RosterPage() {
         <span className="text-foreground">Roster</span>
       </div>
 
+      {/* Roster locked banner */}
+      {rosterLocked && (
+        <div className="flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3">
+          <Lock className="h-4 w-4 shrink-0 text-amber-400" />
+          <p className="text-sm text-amber-300 font-medium">
+            Roster is locked for the current season — changes are disabled.
+          </p>
+        </div>
+      )}
+
       {/* Header card */}
       <div
         className="relative overflow-hidden rounded-2xl px-6 py-5"
@@ -311,7 +324,7 @@ export default function RosterPage() {
               <span className="opacity-50"> · max 8</span>
             </p>
           </div>
-          {!showAdd && roster.length < 8 && (
+          {!showAdd && roster.length < 8 && !rosterLocked && (
             <button
               onClick={() => setShowAdd(true)}
               className={cn(buttonVariants({ size: "sm" }), "gap-1.5 shrink-0")}
@@ -594,21 +607,23 @@ export default function RosterPage() {
                   {m.role === "SUBSTITUTE" ? "Sub" : m.role.charAt(0) + m.role.slice(1).toLowerCase()}
                 </span>
 
-                {/* Remove */}
-                <button
-                  onClick={() => handleRemove(m.id)}
-                  disabled={removingId === m.id}
-                  className={cn(
-                    buttonVariants({ variant: "ghost", size: "icon-sm" }),
-                    "shrink-0 text-muted-foreground hover:text-destructive"
-                  )}
-                  aria-label="Remove player"
-                >
-                  {removingId === m.id
-                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    : <Trash2 className="h-3.5 w-3.5" />
-                  }
-                </button>
+                {/* Remove — hidden when roster is locked */}
+                {!rosterLocked && (
+                  <button
+                    onClick={() => handleRemove(m.id)}
+                    disabled={removingId === m.id}
+                    className={cn(
+                      buttonVariants({ variant: "ghost", size: "icon-sm" }),
+                      "shrink-0 text-muted-foreground hover:text-destructive"
+                    )}
+                    aria-label="Remove player"
+                  >
+                    {removingId === m.id
+                      ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      : <Trash2 className="h-3.5 w-3.5" />
+                    }
+                  </button>
+                )}
               </li>
             ))}
           </ul>

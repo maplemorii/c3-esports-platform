@@ -15,6 +15,7 @@ import {
   ArrowLeft,
   Calendar,
   ClipboardList,
+  Lock,
   Settings,
   Swords,
   BarChart3,
@@ -66,6 +67,7 @@ async function getData(seasonId: string) {
       registrationEnd:   true,
       leagueWeeks:       true,
       isVisible:         true,
+      rosterLockAt:      true,
       divisions: {
         orderBy: { tier: "asc" },
         select: {
@@ -246,6 +248,32 @@ export default async function AdminSeasonHubPage({
           </div>
         ))}
       </div>
+
+      {/* Roster lock status */}
+      {season.rosterLockAt && (() => {
+        const locked = new Date(season.rosterLockAt) <= new Date()
+        return (
+          <div
+            className={cn(
+              "flex items-center gap-3 rounded-xl px-4 py-3",
+              locked
+                ? "border border-amber-500/30 bg-amber-500/10"
+                : "border border-border bg-card"
+            )}
+          >
+            <Lock className={cn("h-4 w-4 shrink-0", locked ? "text-amber-400" : "text-muted-foreground")} />
+            <div className="min-w-0 flex-1">
+              <p className={cn("text-sm font-medium", locked ? "text-amber-300" : "text-foreground")}>
+                {locked ? "Roster locked" : "Roster lock scheduled"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {locked ? "Locked since" : "Locks on"}{" "}
+                {formatDate(new Date(season.rosterLockAt))}
+              </p>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Quick links */}
       <div className="grid gap-3 sm:grid-cols-2">

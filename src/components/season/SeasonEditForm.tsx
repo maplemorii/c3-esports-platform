@@ -27,6 +27,7 @@ export interface SeasonData {
   endDate:              string | null
   registrationStart:    string | null
   registrationEnd:      string | null
+  rosterLockAt:         string | null
   leagueWeeks:          number
   checkInWindowMinutes: number
   checkInGraceMinutes:  number
@@ -97,6 +98,7 @@ export function SeasonEditForm({ season }: { season: SeasonData }) {
   const [endDate,              setEndDate]              = useState(toLocal(season.endDate))
   const [registrationStart,    setRegistrationStart]    = useState(toLocal(season.registrationStart))
   const [registrationEnd,      setRegistrationEnd]      = useState(toLocal(season.registrationEnd))
+  const [rosterLockAt,         setRosterLockAt]         = useState(toLocal(season.rosterLockAt))
   const [leagueWeeks,          setLeagueWeeks]          = useState(season.leagueWeeks)
   const [checkInWindow,        setCheckInWindow]        = useState(season.checkInWindowMinutes)
   const [checkInGrace,         setCheckInGrace]         = useState(season.checkInGraceMinutes)
@@ -128,6 +130,8 @@ export function SeasonEditForm({ season }: { season: SeasonData }) {
     if (endDate)           payload.endDate           = new Date(endDate).toISOString()
     if (registrationStart) payload.registrationStart = new Date(registrationStart).toISOString()
     if (registrationEnd)   payload.registrationEnd   = new Date(registrationEnd).toISOString()
+    if (rosterLockAt)      payload.rosterLockAt      = new Date(rosterLockAt).toISOString()
+    else                   payload.rosterLockAt      = null
 
     try {
       const res = await fetch(`/api/seasons/${season.id}`, {
@@ -235,6 +239,9 @@ export function SeasonEditForm({ season }: { season: SeasonData }) {
           </Field>
           <Field label="Registration Closes">
             <input type="datetime-local" value={registrationEnd}   onChange={(e) => setRegistrationEnd(e.target.value)}   disabled={saving} className={INPUT_CLS} />
+          </Field>
+          <Field label="Roster Lock" hint="After this time, approved teams cannot add or remove players. Leave blank for no lock.">
+            <input type="datetime-local" value={rosterLockAt}      onChange={(e) => setRosterLockAt(e.target.value)}      disabled={saving} className={INPUT_CLS} />
           </Field>
         </div>
       </section>

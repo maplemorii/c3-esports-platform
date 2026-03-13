@@ -9,15 +9,33 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireAuth } from "@/lib/session"
 import { assertCanManageTeam } from "@/lib/auth/permissions"
+import { hasMinRole } from "@/lib/roles"
 import { AddRosterMemberSchema } from "@/lib/validators/team.schema"
 import {
   parseBody,
   apiNotFound,
   apiConflict,
   apiBadRequest,
+  apiForbidden,
   apiInternalError,
 } from "@/lib/utils/errors"
 import { MAX_ROSTER_SIZE } from "@/lib/constants"
+
+// ---------------------------------------------------------------------------
+// Helper — check if a team's roster is currently locked
+// ---------------------------------------------------------------------------
+
+async function getRosterLockStatus(teamId: string): Promise<boolean> {
+  const reg = await prisma.seasonRegistration.findFirst({
+    where: {
+      teamId,
+      status: "APPROVED",
+      season: { rosterLockAt: { lte: new Date() } },
+    },
+    select: { id: true },
+  })
+  return reg !== null
+}
 
 // ---------------------------------------------------------------------------
 // Shared select
@@ -58,13 +76,16 @@ export async function GET(
     })
     if (!team) return apiNotFound("Team")
 
-    const roster = await prisma.teamMembership.findMany({
-      where:   { teamId, leftAt: null },
-      select:  MEMBERSHIP_SELECT,
-      orderBy: [{ isCaptain: "desc" }, { role: "asc" }, { joinedAt: "asc" }],
-    })
+    const [roster, rosterLocked] = await Promise.all([
+      prisma.teamMembership.findMany({
+        where:   { teamId, leftAt: null },
+        select:  MEMBERSHIP_SELECT,
+        orderBy: [{ isCaptain: "desc" }, { role: "asc" }, { joinedAt: "asc" }],
+      }),
+      getRosterLockStatus(teamId),
+    ])
 
-    return NextResponse.json({ data: roster, total: roster.length })
+    return NextResponse.json({ data: roster, total: roster.length, rosterLocked })
   } catch (err) {
     return apiInternalError(err, "GET /api/teams/:teamId/roster")
   }
@@ -93,6 +114,12 @@ export async function POST(
   if (bodyError) return bodyError
 
   try {
+    // Roster lock check — STAFF+ may bypass
+    if (!hasMinRole(session.user.role, "STAFF")) {
+      const locked = await getRosterLockStatus(teamId)
+      if (locked) return apiForbidden("Roster is locked for the current season")
+    }
+
     // Team must exist
     const team = await prisma.team.findUnique({
       where:  { id: teamId, deletedAt: null },

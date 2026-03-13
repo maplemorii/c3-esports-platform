@@ -39,6 +39,7 @@ export const SEASON_SELECT = {
   resultWindowHours:    true,
   pointsConfig:         true,
   maxTeamsTotal:        true,
+  rosterLockAt:         true,
   createdAt:            true,
   updatedAt:            true,
   divisions: {

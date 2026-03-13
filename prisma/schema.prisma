@@ -376,6 +376,7 @@ model Season {
 
   maxTeamsTotal Int?          // Overall cap across all divisions
   isVisible     Boolean @default(false)  // Controls public visibility before REGISTRATION
+  rosterLockAt  DateTime?               // After this time, approved teams cannot add/remove players
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
