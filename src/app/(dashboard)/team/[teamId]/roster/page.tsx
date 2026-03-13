@@ -5,9 +5,14 @@ import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import {
   ArrowLeft,
+  Check,
+  Copy,
   Crown,
+  Link2,
+  Link2Off,
   Loader2,
   Plus,
+  RefreshCw,
   Trash2,
   UserRound,
   Search,
@@ -41,6 +46,11 @@ interface TeamInfo {
   id:      string
   name:    string
   ownerId: string
+}
+
+interface InviteInfo {
+  inviteToken:     string | null
+  inviteExpiresAt: string | null
 }
 
 const ROLE_OPTIONS: { value: MembershipRole; label: string }[] = [
@@ -87,6 +97,13 @@ export default function RosterPage() {
   // Remove state
   const [removingId, setRemovingId] = useState<string | null>(null)
 
+  // Invite state
+  const [invite,          setInvite]          = useState<InviteInfo | null>(null)
+  const [inviteLoading,   setInviteLoading]   = useState(false)
+  const [inviteGenerating, setInviteGenerating] = useState(false)
+  const [inviteRevoking,  setInviteRevoking]  = useState(false)
+  const [copied,          setCopied]          = useState(false)
+
   // ---------------------------------------------------------------------------
   // Data fetching
   // ---------------------------------------------------------------------------
@@ -113,7 +130,20 @@ export default function RosterPage() {
     }
   }, [teamId])
 
+  const fetchInvite = useCallback(async () => {
+    setInviteLoading(true)
+    try {
+      const res = await fetch(`/api/teams/${teamId}/invite`)
+      if (res.ok) {
+        setInvite(await res.json())
+      }
+    } finally {
+      setInviteLoading(false)
+    }
+  }, [teamId])
+
   useEffect(() => { fetchRoster() }, [fetchRoster])
+  useEffect(() => { fetchInvite() }, [fetchInvite])
 
   // ---------------------------------------------------------------------------
   // Player search (debounced)
@@ -183,6 +213,39 @@ export default function RosterPage() {
   }
 
   // ---------------------------------------------------------------------------
+  // Invite link actions
+  // ---------------------------------------------------------------------------
+
+  async function handleGenerateInvite() {
+    setInviteGenerating(true)
+    try {
+      const res = await fetch(`/api/teams/${teamId}/invite`, { method: "POST" })
+      if (res.ok) setInvite(await res.json())
+    } finally {
+      setInviteGenerating(false)
+    }
+  }
+
+  async function handleRevokeInvite() {
+    setInviteRevoking(true)
+    try {
+      await fetch(`/api/teams/${teamId}/invite`, { method: "DELETE" })
+      setInvite({ inviteToken: null, inviteExpiresAt: null })
+    } finally {
+      setInviteRevoking(false)
+    }
+  }
+
+  function handleCopy() {
+    if (!invite?.inviteToken) return
+    const url = `${window.location.origin}/invite/${invite.inviteToken}`
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
 
@@ -204,6 +267,16 @@ export default function RosterPage() {
       </div>
     )
   }
+
+  const inviteUrl = invite?.inviteToken
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}/invite/${invite.inviteToken}`
+    : null
+
+  const inviteExpiry = invite?.inviteExpiresAt
+    ? new Date(invite.inviteExpiresAt).toLocaleDateString("en-US", {
+        month: "short", day: "numeric", year: "numeric",
+      })
+    : null
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -384,6 +457,91 @@ export default function RosterPage() {
           </div>
         </div>
       )}
+
+      {/* Invite Link panel */}
+      <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+              <Link2 className="h-3.5 w-3.5" />
+              Invite Link
+            </h2>
+            {inviteUrl && inviteExpiry && (
+              <p className="text-xs text-muted-foreground mt-0.5">Expires {inviteExpiry}</p>
+            )}
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {inviteUrl ? (
+              <>
+                <button
+                  onClick={handleGenerateInvite}
+                  disabled={inviteGenerating}
+                  className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}
+                  title="Generate new link"
+                >
+                  {inviteGenerating
+                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    : <RefreshCw className="h-3.5 w-3.5" />
+                  }
+                  New Link
+                </button>
+                <button
+                  onClick={handleRevokeInvite}
+                  disabled={inviteRevoking}
+                  className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5 text-destructive hover:text-destructive")}
+                  title="Revoke invite link"
+                >
+                  {inviteRevoking
+                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    : <Link2Off className="h-3.5 w-3.5" />
+                  }
+                  Revoke
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={handleGenerateInvite}
+                disabled={inviteGenerating || inviteLoading}
+                className={cn(buttonVariants({ size: "sm" }), "gap-1.5")}
+              >
+                {inviteGenerating
+                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  : <Link2 className="h-3.5 w-3.5" />
+                }
+                Generate Link
+              </button>
+            )}
+          </div>
+        </div>
+
+        {inviteLoading ? (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            Loading…
+          </div>
+        ) : inviteUrl ? (
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
+            <span className="flex-1 min-w-0 text-xs text-muted-foreground font-mono truncate">
+              {inviteUrl}
+            </span>
+            <button
+              onClick={handleCopy}
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "icon-sm" }),
+                "shrink-0",
+                copied ? "text-green-500" : "text-muted-foreground hover:text-foreground"
+              )}
+              title="Copy link"
+            >
+              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            </button>
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            No active invite link. Generate one to let players join directly.
+          </p>
+        )}
+      </div>
 
       {/* Roster list */}
       <div className="rounded-xl border border-border bg-card">

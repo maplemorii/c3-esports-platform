@@ -282,6 +282,10 @@ model Team {
   twitterHandle String?
   discordInvite String?
 
+  // Invite link
+  inviteToken     String?   @unique
+  inviteExpiresAt DateTime?
+
   // Soft delete — retains season history
   deletedAt     DateTime?
 
