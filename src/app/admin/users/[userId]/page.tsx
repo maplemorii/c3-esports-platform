@@ -33,7 +33,7 @@ import type { Role, MembershipRole } from "@prisma/client"
 // Constants
 // ---------------------------------------------------------------------------
 
-const ROLE_META: Record<Role, { label: string; bg: string; color: string }> = {
+const ROLE_META: Record<Role, { label: string; bg: string; color: string; boxShadow?: string }> = {
   USER: {
     label: "User",
     bg: "rgba(255,255,255,0.06)",
@@ -61,8 +61,9 @@ const ROLE_META: Record<Role, { label: string; bg: string; color: string }> = {
   },
   DEVELOPER: {
     label: "Developer",
-    bg: "rgba(168,85,247,0.12)",
-    color: "rgba(192,132,252,0.9)",
+    bg: "rgba(168,85,247,0.15)",
+    color: "rgba(216,180,254,0.95)",
+    boxShadow: "0 0 8px rgba(168,85,247,0.5), inset 0 0 8px rgba(168,85,247,0.08)",
   },
 }
 
@@ -155,7 +156,11 @@ export default async function AdminUserDetailPage({
   if (!user) notFound()
   const viewerRole: Role = (session?.user?.role as Role) ?? "ADMIN"
 
-  const roleMeta = ROLE_META[user.role]
+  const displayRole: Role =
+    process.env.DEVELOPER_USER_ID && user.id === process.env.DEVELOPER_USER_ID
+      ? "DEVELOPER"
+      : user.role
+  const roleMeta = ROLE_META[displayRole]
   const eduVerified = !!(user.eduEmailVerified || user.eduVerifyOverride)
   const player = user.player
 
@@ -216,7 +221,7 @@ export default async function AdminUserDetailPage({
               </h1>
               <span
                 className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase"
-                style={{ background: roleMeta.bg, color: roleMeta.color }}
+                style={{ background: roleMeta.bg, color: roleMeta.color, boxShadow: roleMeta.boxShadow }}
               >
                 {roleMeta.label}
               </span>
@@ -266,7 +271,7 @@ export default async function AdminUserDetailPage({
         <Row
           label="Role"
           value={
-            <UserRoleSelect userId={user.id} currentRole={user.role} viewerRole={viewerRole} />
+            <UserRoleSelect userId={user.id} currentRole={displayRole} viewerRole={viewerRole} />
           }
         />
         <Row label="User ID" value={user.id} mono dim />

@@ -24,7 +24,7 @@ export const metadata: Metadata = { title: "Users — Admin" };
 
 const PAGE_SIZE = 30;
 
-const ROLE_META: Record<Role, { label: string; bg: string; color: string }> = {
+const ROLE_META: Record<Role, { label: string; bg: string; color: string; boxShadow?: string }> = {
   USER: {
     label: "User",
     bg: "rgba(255,255,255,0.06)",
@@ -52,8 +52,9 @@ const ROLE_META: Record<Role, { label: string; bg: string; color: string }> = {
   },
   DEVELOPER: {
     label: "Developer",
-    bg: "rgba(168,85,247,0.12)",
-    color: "rgba(192,132,252,0.9)",
+    bg: "rgba(168,85,247,0.15)",
+    color: "rgba(216,180,254,0.95)",
+    boxShadow: "0 0 8px rgba(168,85,247,0.5), inset 0 0 8px rgba(168,85,247,0.08)",
   },
 };
 
@@ -233,7 +234,11 @@ export default async function AdminUsersPage({
           style={{ border: "1px solid rgba(255,255,255,0.07)" }}
         >
           {users.map((user) => {
-            const roleMeta = ROLE_META[user.role];
+            const displayRole: Role =
+              process.env.DEVELOPER_USER_ID && user.id === process.env.DEVELOPER_USER_ID
+                ? "DEVELOPER"
+                : user.role;
+            const roleMeta = ROLE_META[displayRole];
             const eduVerified = !!(
               user.eduEmailVerified || user.eduVerifyOverride
             );
@@ -287,6 +292,7 @@ export default async function AdminUsersPage({
                         style={{
                           background: roleMeta.bg,
                           color: roleMeta.color,
+                          boxShadow: roleMeta.boxShadow,
                         }}
                       >
                         {roleMeta.label}
@@ -329,7 +335,7 @@ export default async function AdminUsersPage({
 
                 {/* Actions */}
                 <div className="flex items-start gap-3 shrink-0 flex-wrap justify-end">
-                  <UserRoleSelect userId={user.id} currentRole={user.role} viewerRole={viewerRole} />
+                  <UserRoleSelect userId={user.id} currentRole={displayRole} viewerRole={viewerRole} />
                   <EduOverrideButton
                     userId={user.id}
                     currentOverride={user.eduVerifyOverride ?? false}
