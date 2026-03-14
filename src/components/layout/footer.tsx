@@ -10,7 +10,7 @@ const LINKS = {
   Platform: [
     { href: "/auth/register", label: "Register" },
     { href: "/auth/signin", label: "Sign In" },
-    { href: "/docs", label: "Docs" },
+    { href: "https://docs.c3esports.com", label: "Docs" },
     { href: "/support", label: "Support" },
     { href: "/credits", label: "Credits" },
   ],

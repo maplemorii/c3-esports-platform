@@ -10,7 +10,7 @@ import { UserMenu } from "./user-menu"
 const NAV_LINKS = [
   { href: "/seasons", label: "Seasons" },
   { href: "/teams",   label: "Teams"   },
-  { href: "/docs",    label: "Docs"    },
+  { href: "https://docs.c3esports.com", label: "Docs" },
 ]
 
 interface NavbarClientProps {
