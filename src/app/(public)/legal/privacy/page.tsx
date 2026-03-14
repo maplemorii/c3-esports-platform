@@ -217,7 +217,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <h2 className="mb-3 font-display text-lg font-semibold uppercase tracking-wide text-foreground/80">
         {title}
       </h2>
-      <div className="text-sm leading-relaxed text-muted-foreground [&_strong]:font-semibold [&_strong]:text-foreground/80 [&_li]:flex [&_li]:gap-2 [&_li]:before:content-['·'] [&_li]:before:text-brand/40 [&_li]:before:shrink-0">
+      <div className="text-sm leading-relaxed text-muted-foreground [&_strong]:font-semibold [&_strong]:text-foreground/80 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_li]:leading-relaxed">
         {children}
       </div>
     </div>
