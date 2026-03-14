@@ -130,6 +130,12 @@ enum AnnouncementVisibility {
   STAFF_ONLY
 }
 
+enum ScheduleMode {
+  FULL_RR    // Every team plays every other team once (W >= N-1 rounds)
+  PARTIAL_RR // W < N-1 rounds; pairs chosen for seed balance
+  DOUBLE_RR  // Every team plays every other team twice
+}
+
 // =============================================================================
 // USERS & AUTH (Auth.js / NextAuth compatible)
 // =============================================================================
@@ -305,6 +311,7 @@ model Team {
   winnerOf           Match[]             @relation("MatchWinner")
   h2hAsTeam          HeadToHeadRecord[]  @relation("H2HTeam")
   h2hAsOpponent      HeadToHeadRecord[]  @relation("H2HOpponent")
+  seeds              TeamSeed[]
 
   @@index([slug])
   @@index([ownerId])
@@ -405,6 +412,8 @@ model Division {
   description String?
   maxTeams    Int?
   bracketType BracketType  @default(DOUBLE_ELIMINATION)
+  scheduleMode        ScheduleMode?
+  scheduleGeneratedAt DateTime?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -415,6 +424,7 @@ model Division {
   standingEntries    StandingEntry[]
   headToHeadRecords  HeadToHeadRecord[]
   bracket            Bracket?
+  seeds              TeamSeed[]
 
   // Division names must be unique within a season
   @@unique([seasonId, name])
@@ -927,3 +937,25 @@ model HeadToHeadRecord {
   @@map("head_to_head_records")
 }
 
+// =============================================================================
+// TEAM SEEDS
+// Per-team seeding within a division for schedule generation.
+// =============================================================================
+
+model TeamSeed {
+  id         String   @id @default(cuid())
+  divisionId String
+  teamId     String
+  seed       Int      // 1-based
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  division   Division @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([divisionId, teamId])
+  @@unique([divisionId, seed])
+  @@index([divisionId])
+  @@map("team_seeds")
+}

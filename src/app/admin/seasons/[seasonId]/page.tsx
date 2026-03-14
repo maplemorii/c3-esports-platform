@@ -22,6 +22,7 @@ import {
   ChevronRight,
 } from "lucide-react"
 import type { SeasonStatus, DivisionTier } from "@prisma/client"
+import SchedulePanel from "./_components/SchedulePanel"
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -75,6 +76,8 @@ async function getData(seasonId: string) {
           name: true,
           tier: true,
           maxTeams: true,
+          scheduleGeneratedAt: true,
+          scheduleMode: true,
           _count: {
             select: {
               standingEntries: true,
@@ -339,6 +342,16 @@ export default async function AdminSeasonHubPage({
                       <span className="font-medium">{matchCount}</span>
                     </div>
                   </div>
+                  <SchedulePanel
+                    divisionId={d.id}
+                    divisionName={d.name}
+                    seasonId={seasonId}
+                    teamCount={d._count.standingEntries}
+                    weekCount={season.leagueWeeks}
+                    scheduleGeneratedAt={d.scheduleGeneratedAt}
+                    matchCount={matchCount}
+                    scheduleMode={d.scheduleMode}
+                  />
                   <div className="flex gap-2 text-xs">
                     <Link
                       href={`/admin/standings?seasonId=${seasonId}&divisionId=${d.id}`}
