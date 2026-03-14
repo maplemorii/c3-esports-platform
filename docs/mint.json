@@ -1,14 +1,22 @@
 {
   "name": "C3 Esports",
   "logo": {
-    "light": "/images/logo-light.png",
-    "dark": "/images/logo-dark.png"
+    "light": "/images/logo.png",
+    "dark": "/images/logo.png",
+    "href": "https://c3esports.com"
   },
-  "favicon": "/images/favicon.png",
+  "favicon": "/images/favicon.svg",
   "colors": {
-    "primary": "#3B82F6",
-    "light": "#93C5FD",
-    "dark": "#1D4ED8"
+    "primary": "#C41C35",
+    "light": "#e05470",
+    "dark": "#9b1528",
+    "background": {
+      "dark": "#090909"
+    },
+    "anchors": {
+      "from": "#C41C35",
+      "to": "#1e3a8a"
+    }
   },
   "topbarLinks": [
     {
@@ -122,5 +130,9 @@
   ],
   "footerSocials": {
     "discord": "https://discord.gg/c3esports"
+  },
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true
   }
 }
