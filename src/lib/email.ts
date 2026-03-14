@@ -27,6 +27,7 @@ function getResend(): Resend {
 // ---------------------------------------------------------------------------
 
 function layout(content: string, previewText = ""): string {
+  const logoUrl = `${APP_URL}/logo.png`
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,88 +38,65 @@ function layout(content: string, previewText = ""): string {
   <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
   <title>C3 Esports</title>
 </head>
-<body style="margin:0;padding:0;background-color:#080808;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-  ${previewText ? `<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${previewText}&nbsp;‌&zwnj;&nbsp;‌&zwnj;&nbsp;‌&zwnj;&nbsp;‌&zwnj;&nbsp;‌&zwnj;&nbsp;‌&zwnj;&nbsp;‌&zwnj;&nbsp;‌&zwnj;&nbsp;‌&zwnj;</div>` : ""}
-  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#080808;">
+<body style="margin:0;padding:0;background-color:#090909;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  ${previewText ? `<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${previewText}&nbsp;‌&zwnj;&nbsp;‌&zwnj;&nbsp;‌&zwnj;&nbsp;‌&zwnj;&nbsp;‌&zwnj;&nbsp;‌&zwnj;</div>` : ""}
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#090909;">
     <tr>
-      <td align="center" style="padding:40px 16px;">
-        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:560px;">
+      <td align="center" style="padding:40px 20px 48px;">
 
-          <!-- Header / Logo -->
+        <!--[if mso]><table width="480" cellpadding="0" cellspacing="0"><tr><td><![endif]-->
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:480px;">
+
+          <!-- Logo -->
           <tr>
-            <td align="center" style="padding-bottom:32px;">
-              <table cellpadding="0" cellspacing="0" role="presentation">
-                <tr>
-                  <td style="
-                    background: linear-gradient(135deg, #C41C35, #1e3a8a);
-                    border-radius: 14px;
-                    padding: 2px;
-                  ">
-                    <table cellpadding="0" cellspacing="0" role="presentation">
-                      <tr>
-                        <td style="
-                          background: #0d0d0d;
-                          border-radius: 12px;
-                          padding: 10px 20px;
-                        ">
-                          <span style="
-                            font-size: 22px;
-                            font-weight: 800;
-                            letter-spacing: -0.5px;
-                            color: #ffffff;
-                            text-transform: uppercase;
-                          ">C3 <span style="color:#C41C35;">ESPORTS</span></span>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
+            <td align="center" style="padding-bottom:28px;">
+              <a href="${APP_URL}" style="display:inline-block;text-decoration:none;">
+                <img src="${logoUrl}" alt="C3 Esports" width="140" height="34"
+                  style="display:block;width:140px;height:auto;border:0;" />
+              </a>
             </td>
           </tr>
 
           <!-- Card -->
           <tr>
-            <td style="
-              background-color: #111111;
-              border-radius: 16px;
-              border: 1px solid rgba(255,255,255,0.07);
-              overflow: hidden;
-            ">
-              <!-- Red top accent line -->
-              <div style="
-                height: 3px;
-                background: linear-gradient(90deg, #C41C35 0%, #1e3a8a 60%, transparent 100%);
-              "></div>
+            <td style="background-color:#111113;border-radius:14px;border:1px solid #1f1f22;overflow:hidden;">
 
-              <!-- Card body -->
+              <!-- Gradient top bar -->
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
-                  <td style="padding: 36px 40px 40px;">
+                  <td height="3" style="background:linear-gradient(90deg,#C41C35,#1e3a8a);font-size:0;line-height:0;">&nbsp;</td>
+                </tr>
+              </table>
+
+              <!-- Body -->
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td style="padding:32px 36px 36px;">
                     ${content}
                   </td>
                 </tr>
               </table>
+
             </td>
           </tr>
 
           <!-- Footer -->
           <tr>
-            <td style="padding-top:28px;" align="center">
-              <p style="margin:0 0 8px;font-size:12px;color:#4a4a4a;text-transform:uppercase;letter-spacing:0.1em;">
-                Carolina Collegiate Clash
-              </p>
-              <p style="margin:0;font-size:11px;color:#333333;">
-                <a href="${APP_URL}" style="color:#555555;text-decoration:none;">${APP_URL.replace(/^https?:\/\//, "")}</a>
-                &nbsp;·&nbsp;
-                <a href="${APP_URL}/legal/privacy" style="color:#555555;text-decoration:none;">Privacy</a>
-                &nbsp;·&nbsp;
-                <a href="${APP_URL}/legal/terms" style="color:#555555;text-decoration:none;">Terms</a>
+            <td align="center" style="padding-top:24px;">
+              <p style="margin:0 0 6px;font-size:11px;color:#3a3a3a;text-transform:uppercase;letter-spacing:0.08em;">Carolina Collegiate Clash</p>
+              <p style="margin:0;font-size:11px;color:#2e2e2e;">
+                <a href="${APP_URL}" style="color:#444;text-decoration:none;">${APP_URL.replace(/^https?:\/\//, "")}</a>
+                &nbsp;&middot;&nbsp;
+                <a href="${APP_URL}/legal/privacy" style="color:#444;text-decoration:none;">Privacy</a>
+                &nbsp;&middot;&nbsp;
+                <a href="${APP_URL}/legal/terms" style="color:#444;text-decoration:none;">Terms</a>
               </p>
             </td>
           </tr>
 
         </table>
+        <!--[if mso]></td></tr></table><![endif]-->
+
       </td>
     </tr>
   </table>
