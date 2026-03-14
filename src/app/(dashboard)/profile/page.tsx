@@ -35,6 +35,7 @@ import { DashboardTeamCard, type DashboardTeamCardData } from "@/components/dash
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist"
 import { SteamLinkButton } from "@/components/player/SteamLinkButton"
 import { EpicLinkButton } from "@/components/player/EpicLinkButton"
+import { DiscordLinkButton } from "@/components/player/DiscordLinkButton"
 import { TwoFactorSettings } from "@/components/settings/TwoFactorSettings"
 import { DeleteAccountButton } from "@/components/settings/DeleteAccountButton"
 import type { MembershipRole } from "@prisma/client"
@@ -349,6 +350,7 @@ export default async function ProfilePage() {
             hint={hasDiscordOAuth ? "OAuth connected" : "Username"}
             accentClass="text-indigo-400"
             oauthConnected={hasDiscordOAuth}
+            action={<DiscordLinkButton discordUsername={player.discordUsername} />}
           />
         </div>
 
