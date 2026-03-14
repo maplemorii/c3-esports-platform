@@ -21,7 +21,7 @@ const SUPPORT_ITEMS = [
     title: "Email Support",
     description:
       "For account issues, ban appeals, privacy requests, or anything you'd prefer to keep off Discord, email us directly.",
-    action: { label: "admin@c3esports.gg", href: "mailto:admin@c3esports.gg", external: false },
+    action: { label: "admin@c3esports.com", href: "mailto:admin@c3esports.com", external: false },
     accent: "red" as const,
   },
   {
@@ -49,7 +49,7 @@ const FAQS = [
   },
   {
     q: "I signed up with Discord — how do I set a password?",
-    a: "Discord-only accounts cannot use password reset directly. Email admin@c3esports.gg and staff can set up your account.",
+    a: "Discord-only accounts cannot use password reset directly. Email admin@c3esports.com and staff can set up your account.",
   },
   {
     q: "How do I get my .edu email verified?",
@@ -65,7 +65,7 @@ const FAQS = [
   },
   {
     q: "How do I delete my account or request my data?",
-    a: "Email admin@c3esports.gg with the subject \"Data Request\" or \"Account Deletion\". We'll process your request within 14 days.",
+    a: "Email admin@c3esports.com with the subject \"Data Request\" or \"Account Deletion\". We'll process your request within 14 days.",
   },
 ]
 

@@ -97,10 +97,10 @@ export default function PrivacyPage() {
             <p>
               Questions about this policy or your data? Reach us at{" "}
               <a
-                href="mailto:admin@c3esports.gg"
+                href="mailto:admin@c3esports.com"
                 className="text-brand/80 hover:text-brand transition-colors duration-150"
               >
-                admin@c3esports.gg
+                admin@c3esports.com
               </a>
               .
             </p>

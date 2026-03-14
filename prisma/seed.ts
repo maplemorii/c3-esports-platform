@@ -44,10 +44,10 @@ async function main() {
   // ---------------------------------------------------------------------------
   const adminPassword = await bcrypt.hash("Admin1234!", 12)
   const admin = await prisma.user.upsert({
-    where: { email: "admin@c3esports.gg" },
+    where: { email: "admin@c3esports.com" },
     update: {},
     create: {
-      email:    "admin@c3esports.gg",
+      email:    "admin@c3esports.com",
       name:     "C3 Admin",
       password: adminPassword,
       role:     Role.ADMIN,
@@ -438,7 +438,7 @@ async function main() {
   // Done
   // ---------------------------------------------------------------------------
   console.log("\n✅  Seed complete.")
-  console.log("   Admin login  → admin@c3esports.gg / Admin1234!")
+  console.log("   Admin login  → admin@c3esports.com / Admin1234!")
   console.log("   Player login → apex@demo.gg / Player1234! (and blaze, cipher, dusk, echo, frost)")
   console.log("")
   console.log("   Season 1 — ACTIVE · Open Challengers division")
