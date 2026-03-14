@@ -115,6 +115,20 @@ export default function PrivacyPage() {
                 governs how they handle replay data on their end.
               </li>
               <li>
+                <strong>Epic Games</strong> — OAuth provider for Epic Games account linking.
+                When you connect your Epic account, your Epic display name is transmitted to
+                Epic&apos;s servers to complete the OAuth flow. Epic&apos;s{" "}
+                <a
+                  href="https://www.epicgames.com/site/en-US/privacypolicy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-brand/80 hover:text-brand transition-colors duration-150"
+                >
+                  privacy policy
+                </a>{" "}
+                applies to data they receive during authorization.
+              </li>
+              <li>
                 <strong>Discord</strong> — OAuth provider for sign-in and account linking.
                 Discord&apos;s{" "}
                 <a
