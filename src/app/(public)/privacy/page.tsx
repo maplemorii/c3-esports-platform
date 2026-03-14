@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 }
 
 export default function PrivacyPage() {
-  const updated = "March 9, 2026"
+  const updated = "March 14, 2026"
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
@@ -59,12 +59,58 @@ export default function PrivacyPage() {
           <ul className="list-disc pl-5 space-y-1">
             <li>To operate the platform and manage league seasons, matches, and standings.</li>
             <li>To verify player identity and prevent duplicate accounts or impersonation.</li>
-            <li>To communicate match schedules, results, and administrative notices.</li>
+            <li>To send transactional emails (verification links, match notifications, dispute updates).</li>
             <li>To resolve disputes and maintain a fair competitive environment.</li>
+            <li>To detect and prevent abuse, fraud, or violations of our rules.</li>
           </ul>
           <p className="mt-2">
             We do not sell, rent, or share your personal information with third parties for
             marketing purposes.
+          </p>
+        </Section>
+
+        <Section title="How We Share Your Information">
+          <p>
+            We share data only with the infrastructure and service providers necessary to operate
+            the platform. Each provider processes your data solely to deliver their service to us:
+          </p>
+          <ul className="list-disc pl-5 mt-2 space-y-1">
+            <li>
+              <strong className="text-foreground">Railway</strong> — cloud hosting that runs our
+              application and PostgreSQL database in the United States.
+            </li>
+            <li>
+              <strong className="text-foreground">Cloudflare R2</strong> — object storage for
+              uploaded media files (e.g., team logos), hosted in the United States.
+            </li>
+            <li>
+              <strong className="text-foreground">Resend</strong> — transactional email delivery.
+              Your email address is transmitted to Resend solely to deliver messages you have
+              requested or that are required for platform operation (e.g., email address verification).
+            </li>
+            <li>
+              <strong className="text-foreground">Ballchasing.com</strong> — Rocket League replay
+              parsing. When you or your team manager upload a replay file, it is forwarded to
+              Ballchasing&apos;s API for statistical analysis. Their{" "}
+              <a href="https://ballchasing.com/privacy" target="_blank" rel="noopener noreferrer"
+                className="text-brand/70 hover:text-brand transition-colors">
+                privacy policy
+              </a>{" "}
+              governs how they handle replay data on their end.
+            </li>
+            <li>
+              <strong className="text-foreground">Discord</strong> — OAuth provider for sign-in
+              and account linking. Discord&apos;s{" "}
+              <a href="https://discord.com/privacy" target="_blank" rel="noopener noreferrer"
+                className="text-brand/70 hover:text-brand transition-colors">
+                privacy policy
+              </a>{" "}
+              applies to data they receive during the OAuth authorization flow.
+            </li>
+          </ul>
+          <p className="mt-2">
+            We do not share your data with advertising networks, data brokers, or any third
+            parties beyond the service providers listed above.
           </p>
         </Section>
 

@@ -29,7 +29,7 @@ export default function PrivacyPage() {
           <h1 className="font-display text-5xl font-bold uppercase tracking-tight text-foreground sm:text-6xl">
             Privacy Policy
           </h1>
-          <p className="mt-3 text-sm text-muted-foreground">Last updated: January 2025</p>
+          <p className="mt-3 text-sm text-muted-foreground">Last updated: March 14, 2026</p>
           <div
             className="mt-6 h-px w-24"
             style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.6), rgba(59,130,246,0.3), transparent)" }}
