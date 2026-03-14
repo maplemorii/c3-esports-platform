@@ -10,6 +10,7 @@ import { UserMenu } from "./user-menu"
 const NAV_LINKS = [
   { href: "/seasons", label: "Seasons" },
   { href: "/teams",   label: "Teams"   },
+  { href: "/docs",    label: "Docs"    },
 ]
 
 interface NavbarClientProps {
