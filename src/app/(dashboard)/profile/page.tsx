@@ -35,6 +35,8 @@ import { DashboardTeamCard, type DashboardTeamCardData } from "@/components/dash
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist"
 import { SteamLinkButton } from "@/components/player/SteamLinkButton"
 import { EpicLinkButton } from "@/components/player/EpicLinkButton"
+import { TwoFactorSettings } from "@/components/settings/TwoFactorSettings"
+import { DeleteAccountButton } from "@/components/settings/DeleteAccountButton"
 import type { MembershipRole } from "@prisma/client"
 
 export const metadata: Metadata = { title: "My Profile" }
@@ -69,7 +71,9 @@ async function getProfileData(userId: string) {
         image:     true,
         role:      true,
         createdAt: true,
-        accounts:  { select: { provider: true } },
+        accounts:         { select: { provider: true } },
+        password:         true,
+        twoFactorEnabled: true,
       },
     }),
 
@@ -451,6 +455,36 @@ export default async function ProfilePage() {
           />
           <InfoRow label="Account Created" value={formatDate(user.createdAt)} />
           <InfoRow label="Player ID" value={player.id} mono />
+        </div>
+      </section>
+
+      {/* ── Security ─────────────────────────────────────────────────── */}
+      <section className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-6 py-4 border-b border-border">
+          <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+            Security
+          </h2>
+        </div>
+        <div className="px-6 py-5">
+          <TwoFactorSettings
+            twoFactorEnabled={user.twoFactorEnabled}
+            hasPassword={!!user.password}
+          />
+        </div>
+      </section>
+
+      {/* ── Danger zone ──────────────────────────────────────────────── */}
+      <section className="rounded-xl border border-red-900/30 bg-card overflow-hidden">
+        <div className="px-6 py-4 border-b border-red-900/20">
+          <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-red-500/60">
+            Danger Zone
+          </h2>
+        </div>
+        <div className="px-6 py-5 flex flex-col gap-2">
+          <p className="text-sm text-muted-foreground">
+            Permanently delete your account and all associated data. This cannot be undone.
+          </p>
+          <DeleteAccountButton userId={user.id} />
         </div>
       </section>
 
