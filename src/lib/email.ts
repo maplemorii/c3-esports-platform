@@ -436,3 +436,28 @@ export async function sendEduVerificationEmail({
     `, `Verify your college email for C3 Esports`),
   })
 }
+
+// ---------------------------------------------------------------------------
+// Account email verification
+// ---------------------------------------------------------------------------
+
+export async function sendEmailVerificationEmail(
+  to: string,
+  name: string | null | undefined,
+  token: string,
+) {
+  const verifyUrl = `${APP_URL}/api/auth/verify-email?token=${token}`
+  await getResend().emails.send({
+    from: FROM,
+    to,
+    subject: "Verify your C3 Esports account",
+    html: layout(`
+      ${heading("Confirm your email address")}
+      ${bodyText(`Hey${name ? ` ${name}` : ""},`)}
+      ${bodyText("Click the button below to verify your email address and unlock full access to C3 Esports — including editing your profile and joining teams.")}
+      ${actionButton(verifyUrl, "Verify Email Address")}
+      ${divider()}
+      ${mutedNote("This link expires in 24 hours. If you didn't create a C3 Esports account, you can safely ignore this email.")}
+    `, "Verify your C3 Esports account"),
+  })
+}

@@ -18,6 +18,7 @@ import { slugify, dedupeSlug } from "@/lib/utils/slug"
 import { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE } from "@/lib/constants"
 import type { Prisma } from "@prisma/client"
 import { rateLimit, rateLimitResponse } from "@/lib/rateLimit"
+import { hasMinRole } from "@/lib/roles"
 import { logger, logRequest } from "@/lib/logger"
 
 // ---------------------------------------------------------------------------
@@ -91,6 +92,18 @@ export async function POST(req: NextRequest) {
   // Auth
   const { session, error } = await requireAuth()
   if (error) return error
+
+  // Email verification required
+  const dbUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { emailVerified: true },
+  })
+  if (!dbUser?.emailVerified && !hasMinRole(session.user.role, "STAFF")) {
+    return NextResponse.json(
+      { error: "Email verification required before creating a team." },
+      { status: 403 },
+    )
+  }
 
   // 3 team creations per user per day
   const rl = await rateLimit(req, "teams:create", 3, 86400, session.user.id)

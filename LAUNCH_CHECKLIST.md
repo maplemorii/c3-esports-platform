@@ -7,18 +7,18 @@ Each item has the env var, page, or command needed.
 
 ## 1. Environment & Secrets
 
-- [ ] `DATABASE_URL` — production Postgres URL set in Railway
+- [x] `DATABASE_URL` — production Postgres URL set in Railway
 - [ ] `NEXTAUTH_SECRET` — strong random secret (`openssl rand -base64 32`)
-- [ ] `NEXTAUTH_URL` — production domain (e.g. `https://c3esports.com`)
-- [ ] `DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET` — Discord OAuth app created and redirect URI set to `{NEXTAUTH_URL}/api/auth/callback/discord`
+- [x] `NEXTAUTH_URL` — production domain (e.g. `https://c3esports.com`)
+- [x] `DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET` — Discord OAuth app created and redirect URI set to `{NEXTAUTH_URL}/api/auth/callback/discord`
 - [ ] `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_REGION` / `S3_BUCKET_NAME` — R2/S3 bucket created, CORS policy allows uploads from your domain
 - [ ] `BALLCHASING_TOKEN` — ballchasing.com API key set (needed for replay parsing)
 - [ ] `CRON_SECRET` — random secret, also set in Railway cron schedule headers
 - [ ] `REDIS_URL` — Redis instance provisioned (Railway Redis plugin or Upstash); app degrades gracefully without it but cache + rate limit will be in-memory only
 - [ ] `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` — Sentry project DSN (already in sentry configs; verify it matches your project)
 - [ ] `SENTRY_AUTH_TOKEN` — for source map upload during CI build
-- [ ] `RESEND_API_KEY` (or your email provider key) — email notifications won't send without this
-- [ ] `EMAIL_FROM` — sender address (e.g. `noreply@c3esports.com`), must be verified with your email provider
+- [x] `RESEND_API_KEY` (or your email provider key) — email notifications won't send without this
+- [x] `EMAIL_FROM` — sender address (e.g. `noreply@c3esports.com`), must be verified with your email provider
 
 ---
 

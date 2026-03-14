@@ -107,6 +107,20 @@ export async function PATCH(
 
     // Only the owning user or STAFF+ may update
     const isSelf  = player.userId === session.user.id
+
+    // Email verification required for self-edits (STAFF bypass)
+    if (isSelf && !hasMinRole(session.user.role, "STAFF")) {
+      const dbUser = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { emailVerified: true },
+      })
+      if (!dbUser?.emailVerified) {
+        return NextResponse.json(
+          { error: "Email verification required. Check your inbox for a verification link." },
+          { status: 403 },
+        )
+      }
+    }
     const isStaff = hasMinRole(session.user.role, "STAFF")
     if (!isSelf && !isStaff) return apiForbidden()
 

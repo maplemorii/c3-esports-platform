@@ -149,6 +149,15 @@ model User {
   password      String?   // Hashed (bcrypt). Null for OAuth-only accounts.
   role          Role      @default(USER)
 
+  // ── Account email verification ────────────────────────────────────────────
+  // Sent on first sign-in; required before editing profile or joining a team.
+  emailVerifyToken    String?   @map("email_verify_token")   // SHA-256 hash of raw token
+  emailVerifyExpires  DateTime? @map("email_verify_expires") // Expires 24h after issue
+
+  // ── Two-factor authentication (TOTP, credentials users only) ──────────────
+  twoFactorSecret  String?  @map("two_factor_secret")          // base32 TOTP secret
+  twoFactorEnabled Boolean  @default(false) @map("two_factor_enabled")
+
   // ── College student verification ──────────────────────────────────────────
   // Users can sign up with any email but must verify a .edu email to compete.
   // Staff can manually override for edge cases (community colleges, etc).
