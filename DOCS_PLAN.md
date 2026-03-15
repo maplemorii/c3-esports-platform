@@ -129,7 +129,7 @@ docs.c3esports.com/
 - [x] Scaffold `docs/` folder with Mintlify config (`mint.json`)
 - [x] Full navigation structure in `mint.json`
 - [x] All pages created (Getting Started fully written; all others stubbed)
-- [ ] Deploy to `docs.c3esports.com` (connect Mintlify to GitHub repo)
+- [x] Deploy to `docs.c3esports.com` (connect Mintlify to GitHub repo)
 - [ ] Add link to docs in main site nav/footer
 
 ### Phase 2 — Core Player & Manager Docs

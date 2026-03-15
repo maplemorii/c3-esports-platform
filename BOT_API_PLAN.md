@@ -427,7 +427,7 @@ All webhooks are best-effort (fire-and-forget). If the bot is down, the platform
 - [x] Verify matches advance state automatically in production (200 OK confirmed)
 
 ### Bot API Foundation
-- [ ] Add `BOT_API_KEY` to Railway env vars (generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
+- [x] Add `BOT_API_KEY` to Railway env vars (generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
 - [x] Create `src/lib/bot-auth.ts`
 - [x] Create `src/app/api/bot/` directory
 
