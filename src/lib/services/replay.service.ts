@@ -352,27 +352,29 @@ export async function handleParseResult(
     return
   }
 
-  // SUCCESS path — store parsed fields, create GameResult + player stats
+  // SUCCESS path — create game rows first, then mark SUCCESS so a failure
+  // mid-way leaves the upload in PROCESSING (retriable) rather than SUCCESS
+  // with no game data.
+  await createMatchGameFromReplay(replayUploadId, result)
+
+  if (result.players?.length) {
+    await createPlayerStats(replayUploadId, result.players)
+  }
+
   await prisma.replayUpload.update({
     where: { id: replayUploadId },
     data: {
       parseStatus:      "SUCCESS",
       parseCompletedAt: now,
       parseError:       null,
-      parsedHomeGoals:  result.homeGoals ?? null,
-      parsedAwayGoals:  result.awayGoals ?? null,
-      parsedDuration:   result.duration  ?? null,
-      parsedOvertime:   result.overtime  ?? null,
-      parsedData: result.rawJson ?? Prisma.JsonNull,
+      parsedHomeGoals:  result.homeGoals                           ?? null,
+      parsedAwayGoals:  result.awayGoals                           ?? null,
+      parsedDuration:   result.duration != null ? Math.round(result.duration) : null,
+      parsedOvertime:   result.overtime                            ?? null,
+      parsedData:       result.rawJson ?? Prisma.JsonNull,
       scoresAccepted:   true,
     },
   })
-
-  await createMatchGameFromReplay(replayUploadId, result)
-
-  if (result.players?.length) {
-    await createPlayerStats(replayUploadId, result.players)
-  }
 
   await prisma.match.update({
     where: { id: upload.matchId },
@@ -450,7 +452,7 @@ export async function createMatchGameFromReplay(
       homeGoals:     result.homeGoals!,
       awayGoals:     result.awayGoals!,
       overtime:      result.overtime ?? false,
-      duration:      result.duration ?? null,
+      duration:      result.duration != null ? Math.round(result.duration) : null,
       source:        "REPLAY_AUTO",
       replayUploadId,
     },
@@ -458,7 +460,7 @@ export async function createMatchGameFromReplay(
       homeGoals:     result.homeGoals!,
       awayGoals:     result.awayGoals!,
       overtime:      result.overtime ?? false,
-      duration:      result.duration ?? null,
+      duration:      result.duration != null ? Math.round(result.duration) : null,
       source:        "REPLAY_AUTO",
       replayUploadId,
     },
