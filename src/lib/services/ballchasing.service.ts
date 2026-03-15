@@ -101,7 +101,7 @@ export async function uploadReplay(fileKey: string): Promise<BallchasingUploadRe
  * Fetches the current parse status of a replay from ballchasing.com.
  */
 export async function getReplayStatus(ballchasingId: string): Promise<BallchasingReplay> {
-  const res = await ballchasingFetch(`/v3/replays/${ballchasingId}`)
+  const res = await ballchasingFetch(`/replays/${ballchasingId}`)
   return res.json() as Promise<BallchasingReplay>
 }
 
