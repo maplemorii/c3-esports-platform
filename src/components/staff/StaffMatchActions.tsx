@@ -466,7 +466,7 @@ function CancelPanel({ matchId }: { matchId: string }) {
         setError(data.error ?? "Cancel failed.")
         return
       }
-      router.refresh()
+      router.push("/admin/matches")
     } catch {
       setError("Network error.")
     } finally {

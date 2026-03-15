@@ -7,7 +7,7 @@
 
 import type { Metadata } from "next"
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { cn } from "@/lib/utils"
 import { formatDate, formatRelative } from "@/lib/utils/dates"
