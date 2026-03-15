@@ -551,16 +551,27 @@ export async function checkFastPath(matchId: string): Promise<void> {
     await prisma.match.update({ where: { id: matchId }, data: { status: "MATCH_FINISHED" } })
   }
 
-  await prisma.match.update({
-    where: { id: matchId },
-    data: {
-      status: target,
-      ...(target === "COMPLETED" ? { completedAt: new Date() } : {}),
-    },
-  })
-
   if (target === "COMPLETED") {
+    // Tally series scores from MatchGame results
+    const games = await prisma.matchGame.findMany({
+      where:  { matchId },
+      select: { homeGoals: true, awayGoals: true },
+    })
+    const homeScore = games.filter((g) => g.homeGoals > g.awayGoals).length
+    const awayScore = games.filter((g) => g.awayGoals > g.homeGoals).length
+    const winnerId  = homeScore > awayScore ? match.homeTeamId : match.awayTeamId
+
+    await prisma.match.update({
+      where: { id: matchId },
+      data:  { status: "COMPLETED", completedAt: new Date(), homeScore, awayScore, winnerId },
+    })
+
     await applyMatchToStandings(matchId)
+  } else {
+    await prisma.match.update({
+      where: { id: matchId },
+      data:  { status: "VERIFYING" },
+    })
   }
 }
 
