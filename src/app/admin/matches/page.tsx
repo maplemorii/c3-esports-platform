@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils"
 import { formatDate } from "@/lib/utils/dates"
 import { Swords, ChevronRight } from "lucide-react"
 import type { MatchStatus } from "@prisma/client"
+import { TestMatchButton } from "./_components/TestMatchButton"
 
 export const metadata: Metadata = { title: "Matches — Staff" }
 
@@ -147,16 +148,19 @@ export default async function AdminMatchesPage({
             <h1 className="font-display text-3xl font-black uppercase tracking-wide">Matches</h1>
             <p className="mt-1 text-sm text-muted-foreground">{total.toLocaleString()} total</p>
           </div>
-          <Link
-            href="/admin/matches/create"
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white shrink-0 transition-opacity hover:opacity-90"
-            style={{
-              background: "linear-gradient(135deg, rgba(196,28,53,0.9), rgba(59,130,246,0.9))",
-              boxShadow: "0 0 16px rgba(196,28,53,0.15)",
-            }}
-          >
-            + Schedule Match
-          </Link>
+          <div className="flex items-center gap-2">
+            <TestMatchButton />
+            <Link
+              href="/admin/matches/create"
+              className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white shrink-0 transition-opacity hover:opacity-90"
+              style={{
+                background: "linear-gradient(135deg, rgba(196,28,53,0.9), rgba(59,130,246,0.9))",
+                boxShadow: "0 0 16px rgba(196,28,53,0.15)",
+              }}
+            >
+              + Schedule Match
+            </Link>
+          </div>
         </div>
       </div>
 
