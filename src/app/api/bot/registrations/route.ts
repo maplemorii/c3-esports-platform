@@ -32,11 +32,11 @@ export async function GET(req: NextRequest) {
 
   const regs = await prisma.seasonRegistration.findMany({
     where:   { seasonId: resolvedSeasonId, status: status as never },
-    orderBy: { createdAt: "asc" },
+    orderBy: { registeredAt: "asc" },
     select: {
-      id:         true,
-      status:     true,
-      createdAt:  true,
+      id:           true,
+      status:       true,
+      registeredAt: true,
       team:       { select: { id: true, name: true, slug: true } },
       division:   { select: { name: true } },
       memberships: false,
@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
     divisionName: r.division?.name ?? null,
     rosterSize:   rosterMap[r.team.id] ?? 0,
     status:       r.status,
-    registeredAt: r.createdAt,
+    registeredAt: r.registeredAt,
   }))
 
   return NextResponse.json({ registrations: formatted, total: formatted.length })
