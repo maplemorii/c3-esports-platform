@@ -98,14 +98,18 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       })
     }
 
-    await tx.auditLog.create({
-      data: {
-        action:     `DISPUTE_${action}`,
-        entityType: "Dispute",
-        entityId:   disputeId,
-        after:      { outcome, reason, source: "discord_bot" },
-      },
-    })
+    const botUser = await tx.user.findFirst({ where: { email: "bot@c3esports.com" }, select: { id: true } })
+    if (botUser) {
+      await tx.auditLog.create({
+        data: {
+          actorId:    botUser.id,
+          action:     `DISPUTE_${action}`,
+          entityType: "Dispute",
+          entityId:   disputeId,
+          after:      { outcome, reason, source: "discord_bot" },
+        },
+      })
+    }
   })
 
   if (action === "RESOLVED") {

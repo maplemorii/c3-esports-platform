@@ -66,14 +66,18 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     data:  { status: "COMPLETED", completedAt: new Date(), homeScore, awayScore, winnerId },
   })
 
-  await prisma.auditLog.create({
-    data: {
-      action:     "STAFF_RESULT_OVERRIDE",
-      entityType: "Match",
-      entityId:   matchId,
-      after:      { homeScore, awayScore, winnerId, reason, source: "discord_bot" },
-    },
-  })
+  const botUser = await prisma.user.findFirst({ where: { email: "bot@c3esports.com" }, select: { id: true } })
+  if (botUser) {
+    await prisma.auditLog.create({
+      data: {
+        actorId:    botUser.id,
+        action:     "STAFF_RESULT_OVERRIDE",
+        entityType: "Match",
+        entityId:   matchId,
+        after:      { homeScore, awayScore, winnerId, reason, source: "discord_bot" },
+      },
+    })
+  }
 
   await applyMatchToStandings(matchId)
 
