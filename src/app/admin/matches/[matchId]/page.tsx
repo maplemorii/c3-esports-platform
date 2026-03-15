@@ -43,6 +43,7 @@ async function getData(matchId: string) {
       homeScore:         true,
       awayScore:         true,
       notes:             true,
+      deletedAt:         true,
 
       homeTeam: { select: { id: true, name: true, slug: true } },
       awayTeam: { select: { id: true, name: true, slug: true } },
