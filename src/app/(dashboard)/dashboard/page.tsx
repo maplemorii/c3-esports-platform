@@ -27,7 +27,7 @@ async function getDashboardData(userId: string) {
   const [player, ownedTeams, memberships, activeSeason] = await Promise.all([
     prisma.player.findUnique({
       where: { userId, deletedAt: null },
-      select: { id: true, displayName: true, avatarUrl: true, epicUsername: true },
+      select: { id: true, displayName: true, avatarUrl: true },
     }),
 
     prisma.team.findMany({
@@ -213,11 +213,6 @@ export default async function DashboardPage() {
               >
                 {userName}
               </h1>
-              {player?.epicUsername && (
-                <p className="text-xs font-mono mt-0.5" style={{ color: "rgba(255,255,255,0.28)" }}>
-                  Epic: {player.epicUsername}
-                </p>
-              )}
             </div>
           </div>
 

@@ -262,7 +262,8 @@ model Player {
   userId          String    @unique
   displayName     String
   avatarUrl       String?
-  epicUsername    String?   @unique  // Rocket League / Epic Games username
+  epicUsername    String?   @unique  // RL username — used internally for replay stat matching
+  trackerUrl      String?             // Rocket League Tracker Network profile URL
   steamId         String?   @unique
   discordUsername String?
   bio             String?   @db.Text
@@ -894,17 +895,6 @@ model Announcement {
 // AUDIT LOG
 // Immutable record of all consequential admin/staff actions.
 // =============================================================================
-
-model Announcement {
-  id                String   @id @default(cuid())
-  title             String
-  body              String
-  postedByDiscordId String?
-  postedByName      String?
-  createdAt         DateTime @default(now())
-
-  @@map("announcements")
-}
 
 // =============================================================================
 

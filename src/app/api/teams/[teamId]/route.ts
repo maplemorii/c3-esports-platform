@@ -34,7 +34,7 @@ const ROSTER_SELECT = {
       id:              true,
       displayName:     true,
       avatarUrl:       true,
-      epicUsername:    true,
+      trackerUrl:      true,
       discordUsername: true,
     },
   },

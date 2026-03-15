@@ -72,7 +72,7 @@ export interface PlayerResponse {
   userId:         string
   displayName:    string
   avatarUrl:      string | null
-  epicUsername:   string | null
+  trackerUrl:     string | null
   steamId:        string | null
   discordUsername:string | null
   bio:            string | null
@@ -101,7 +101,6 @@ export interface RosterMember {
     id:           string
     displayName:  string
     avatarUrl:    string | null
-    epicUsername: string | null
   }
 }
 

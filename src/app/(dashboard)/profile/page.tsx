@@ -34,7 +34,7 @@ import { buttonVariants } from "@/components/ui/button-variants"
 import { DashboardTeamCard, type DashboardTeamCardData } from "@/components/dashboard/DashboardTeamCard"
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist"
 import { SteamLinkButton } from "@/components/player/SteamLinkButton"
-import { EpicLinkButton } from "@/components/player/EpicLinkButton"
+import { TrackerUrlInput } from "@/components/player/TrackerUrlInput"
 import { DiscordLinkButton } from "@/components/player/DiscordLinkButton"
 import { TwoFactorSettings } from "@/components/settings/TwoFactorSettings"
 import { DeleteAccountButton } from "@/components/settings/DeleteAccountButton"
@@ -54,7 +54,7 @@ async function getProfileData(userId: string) {
         id:              true,
         displayName:     true,
         avatarUrl:       true,
-        epicUsername:    true,
+        trackerUrl:      true,
         steamId:         true,
         discordUsername: true,
         bio:             true,
@@ -329,11 +329,11 @@ export default async function ProfilePage() {
         <div className="grid divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           <AccountRow
             icon={Gamepad2}
-            platform="Epic Games"
-            value={player.epicUsername}
-            hint="Required to compete"
+            platform="RL Tracker"
+            value={player.trackerUrl ? "Linked" : null}
+            hint="tracker.network profile"
             accentClass="text-sky-400"
-            action={<EpicLinkButton epicUsername={player.epicUsername} />}
+            action={<TrackerUrlInput trackerUrl={player.trackerUrl} playerId={player.id} />}
           />
           <AccountRow
             icon={Layers}
@@ -354,7 +354,7 @@ export default async function ProfilePage() {
           />
         </div>
 
-        {(!player.epicUsername || !player.steamId || !player.discordUsername) && (
+        {(!player.trackerUrl || !player.steamId || !player.discordUsername) && (
           <div className="flex items-center justify-between gap-3 border-t border-border bg-muted/30 px-6 py-3">
             <p className="text-xs text-muted-foreground">
               Link your gaming accounts to improve match verification and team discovery.

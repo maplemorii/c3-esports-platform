@@ -31,7 +31,6 @@ export async function GET(req: Request) {
       ...(search && {
         OR: [
           { displayName:     { contains: search, mode: "insensitive" } },
-          { epicUsername:    { contains: search, mode: "insensitive" } },
           { discordUsername: { contains: search, mode: "insensitive" } },
         ],
       }),
@@ -44,7 +43,7 @@ export async function GET(req: Request) {
           id:              true,
           displayName:     true,
           avatarUrl:       true,
-          epicUsername:    true,
+          trackerUrl:      true,
           discordUsername: true,
         },
         orderBy: { displayName: "asc" },

@@ -40,7 +40,6 @@ export async function GET(req: NextRequest) {
       ...(search && {
         OR: [
           { displayName:     { contains: search, mode: "insensitive" } },
-          { epicUsername:    { contains: search, mode: "insensitive" } },
           { discordUsername: { contains: search, mode: "insensitive" } },
         ],
       }),
@@ -53,7 +52,6 @@ export async function GET(req: NextRequest) {
           id:              true,
           displayName:     true,
           avatarUrl:       true,
-          epicUsername:    true,
           discordUsername: true,
         },
         orderBy: { displayName: "asc" },
@@ -96,15 +94,6 @@ export async function POST(req: NextRequest) {
       return apiConflict("You already have a player profile")
     }
 
-    // epicUsername uniqueness
-    if (data.epicUsername) {
-      const taken = await prisma.player.findUnique({
-        where:  { epicUsername: data.epicUsername },
-        select: { id: true },
-      })
-      if (taken) return apiConflict(`Epic username "${data.epicUsername}" is already in use`)
-    }
-
     // steamId uniqueness
     if (data.steamId) {
       const taken = await prisma.player.findUnique({
@@ -118,7 +107,7 @@ export async function POST(req: NextRequest) {
       data: {
         userId:          session.user.id,
         displayName:     data.displayName,
-        epicUsername:    data.epicUsername,
+        trackerUrl:      data.trackerUrl,
         steamId:         data.steamId,
         discordUsername: data.discordUsername,
         bio:             data.bio,
@@ -128,7 +117,7 @@ export async function POST(req: NextRequest) {
         userId:          true,
         displayName:     true,
         avatarUrl:       true,
-        epicUsername:    true,
+        trackerUrl:      true,
         steamId:         true,
         discordUsername: true,
         bio:             true,

@@ -30,7 +30,6 @@ interface Player {
   id:              string
   displayName:     string
   avatarUrl:       string | null
-  epicUsername:    string | null
   discordUsername: string | null
   user?:           { image: string | null } | null
 }
@@ -379,9 +378,6 @@ export default function RosterPage() {
                         </div>
                         <div className="min-w-0">
                           <p className="text-sm font-medium truncate">{p.displayName}</p>
-                          {p.epicUsername && (
-                            <p className="text-xs text-muted-foreground truncate">{p.epicUsername}</p>
-                          )}
                         </div>
                       </button>
                     </li>
@@ -401,9 +397,6 @@ export default function RosterPage() {
                 <UserRound className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium">{selectedPlayer.displayName}</p>
-                  {selectedPlayer.epicUsername && (
-                    <p className="text-xs text-muted-foreground">{selectedPlayer.epicUsername}</p>
-                  )}
                 </div>
                 <button
                   type="button"
@@ -594,9 +587,6 @@ export default function RosterPage() {
                       <Crown className="h-3 w-3 text-yellow-500 shrink-0" aria-label="Captain" />
                     )}
                   </div>
-                  {m.player?.epicUsername && (
-                    <p className="text-xs text-muted-foreground truncate">{m.player.epicUsername}</p>
-                  )}
                 </div>
 
                 {/* Role badge */}

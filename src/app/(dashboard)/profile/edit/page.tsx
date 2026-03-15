@@ -6,7 +6,7 @@
  *
  * Two sections:
  *   1. Profile form  — display name, Discord username, bio
- *   2. Linked accounts — Epic Games + Steam via OAuth (link/unlink)
+ *   2. Linked accounts — RL Tracker URL + Steam
  */
 
 import type { Metadata } from "next"
@@ -19,7 +19,7 @@ import { prisma } from "@/lib/prisma"
 import { buttonVariants } from "@/components/ui/button-variants"
 import { cn } from "@/lib/utils"
 import { EditFormWrapper } from "./EditFormWrapper"
-import { EpicLinkButton } from "@/components/player/EpicLinkButton"
+import { TrackerUrlInput } from "@/components/player/TrackerUrlInput"
 import { SteamLinkButton } from "@/components/player/SteamLinkButton"
 import { EduVerificationCard } from "@/components/profile/EduVerificationCard"
 import { AvatarUpload } from "@/components/profile/AvatarUpload"
@@ -38,7 +38,7 @@ export default async function ProfileEditPage() {
         id:              true,
         displayName:     true,
         avatarUrl:       true,
-        epicUsername:    true,
+        trackerUrl:      true,
         steamId:         true,
         discordUsername: true,
         bio:             true,
@@ -147,12 +147,12 @@ export default async function ProfileEditPage() {
           <div className="divide-y divide-border">
             <LinkedAccountRow
               icon={Gamepad2}
-              platform="Epic Games"
-              value={player.epicUsername}
+              platform="RL Tracker"
+              value={player.trackerUrl ? "Linked" : null}
               accentClass="text-sky-400"
-              description="Your Rocket League / Epic display name — verified via Epic OAuth."
+              description="Your Rocket League Tracker Network profile page."
             >
-              <EpicLinkButton epicUsername={player.epicUsername} />
+              <TrackerUrlInput trackerUrl={player.trackerUrl} playerId={player.id} />
             </LinkedAccountRow>
 
             <LinkedAccountRow

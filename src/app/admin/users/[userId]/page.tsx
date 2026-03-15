@@ -99,6 +99,7 @@ async function getData(userId: string) {
           displayName: true,
           avatarUrl: true,
           epicUsername: true,
+          trackerUrl: true,
           steamId: true,
           discordUsername: true,
           bio: true,
@@ -378,7 +379,14 @@ export default async function AdminUserDetailPage({
         {player ? (
           <>
             <Row
-              label="Epic / Rocket League"
+              label="Tracker URL"
+              value={player.trackerUrl ?? (
+                <span className="text-muted-foreground/50 italic">Not set</span>
+              )}
+              mono={!!player.trackerUrl}
+            />
+            <Row
+              label="Epic Username (internal)"
               value={player.epicUsername ?? (
                 <span className="text-muted-foreground/50 italic">Not set</span>
               )}

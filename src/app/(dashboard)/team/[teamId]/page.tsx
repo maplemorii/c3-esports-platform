@@ -59,7 +59,6 @@ async function getTeam(teamId: string) {
               id:          true,
               displayName: true,
               avatarUrl:   true,
-              epicUsername: true,
             },
           },
         },
@@ -389,11 +388,6 @@ export default async function TeamHubPage({
                       <Crown className="h-3 w-3 text-yellow-500 shrink-0" aria-label="Captain" />
                     )}
                   </div>
-                  {m.player?.epicUsername && (
-                    <p className="text-xs text-muted-foreground truncate">
-                      {m.player.epicUsername}
-                    </p>
-                  )}
                 </div>
 
                 <RoleBadge role={m.role} />

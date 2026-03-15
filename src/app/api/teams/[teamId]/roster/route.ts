@@ -52,7 +52,7 @@ const MEMBERSHIP_SELECT = {
       id:              true,
       displayName:     true,
       avatarUrl:       true,
-      epicUsername:    true,
+      trackerUrl:      true,
       discordUsername: true,
       user: { select: { image: true } },
     },

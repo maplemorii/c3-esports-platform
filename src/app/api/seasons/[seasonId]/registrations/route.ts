@@ -108,10 +108,10 @@ export async function POST(
     })
     if (!division) return apiNotFound("Division")
 
-    // Eligibility: at least 3 active players, all with Epic + Discord linked
+    // Eligibility: at least 3 active players, all with Tracker URL + Discord linked
     const memberships = await prisma.teamMembership.findMany({
       where:  { teamId, leftAt: null },
-      select: { player: { select: { displayName: true, epicUsername: true, discordUsername: true } } },
+      select: { player: { select: { displayName: true, trackerUrl: true, discordUsername: true } } },
     })
     if (memberships.length < 3) {
       return apiBadRequest(
@@ -119,12 +119,12 @@ export async function POST(
       )
     }
     const incomplete = memberships
-      .filter((m) => !m.player?.epicUsername || !m.player?.discordUsername)
+      .filter((m) => !m.player?.trackerUrl || !m.player?.discordUsername)
       .map((m) => m.player?.displayName ?? "Unknown")
     if (incomplete.length > 0) {
       return apiBadRequest(
         `The following players are missing required accounts: ${incomplete.join(", ")}. ` +
-        `Each player needs an Epic Games username and a Discord username linked to their profile.`
+        `Each player needs a Rocket League Tracker URL and a Discord username linked to their profile.`
       )
     }
 

@@ -46,7 +46,7 @@ export async function GET(req: Request, { params }: Params) {
                 id:              true,
                 displayName:     true,
                 avatarUrl:       true,
-                epicUsername:    true,
+                trackerUrl:      true,
                 discordUsername: true,
               },
             },

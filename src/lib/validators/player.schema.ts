@@ -25,19 +25,16 @@ const displayName = z
   .trim()
 
 /**
- * Epic Games / Rocket League display name.
- * 3–16 characters: letters, numbers, underscores, hyphens, periods, spaces.
- * No leading/trailing spaces.
+ * Rocket League Tracker Network profile URL.
+ * e.g. https://rocketleague.tracker.network/rocket-league/profile/epic/PlayerName/overview
  */
-const epicUsername = z
+const trackerUrl = z
   .string()
-  .min(3, "Epic username must be at least 3 characters")
-  .max(16, "Epic username must be 16 characters or less")
-  .regex(
-    /^[A-Za-z0-9_.\ \-]+$/,
-    "Epic username can only contain letters, numbers, spaces, underscores, hyphens, and periods"
+  .url("Must be a valid URL")
+  .refine(
+    (url) => url.includes("tracker.network") || url.includes("rocketleague.tracker.network"),
+    "Must be a Rocket League Tracker Network URL (tracker.network)"
   )
-  .regex(/^[^\s].*[^\s]$|^[^\s]{1}$/, "Epic username cannot start or end with a space")
   .optional()
 
 /**
@@ -67,7 +64,7 @@ const discordUsername = z
 
 export const CreatePlayerSchema = z.object({
   displayName:     displayName,
-  epicUsername:    epicUsername,
+  trackerUrl:      trackerUrl,
   steamId:         steamId,
   discordUsername: discordUsername,
   bio:             z.string().max(500).optional(),

@@ -24,7 +24,6 @@ export interface RosterMember {
     id:             string
     displayName:    string
     avatarUrl:      string | null
-    epicUsername:   string | null
     user?:          { image: string | null } | null
   } | null
 }
@@ -74,11 +73,6 @@ export function RosterTable({ members }: { members: RosterMember[] }) {
                 />
               )}
             </div>
-            {m.player?.epicUsername && (
-              <p className="text-xs text-muted-foreground truncate">
-                Epic: {m.player.epicUsername}
-              </p>
-            )}
           </div>
 
           <RoleBadge role={m.role} />

@@ -78,7 +78,6 @@ async function getTeam(slug: string) {
               id:           true,
               displayName:  true,
               avatarUrl:    true,
-              epicUsername: true,
               user: { select: { image: true } },
             },
           },

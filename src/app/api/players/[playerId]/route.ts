@@ -27,7 +27,7 @@ const PLAYER_SELECT = {
   userId:          true,
   displayName:     true,
   avatarUrl:       true,
-  epicUsername:    true,
+  trackerUrl:      true,
   steamId:         true,
   discordUsername: true,
   bio:             true,
@@ -101,7 +101,7 @@ export async function PATCH(
   try {
     const player = await prisma.player.findUnique({
       where:  { id: playerId, deletedAt: null },
-      select: { id: true, userId: true, epicUsername: true, steamId: true },
+      select: { id: true, userId: true, steamId: true },
     })
     if (!player) return apiNotFound("Player")
 
@@ -123,15 +123,6 @@ export async function PATCH(
     }
     const isStaff = hasMinRole(session.user.role, "STAFF")
     if (!isSelf && !isStaff) return apiForbidden()
-
-    // epicUsername uniqueness (if changing)
-    if (data.epicUsername && data.epicUsername !== player.epicUsername) {
-      const taken = await prisma.player.findUnique({
-        where:  { epicUsername: data.epicUsername },
-        select: { id: true },
-      })
-      if (taken) return apiConflict(`Epic username "${data.epicUsername}" is already in use`)
-    }
 
     // steamId uniqueness (if changing)
     if (data.steamId && data.steamId !== player.steamId) {
