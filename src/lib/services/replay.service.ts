@@ -665,6 +665,9 @@ export async function pollProcessingReplays(): Promise<number> {
       // Log and continue — a single upload failure must not abort the rest
       console.error(`[pollProcessingReplays] upload ${upload.id} failed:`, err)
     }
+
+    // Respect ballchasing.com rate limits between requests
+    await new Promise((r) => setTimeout(r, 500))
   }
 
   return processed
