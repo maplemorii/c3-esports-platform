@@ -37,9 +37,8 @@ export async function GET(req: NextRequest) {
       id:           true,
       status:       true,
       registeredAt: true,
-      team:       { select: { id: true, name: true, slug: true } },
-      division:   { select: { name: true } },
-      memberships: false,
+      team:     { select: { id: true, name: true, slug: true } },
+      division: { select: { name: true } },
     },
   })
 
