@@ -29,7 +29,7 @@ import type { MatchStatus } from "@prisma/client"
 
 async function getData(matchId: string) {
   return prisma.match.findUnique({
-    where: { id: matchId, deletedAt: null },
+    where: { id: matchId },
     select: {
       id:                true,
       status:            true,
@@ -151,6 +151,7 @@ export default async function AdminMatchDetailPage({
   const { matchId } = await params
   const match = await getData(matchId)
   if (!match) notFound()
+  if (match.deletedAt) redirect("/admin/matches")
 
   const meta = STATUS_META[match.status]
 
