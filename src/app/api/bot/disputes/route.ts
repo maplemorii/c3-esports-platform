@@ -27,39 +27,35 @@ export async function GET(req: NextRequest) {
     take:    limit,
     orderBy: { createdAt: "asc" },
     select: {
-      id:           true,
-      status:       true,
-      createdAt:    true,
-      matchId:      true,
+      id:            true,
+      status:        true,
+      createdAt:     true,
+      matchId:       true,
       filedByTeamId: true,
       match: {
         select: {
-          homeTeam: { select: { name: true } },
-          awayTeam: { select: { name: true } },
-        },
-      },
-      filedByTeam: { select: { name: true } },
-      reports: {
-        select: {
-          submittingTeamId: true,
-          reportedHomeScore: true,
-          reportedAwayScore: true,
+          homeTeamId: true,
+          awayTeamId: true,
+          homeTeam:   { select: { name: true } },
+          awayTeam:   { select: { name: true } },
         },
       },
     },
   })
 
   const formatted = disputes.map((d) => {
-    const homeReport = d.reports.find((r) => r.submittingTeamId === d.match?.homeTeam ? undefined : undefined)
+    const filedByName =
+      d.filedByTeamId === d.match?.homeTeamId ? d.match?.homeTeam?.name :
+      d.filedByTeamId === d.match?.awayTeamId ? d.match?.awayTeam?.name :
+      d.filedByTeamId
     return {
-      id:          d.id,
-      matchId:     d.matchId,
-      homeTeam:    d.match?.homeTeam?.name,
-      awayTeam:    d.match?.awayTeam?.name,
-      filedBy:     d.filedByTeam?.name,
-      filedAt:     d.createdAt,
-      status:      d.status.toLowerCase(),
-      homeTeamScore: homeReport ? { home: homeReport.reportedHomeScore, away: homeReport.reportedAwayScore } : null,
+      id:        d.id,
+      matchId:   d.matchId,
+      homeTeam:  d.match?.homeTeam?.name,
+      awayTeam:  d.match?.awayTeam?.name,
+      filedBy:   filedByName,
+      filedAt:   d.createdAt,
+      status:    d.status.toLowerCase(),
     }
   })
 
