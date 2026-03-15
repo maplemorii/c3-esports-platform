@@ -422,31 +422,30 @@ All webhooks are best-effort (fire-and-forget). If the bot is down, the platform
 ## Implementation Checklist
 
 ### Immediate (unblocks match flow today)
-- [ ] Create `src/app/api/cron/match-tick/route.ts`
-- [ ] Test match-tick route locally with `curl -H "x-cron-secret: ..." http://localhost:3000/api/cron/match-tick`
-- [ ] Add match-tick cron job to Railway
-- [ ] Verify matches advance state automatically in production
+- [x] Create `src/app/api/cron/match-tick/route.ts`
+- [x] Add match-tick cron job to Railway
+- [x] Verify matches advance state automatically in production (200 OK confirmed)
 
 ### Bot API Foundation
 - [ ] Add `BOT_API_KEY` to Railway env vars (generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
-- [ ] Create `src/lib/bot-auth.ts`
-- [ ] Create `src/app/api/bot/` directory
+- [x] Create `src/lib/bot-auth.ts`
+- [x] Create `src/app/api/bot/` directory
 
 ### Write Routes
-- [ ] `POST /api/bot/matches/:id/checkin-override`
-- [ ] `POST /api/bot/matches/:id/forfeit`
-- [ ] `PATCH /api/bot/matches/:id/result`
-- [ ] `PATCH /api/bot/disputes/:id`
-- [ ] `GET /api/bot/disputes`
-- [ ] `PATCH /api/bot/registrations/:id`
-- [ ] `GET /api/bot/registrations`
-- [ ] `POST /api/bot/announce`
-- [ ] `GET /api/bot/stats`
-- [ ] `GET /api/bot/matches/:id`
+- [x] `POST /api/bot/matches/:id/checkin-override`
+- [x] `POST /api/bot/matches/:id/forfeit`
+- [x] `PATCH /api/bot/matches/:id/result`
+- [x] `PATCH /api/bot/disputes/:id`
+- [x] `GET /api/bot/disputes`
+- [x] `PATCH /api/bot/registrations/:id`
+- [x] `GET /api/bot/registrations`
+- [x] `POST /api/bot/announce`
+- [x] `GET /api/bot/stats`
+- [x] `GET /api/bot/matches/:id`
 
 ### Schema
-- [ ] Add `Announcement` model to `prisma/schema.prisma`
-- [ ] Run `npx prisma migrate dev --name add-announcements`
+- [x] Add `Announcement` model to `prisma/schema.prisma`
+- [ ] Run `railway run npx prisma migrate deploy` to apply migration in production
 - [ ] Add DB indexes for autocomplete search fields (teams.name, players.displayName, etc.)
 
 ### Webhooks
