@@ -168,10 +168,14 @@ export function toParseResult(
     ...awayTeam.players.map((p) => mapPlayer(p, "away")),
   ]
 
+  // ballchasing doesn't always include team-level goals — fall back to summing player goals
+  const homeGoals = homeTeam.goals ?? homeTeam.players.reduce((s, p) => s + (p.stats.core.goals ?? 0), 0)
+  const awayGoals = awayTeam.goals ?? awayTeam.players.reduce((s, p) => s + (p.stats.core.goals ?? 0), 0)
+
   return {
     status:    "SUCCESS",
-    homeGoals: homeTeam.goals,
-    awayGoals: awayTeam.goals,
+    homeGoals,
+    awayGoals,
     duration:  replay.duration,
     overtime:  replay.overtime,
     players,
