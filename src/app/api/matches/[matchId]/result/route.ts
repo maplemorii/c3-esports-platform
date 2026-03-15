@@ -255,8 +255,13 @@ export async function PATCH(req: Request, { params }: Params) {
       )
     )
 
+    // Compute from ALL current game rows (replays + overrides), not just submitted games
+    const allGames = await prisma.matchGame.findMany({
+      where:  { matchId },
+      select: { homeGoals: true, awayGoals: true },
+    })
     const { homeScore, awayScore, winnerId } = computeSeries(
-      data.games,
+      allGames,
       match.homeTeamId,
       match.awayTeamId
     )

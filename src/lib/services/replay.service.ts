@@ -570,9 +570,18 @@ export async function checkFastPath(matchId: string): Promise<void> {
 
     await applyMatchToStandings(matchId)
   } else {
+    // Still write series scores so the display is correct while awaiting confirmation
+    const games = await prisma.matchGame.findMany({
+      where:  { matchId },
+      select: { homeGoals: true, awayGoals: true },
+    })
+    const homeScore = games.filter((g) => g.homeGoals > g.awayGoals).length
+    const awayScore = games.filter((g) => g.awayGoals > g.homeGoals).length
+    const winnerId  = homeScore > awayScore ? match.homeTeamId : match.awayTeamId
+
     await prisma.match.update({
       where: { id: matchId },
-      data:  { status: "VERIFYING" },
+      data:  { status: "VERIFYING", homeScore, awayScore, winnerId },
     })
   }
 }
