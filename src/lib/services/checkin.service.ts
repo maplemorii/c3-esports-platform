@@ -21,6 +21,7 @@ import { NotFoundError, DomainError } from "@/lib/utils/errors"
 import { transitionTo } from "@/lib/services/matchStatus.service"
 import { gamesExpectedForFormat } from "@/lib/services/match.service"
 import { applyMatchToStandings } from "@/lib/services/standings.service"
+import { sendBotWebhook } from "@/lib/bot-webhook"
 
 // ---------------------------------------------------------------------------
 // Public API
@@ -35,7 +36,15 @@ import { applyMatchToStandings } from "@/lib/services/standings.service"
 export async function openCheckIn(matchId: string): Promise<void> {
   const match = await prisma.match.findUnique({
     where:  { id: matchId, deletedAt: null },
-    select: { status: true, homeTeamId: true, awayTeamId: true },
+    select: {
+      status:            true,
+      homeTeamId:        true,
+      awayTeamId:        true,
+      scheduledAt:       true,
+      checkInDeadlineAt: true,
+      homeTeam: { select: { name: true } },
+      awayTeam: { select: { name: true } },
+    },
   })
   if (!match) throw new NotFoundError("Match", matchId)
   if (match.status !== "SCHEDULED") throw new DomainError("Match is not in SCHEDULED state")
@@ -48,6 +57,16 @@ export async function openCheckIn(matchId: string): Promise<void> {
       { matchId, teamId: match.awayTeamId },
     ],
     skipDuplicates: true,
+  })
+
+  sendBotWebhook("match.checkin_opened", {
+    matchId,
+    homeTeamId:        match.homeTeamId,
+    homeTeam:          match.homeTeam.name,
+    awayTeamId:        match.awayTeamId,
+    awayTeam:          match.awayTeam.name,
+    scheduledAt:       match.scheduledAt?.toISOString() ?? null,
+    checkInDeadlineAt: match.checkInDeadlineAt?.toISOString() ?? null,
   })
 }
 
@@ -64,7 +83,11 @@ export async function checkIn(
 ): Promise<MatchCheckIn> {
   const match = await prisma.match.findUnique({
     where:  { id: matchId, deletedAt: null },
-    select: { status: true, homeTeamId: true, awayTeamId: true, format: true },
+    select: {
+      status: true, homeTeamId: true, awayTeamId: true, format: true,
+      homeTeam: { select: { name: true } },
+      awayTeam: { select: { name: true } },
+    },
   })
   if (!match) throw new NotFoundError("Match", matchId)
   if (match.status !== "CHECKING_IN") throw new DomainError("Match is not currently in check-in phase")
@@ -87,6 +110,14 @@ export async function checkIn(
       data:  { gamesExpected: gamesExpectedForFormat(match.format) },
     })
     await transitionTo(matchId, "IN_PROGRESS", userId)
+    sendBotWebhook("match.started", {
+      matchId,
+      homeTeamId: match.homeTeamId,
+      homeTeam:   match.homeTeam.name,
+      awayTeamId: match.awayTeamId,
+      awayTeam:   match.awayTeam.name,
+      format:     match.format,
+    })
   }
 
   return record
@@ -103,7 +134,11 @@ export async function forceCheckIn(
 ): Promise<void> {
   const match = await prisma.match.findUnique({
     where:  { id: matchId, deletedAt: null },
-    select: { status: true, homeTeamId: true, awayTeamId: true, format: true },
+    select: {
+      status: true, homeTeamId: true, awayTeamId: true, format: true,
+      homeTeam: { select: { name: true } },
+      awayTeam: { select: { name: true } },
+    },
   })
   if (!match) throw new NotFoundError("Match", matchId)
   if (match.status !== "CHECKING_IN") throw new DomainError("Match is not currently in check-in phase")
@@ -126,6 +161,14 @@ export async function forceCheckIn(
       data:  { gamesExpected: gamesExpectedForFormat(match.format) },
     })
     await transitionTo(matchId, "IN_PROGRESS", staffId)
+    sendBotWebhook("match.started", {
+      matchId,
+      homeTeamId: match.homeTeamId,
+      homeTeam:   match.homeTeam.name,
+      awayTeamId: match.awayTeamId,
+      awayTeam:   match.awayTeam.name,
+      format:     match.format,
+    })
   }
 
   await prisma.auditLog.create({

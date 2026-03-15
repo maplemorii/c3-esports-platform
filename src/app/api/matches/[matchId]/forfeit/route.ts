@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma"
 import { requireRole } from "@/lib/session"
 import { transitionTo } from "@/lib/services/matchStatus.service"
 import { applyMatchToStandings } from "@/lib/services/standings.service"
+import { sendBotWebhook } from "@/lib/bot-webhook"
 import { ForfeitMatchSchema } from "@/lib/validators/match.schema"
 import {
   apiNotFound,
@@ -29,7 +30,11 @@ export async function POST(req: Request, { params }: Params) {
 
   const match = await prisma.match.findUnique({
     where:  { id: matchId, deletedAt: null },
-    select: { status: true, homeTeamId: true, awayTeamId: true },
+    select: {
+      status: true, homeTeamId: true, awayTeamId: true,
+      homeTeam: { select: { name: true } },
+      awayTeam: { select: { name: true } },
+    },
   })
   if (!match) return apiNotFound("Match")
 
@@ -76,6 +81,16 @@ export async function POST(req: Request, { params }: Params) {
     ])
 
     await applyMatchToStandings(matchId)
+
+    sendBotWebhook("match.forfeited", {
+      matchId,
+      homeTeamId:      match.homeTeamId,
+      homeTeam:        match.homeTeam?.name,
+      awayTeamId:      match.awayTeamId,
+      awayTeam:        match.awayTeam?.name,
+      forfeitingTeamId,
+      winnerId,
+    })
 
     return NextResponse.json({ status: "FORFEITED", forfeitingTeamId, winnerId })
   } catch (err) {

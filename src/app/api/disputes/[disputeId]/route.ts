@@ -18,6 +18,7 @@ import {
   parseBody,
   handleServiceError,
 } from "@/lib/utils/errors"
+import { sendBotWebhook } from "@/lib/bot-webhook"
 import { z } from "zod"
 
 type Params = { params: Promise<{ disputeId: string }> }
@@ -207,6 +208,13 @@ export async function PATCH(req: Request, { params }: Params) {
     if (data.action === "RESOLVED") {
       await applyMatchToStandings(dispute.matchId)
     }
+
+    sendBotWebhook("dispute.resolved", {
+      disputeId:  disputeId,
+      matchId:    dispute.matchId,
+      outcome:    data.action.toLowerCase(),
+      resolution: data.resolution,
+    })
 
     const updated = await prisma.dispute.findUnique({
       where:  { id: disputeId },

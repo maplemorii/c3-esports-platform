@@ -279,6 +279,8 @@ model Player {
   replayStats     ReplayPlayerStat[]
 
   @@index([epicUsername])
+  @@index([displayName])
+  @@index([discordUsername])
   @@index([deletedAt])
   @@map("players")
 }
@@ -324,6 +326,7 @@ model Team {
   seeds              TeamSeed[]
 
   @@index([slug])
+  @@index([name])
   @@index([ownerId])
   @@index([deletedAt])
   @@map("teams")

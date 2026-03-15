@@ -13,6 +13,7 @@ import { prisma } from "@/lib/prisma"
 import { requireAuth } from "@/lib/session"
 import { transitionTo } from "@/lib/services/matchStatus.service"
 import { applyMatchToStandings } from "@/lib/services/standings.service"
+import { sendBotWebhook } from "@/lib/bot-webhook"
 import {
   apiNotFound,
   apiForbidden,
@@ -38,6 +39,8 @@ export async function POST(_req: Request, { params }: Params) {
       homeScore:         true,
       awayScore:         true,
       winnerId:          true,
+      homeTeam: { select: { name: true } },
+      awayTeam: { select: { name: true } },
     },
   })
   if (!match) return apiNotFound("Match")
@@ -79,6 +82,17 @@ export async function POST(_req: Request, { params }: Params) {
 
     await transitionTo(matchId, "COMPLETED", session.user.id, "Opponent confirmed scores")
     await applyMatchToStandings(matchId)
+
+    sendBotWebhook("match.completed", {
+      matchId,
+      homeTeamId: match.homeTeamId,
+      homeTeam:   match.homeTeam?.name,
+      awayTeamId: match.awayTeamId,
+      awayTeam:   match.awayTeam?.name,
+      homeScore:  match.homeScore,
+      awayScore:  match.awayScore,
+      winnerId:   match.winnerId,
+    })
 
     return NextResponse.json({
       status:    "COMPLETED",

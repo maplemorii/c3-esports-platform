@@ -20,6 +20,7 @@ import {
 import { rateLimit, rateLimitResponse } from "@/lib/rateLimit"
 import { logger, logRequest } from "@/lib/logger"
 import { sendDisputeOpenedEmail } from "@/lib/email"
+import { sendBotWebhook } from "@/lib/bot-webhook"
 
 // ---------------------------------------------------------------------------
 // GET — list disputes (STAFF+)
@@ -171,6 +172,17 @@ export async function POST(req: Request) {
 
     logger.info({ disputeId: dispute.id, matchId: data.matchId, userId: session.user.id }, "Dispute filed")
     logRequest(req, 201, t, { matchId: data.matchId, userId: session.user.id })
+
+    sendBotWebhook("dispute.opened", {
+      disputeId:  dispute.id,
+      matchId:    data.matchId,
+      homeTeamId: match.homeTeamId,
+      homeTeam:   match.homeTeam?.name,
+      awayTeamId: match.awayTeamId,
+      awayTeam:   match.awayTeam?.name,
+      filedByTeamId: filedByTeamId,
+      filedBy:    filedByTeamId === match.homeTeamId ? match.homeTeam?.name : match.awayTeam?.name,
+    })
 
     // Notify both team managers (fire-and-forget)
     const filedByTeamName = filedByTeamId === match.homeTeamId

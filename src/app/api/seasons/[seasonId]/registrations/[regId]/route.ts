@@ -13,6 +13,7 @@ import { requireAuth, requireRole } from "@/lib/session"
 import { assertCanManageTeam } from "@/lib/auth/permissions"
 import { ReviewRegistrationSchema } from "@/lib/validators/season.schema"
 import { parseBody, apiNotFound, apiBadRequest, apiInternalError } from "@/lib/utils/errors"
+import { sendBotWebhook } from "@/lib/bot-webhook"
 
 type Ctx = { params: Promise<{ seasonId: string; regId: string }> }
 
@@ -72,8 +73,9 @@ export async function PATCH(
           divisionId: true,
           notes:      true,
           reviewedAt: true,
-          team:   { select: { id: true, name: true, slug: true } },
-          season: { select: { id: true, name: true } },
+          team:     { select: { id: true, name: true, slug: true } },
+          season:   { select: { id: true, name: true } },
+          division: { select: { id: true, name: true } },
         },
       }),
       // When approving, stamp activeDivisionId on all current members so the
@@ -92,6 +94,16 @@ export async function PATCH(
           })]
         : []),
     ])
+
+    if (data.status === "APPROVED") {
+      sendBotWebhook("registration.approved", {
+        registrationId: regId,
+        teamId:      updated.team.id,
+        teamName:    updated.team.name,
+        divisionName: updated.division?.name ?? null,
+        seasonName:   updated.season?.name ?? null,
+      })
+    }
 
     return NextResponse.json(updated)
   } catch (err) {

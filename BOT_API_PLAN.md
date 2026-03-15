@@ -446,20 +446,20 @@ All webhooks are best-effort (fire-and-forget). If the bot is down, the platform
 ### Schema
 - [x] Add `Announcement` model to `prisma/schema.prisma`
 - [ ] Run `railway run npx prisma migrate deploy` to apply migration in production
-- [ ] Add DB indexes for autocomplete search fields (teams.name, players.displayName, etc.)
+- [x] Add DB indexes for autocomplete search fields (teams.name, players.displayName, players.discordUsername)
 
 ### Webhooks
-- [ ] Add `BOT_WEBHOOK_URL` and `BOT_WEBHOOK_SECRET` env vars
-- [ ] Create `src/lib/bot-webhook.ts`
-- [ ] Wire `match.checkin_opened` into cron tick
-- [ ] Wire `match.started` into cron tick
-- [ ] Wire `match.completed` into confirm handler
-- [ ] Wire `match.forfeited` into forfeit handler
-- [ ] Wire `dispute.opened` into dispute create handler
-- [ ] Wire `dispute.resolved` into dispute resolve handler
-- [ ] Wire `registration.submitted` into registration handler
-- [ ] Wire `registration.approved` into registration approve handler
+- [ ] Add `BOT_WEBHOOK_URL` and `BOT_WEBHOOK_SECRET` env vars to Railway
+- [x] Create `src/lib/bot-webhook.ts`
+- [x] Wire `match.checkin_opened` into cron tick
+- [x] Wire `match.started` into cron tick
+- [x] Wire `match.completed` into confirm handler
+- [x] Wire `match.forfeited` into forfeit handler
+- [x] Wire `dispute.opened` into dispute create handler
+- [x] Wire `dispute.resolved` into dispute resolve handler
+- [x] Wire `registration.submitted` into registration handler
+- [x] Wire `registration.approved` into registration approve handler
 
 ### v1 API
-- [ ] Add `GET /api/v1/matches/:id` direct match lookup
-- [ ] Verify search indexes exist for player/team autocomplete
+- [x] Add `GET /api/v1/matches/:id` direct match lookup
+- [x] Verify search indexes exist for player/team autocomplete

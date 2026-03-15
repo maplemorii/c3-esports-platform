@@ -19,6 +19,7 @@ import {
   apiConflict,
   apiInternalError,
 } from "@/lib/utils/errors"
+import { sendBotWebhook } from "@/lib/bot-webhook"
 import { z } from "zod"
 
 const RegisterSchema = z.object({
@@ -172,6 +173,14 @@ export async function POST(
         id: true, status: true, registeredAt: true,
         division: { select: { id: true, name: true, tier: true } },
       },
+    })
+
+    sendBotWebhook("registration.submitted", {
+      registrationId: reg.id,
+      teamId,
+      teamName:    (await prisma.team.findUnique({ where: { id: teamId }, select: { name: true } }))?.name,
+      divisionName: division.name,
+      seasonName:   season.name,
     })
 
     return NextResponse.json(reg, { status: 201 })
