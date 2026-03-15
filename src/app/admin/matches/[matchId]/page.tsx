@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import { StaffMatchActions } from "@/components/staff/StaffMatchActions"
 import { DisputeCard } from "@/components/staff/DisputeCard"
+import { DeleteMatchButton } from "./DeleteMatchButton"
 import type { MatchStatus } from "@prisma/client"
 
 // ---------------------------------------------------------------------------
@@ -170,14 +171,17 @@ export default async function AdminMatchDetailPage({
     <div className="mx-auto max-w-4xl space-y-6">
 
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <Link href="/admin/matches" className="flex items-center gap-1 hover:text-brand transition-colors">
-          <ArrowLeft className="h-3.5 w-3.5" /> Matches
-        </Link>
-        <span>/</span>
-        <span className="text-foreground truncate">
-          {match.homeTeam.name} vs {match.awayTeam.name}
-        </span>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Link href="/admin/matches" className="flex items-center gap-1 hover:text-brand transition-colors">
+            <ArrowLeft className="h-3.5 w-3.5" /> Matches
+          </Link>
+          <span>/</span>
+          <span className="text-foreground truncate">
+            {match.homeTeam.name} vs {match.awayTeam.name}
+          </span>
+        </div>
+        <DeleteMatchButton matchId={match.id} />
       </div>
 
       {/* Header card */}
