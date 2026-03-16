@@ -505,7 +505,7 @@ export default async function MatchDetailPage({ params }: Params) {
             )}
             <p className="text-xs font-semibold text-muted-foreground">{FORMAT_LABEL[match.format] ?? match.format}</p>
             <p className="text-xs text-muted-foreground">{fmtDate(match.scheduledAt)}</p>
-            {match.matchType && match.matchType !== "REGULAR" && (
+            {match.matchType && match.matchType !== "REGULAR_SEASON" && (
               <span className="text-[10px] uppercase tracking-widest text-muted-foreground bg-white/5 px-2 py-0.5 rounded-full">
                 {match.matchType.replace("_", " ")}
               </span>
