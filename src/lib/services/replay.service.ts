@@ -531,7 +531,25 @@ export async function checkFastPath(matchId: string): Promise<void> {
   })
   if (!match?.gamesExpected) return
 
-  // Only act when the match is in a state that allows advancement
+  // For already-COMPLETED matches, recompute scores in case late replays
+  // created MatchGame rows after the initial fast-path fired
+  if (match.status === "COMPLETED") {
+    const games = await prisma.matchGame.findMany({
+      where:  { matchId },
+      select: { homeGoals: true, awayGoals: true },
+    })
+    if (games.length === 0) return
+    const homeScore = games.filter((g) => g.homeGoals > g.awayGoals).length
+    const awayScore = games.filter((g) => g.awayGoals > g.homeGoals).length
+    const winnerId  = homeScore >= awayScore ? match.homeTeamId : match.awayTeamId
+    await prisma.match.update({
+      where: { id: matchId },
+      data:  { homeScore, awayScore, winnerId },
+    })
+    return
+  }
+
+  // Only advance state when the match is eligible
   const eligible = ["IN_PROGRESS", "MATCH_FINISHED"]
   if (!eligible.includes(match.status)) return
 
