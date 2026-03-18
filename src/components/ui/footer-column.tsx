@@ -9,6 +9,8 @@ import {
 import Link from "next/link"
 import Image from "next/image"
 
+// Server component — no event handlers, pure CSS hover via Tailwind
+
 const data = {
   social: {
     discord:   "https://discord.gg/c3esports",
@@ -87,22 +89,7 @@ export function FooterColumn() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="flex items-center justify-center h-9 w-9 rounded-full transition-colors duration-200"
-                    style={{
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      background: "rgba(255,255,255,0.03)",
-                      color: "rgba(255,255,255,0.35)",
-                    }}
-                    onMouseEnter={(e) => {
-                      ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.85)"
-                      ;(e.currentTarget as HTMLElement).style.borderColor = "rgba(196,28,53,0.5)"
-                      ;(e.currentTarget as HTMLElement).style.background = "rgba(196,28,53,0.08)"
-                    }}
-                    onMouseLeave={(e) => {
-                      ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.35)"
-                      ;(e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.08)"
-                      ;(e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"
-                    }}
+                    className="flex items-center justify-center h-9 w-9 rounded-full transition-colors duration-200 border border-white/8 bg-white/3 text-white/35 hover:text-white/85 hover:border-[rgba(196,28,53,0.5)] hover:bg-[rgba(196,28,53,0.08)]"
                   >
                     <Icon className="h-4 w-4" />
                   </Link>
@@ -134,10 +121,7 @@ export function FooterColumn() {
                   <li key={text}>
                     <Link
                       href={href}
-                      className="text-sm transition-colors duration-150"
-                      style={{ color: "rgba(255,255,255,0.38)" }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)" }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.38)" }}
+                      className="text-sm transition-colors duration-150 text-white/40 hover:text-white/75"
                     >
                       {text}
                     </Link>
@@ -157,10 +141,7 @@ export function FooterColumn() {
                   <li key={text}>
                     <Link
                       href={href}
-                      className="text-sm transition-colors duration-150"
-                      style={{ color: "rgba(255,255,255,0.38)" }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)" }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.38)" }}
+                      className="text-sm transition-colors duration-150 text-white/40 hover:text-white/75"
                     >
                       {text}
                     </Link>
@@ -180,10 +161,7 @@ export function FooterColumn() {
                   <li key={text}>
                     <Link
                       href={href}
-                      className="text-sm transition-colors duration-150"
-                      style={{ color: "rgba(255,255,255,0.38)" }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)" }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.38)" }}
+                      className="text-sm transition-colors duration-150 text-white/40 hover:text-white/75"
                     >
                       {text}
                     </Link>
