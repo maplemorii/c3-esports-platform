@@ -149,17 +149,20 @@ export const SidebarLink = ({
   link,
   className,
   active,
+  onClick,
   ...props
 }: {
   link: Links
   className?: string
   active?: boolean
+  onClick?: () => void
   props?: LinkProps
 }) => {
   const { open, animate } = useSidebar()
   return (
     <Link
       href={link.href}
+      onClick={onClick}
       className={cn(
         "flex items-center gap-3 group/sidebar py-2 px-2 rounded-lg transition-all duration-150 relative",
         active
