@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Trash2, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
+import { DestructiveButton } from "@/components/ui/destructive-button"
 
 export function DeleteMatchButton({ matchId }: { matchId: string }) {
   const router = useRouter()
@@ -34,14 +35,14 @@ export function DeleteMatchButton({ matchId }: { matchId: string }) {
 
   return (
     <div className="flex flex-col items-end gap-1">
-      <button
-        onClick={handleDelete}
-        disabled={loading}
-        className="inline-flex items-center gap-2 rounded-lg border border-destructive/30 px-3 py-1.5 text-xs font-semibold text-destructive hover:bg-destructive/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      >
-        {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-        {confirmed ? "Click again to confirm" : "Delete Match"}
-      </button>
+      <DestructiveButton onClick={handleDelete} disabled={loading}>
+        {loading
+          ? <><Loader2 className="inline h-3 w-3 animate-spin mr-1" />Deleting…</>
+          : confirmed
+            ? "Click again to confirm"
+            : "Delete Match"
+        }
+      </DestructiveButton>
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   )

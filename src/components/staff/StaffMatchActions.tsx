@@ -25,6 +25,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MatchScheduleForm } from "./MatchScheduleForm"
+import { DestructiveButton } from "@/components/ui/destructive-button"
 import type { MatchStatus } from "@prisma/client"
 
 // ---------------------------------------------------------------------------
@@ -442,14 +443,9 @@ function ForfeitPanel({
 
       {error && <ErrorBanner message={error} />}
 
-      <button
-        onClick={submit}
-        disabled={loading}
-        className="inline-flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-white hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      >
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Flag className="h-4 w-4" />}
-        Record Forfeit
-      </button>
+      <DestructiveButton onClick={submit} disabled={loading}>
+        {loading ? <><Loader2 className="inline h-3.5 w-3.5 animate-spin mr-1.5" />Recording…</> : "Record Forfeit"}
+      </DestructiveButton>
     </div>
   )
 }
@@ -522,14 +518,9 @@ function CancelPanel({ matchId }: { matchId: string }) {
 
       {error && <ErrorBanner message={error} />}
 
-      <button
-        onClick={submit}
-        disabled={loading}
-        className="inline-flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-white hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      >
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
-        Cancel Match
-      </button>
+      <DestructiveButton onClick={submit} disabled={loading}>
+        {loading ? <><Loader2 className="inline h-3.5 w-3.5 animate-spin mr-1.5" />Cancelling…</> : "Cancel Match"}
+      </DestructiveButton>
     </div>
   )
 }
