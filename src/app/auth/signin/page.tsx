@@ -284,7 +284,15 @@ export default function SignInPage() {
           </AnimatePresence>
         </div>
 
-        <p className="text-center text-xs leading-relaxed max-w-[30ch]" style={{ color: "rgba(255,255,255,0.18)" }}>
+        <p
+          className="text-center text-xs leading-relaxed max-w-[30ch] px-3 py-2 rounded-lg"
+          style={{
+            color: "rgba(255,255,255,0.55)",
+            background: "rgba(5,8,20,0.60)",
+            backdropFilter: "blur(8px)",
+            border: "1px solid rgba(255,255,255,0.07)",
+          }}
+        >
           To compete you&apos;ll need to link Discord, email, and an Epic Games username.
         </p>
       </motion.div>

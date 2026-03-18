@@ -6,9 +6,9 @@ import { motion, useInView, useMotionValue, useTransform, animate } from "framer
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
 const STATS = [
-  { numeric: true,  value: 32,  suffix: "+", label: "Teams Competing" },
-  { numeric: true,  value: 100, suffix: "+", label: "Matches Played" },
-  { numeric: true,  value: 3,   suffix: "",  label: "Divisions" },
+  { numeric: true,  value: 56,  suffix: "+", label: "Teams Competing" },
+  { numeric: true,  value: 200, suffix: "+", label: "Matches Played" },
+  { numeric: true,  value: 4,   suffix: "",  label: "Game Titles" },
   { numeric: false, value: 0,   suffix: "",  label: "Region", display: "NC/SC" },
 ]
 

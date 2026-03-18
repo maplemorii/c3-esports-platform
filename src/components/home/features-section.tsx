@@ -57,14 +57,14 @@ function ReplayCard({ index }: { index: number }) {
               <FileVideo className="h-5 w-5 text-blue-400" />
             </div>
             <h3 className="font-display text-xl font-bold uppercase tracking-wide text-white mb-2">
-              Replay Parsing
+              Match Verification
             </h3>
             <p
               className="font-sans text-sm leading-relaxed"
               style={{ color: "rgba(255,255,255,0.42)" }}
             >
-              Upload your .replay files — scores, stats, and MVPs are extracted automatically via
-              ballchasing.com. No manual entry. No disputes over scorelines.
+              Upload your replay files or VODs — scores, stats, and MVPs are verified automatically.
+              No manual entry. No disputes over scorelines.
             </p>
           </div>
           <div className="mt-6 flex items-center gap-2">
@@ -76,7 +76,7 @@ function ReplayCard({ index }: { index: number }) {
               className="font-sans text-[11px] tracking-wide"
               style={{ color: "rgba(255,255,255,0.28)" }}
             >
-              Powered by ballchasing.com
+              Auto-verified results
             </span>
           </div>
         </div>
@@ -105,7 +105,7 @@ function ReplayCard({ index }: { index: number }) {
                 <p
                   className="font-sans text-xs font-medium text-white truncate"
                 >
-                  game5_ncstate_vs_unc.replay
+                  ncstate_vs_unc_g3.replay
                 </p>
                 <p
                   className="font-sans text-[10px]"
@@ -167,11 +167,11 @@ function ReplayCard({ index }: { index: number }) {
 /* ── Live Standings — tall bento card with mini table ── */
 function StandingsCard({ index }: { index: number }) {
   const teams = [
-    { rank: 1, name: "NC State RL", w: 8, l: 0 },
-    { rank: 2, name: "UNC Chapel Hill", w: 7, l: 1 },
-    { rank: 3, name: "Duke Gaming", w: 6, l: 2 },
-    { rank: 4, name: "App State RL", w: 5, l: 3 },
-    { rank: 5, name: "Clemson RL", w: 4, l: 4 },
+    { rank: 1, name: "NC State Esports", w: 8, l: 0 },
+    { rank: 2, name: "UNC Chapel Hill",  w: 7, l: 1 },
+    { rank: 3, name: "Duke Gaming",      w: 6, l: 2 },
+    { rank: 4, name: "App State",        w: 5, l: 3 },
+    { rank: 5, name: "Clemson Esports",  w: 4, l: 4 },
   ]
 
   return (

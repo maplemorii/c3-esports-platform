@@ -23,7 +23,7 @@ const STEPS = [
     number: "03",
     title: "Compete Weekly",
     description:
-      "Check in on match day, play your series, upload replays, and watch your standing update in real time.",
+      "Check in on match day, play your series, submit your results, and watch your standing update in real time.",
     detail: "Every match counts",
   },
 ]

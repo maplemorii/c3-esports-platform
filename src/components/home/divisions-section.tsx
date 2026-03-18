@@ -44,7 +44,7 @@ const DIVISIONS = [
     number: "03",
     tagline: "Entry Level",
     description:
-      "New to collegiate Rocket League? Start here. Learn the format, build team chemistry, and compete in a structured environment built for growth.",
+      "New to collegiate esports? Start here. Learn the format, build team chemistry, and compete in a structured environment built for growth.",
     topBorder: "linear-gradient(90deg, rgba(59,130,246,0.8) 0%, rgba(59,130,246,0.2) 60%, transparent 100%)",
     spotlightColor: "rgba(59,130,246,0.06)",
     glowColor: "rgba(59,130,246,0.12)",

@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     default: "C3 Esports League",
     template: "%s | C3 Esports League",
   },
-  description: "The premier collegiate Rocket League platform in the Carolinas.",
+  description: "The premier collegiate esports platform in the Carolinas.",
   openGraph: {
     siteName: "C3 Esports League",
     type: "website",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
       default: "C3 Esports League",
       template: "%s | C3 Esports League",
     },
-    description: "The premier collegiate Rocket League platform in the Carolinas.",
+    description: "The premier collegiate esports platform in the Carolinas.",
   },
   twitter: {
     card: "summary_large_image",
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
       default: "C3 Esports League",
       template: "%s | C3 Esports League",
     },
-    description: "The premier collegiate Rocket League platform in the Carolinas.",
+    description: "The premier collegiate esports platform in the Carolinas.",
   },
 }
 

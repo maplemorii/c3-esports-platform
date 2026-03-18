@@ -11,6 +11,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import type { FC, SVGProps } from "react"
 import {
   Swords,
   CalendarClock,
@@ -24,6 +25,8 @@ import {
   Scale,
   Ban,
 } from "lucide-react"
+
+type LucideIcon = FC<SVGProps<SVGSVGElement>>
 import { getSession } from "@/lib/session"
 import { prisma } from "@/lib/prisma"
 import { cn } from "@/lib/utils"
@@ -115,7 +118,7 @@ async function getMyMatches(userId: string) {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const STATUS_META: Record<MatchStatus, { label: string; color: string; icon: React.ElementType }> = {
+const STATUS_META: Record<MatchStatus, { label: string; color: string; icon: LucideIcon }> = {
   SCHEDULED:      { label: "Scheduled",       color: "text-muted-foreground bg-muted/40 border-border",               icon: CalendarClock },
   CHECKING_IN:    { label: "Check-in Open",   color: "text-amber-400 bg-amber-400/10 border-amber-400/30",            icon: AlertCircle },
   IN_PROGRESS:    { label: "In Progress",     color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/30",      icon: Zap },
@@ -199,7 +202,7 @@ function MatchCard({
     >
       {/* Accent strip for urgent matches */}
       {needsCheckIn && (
-        <div className="h-0.5 w-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400" />
+        <div className="h-0.5 w-full bg-linear-to-r from-amber-400 via-amber-500 to-amber-400" />
       )}
 
       <div className="p-4 sm:p-5">

@@ -8,7 +8,6 @@ import type { Session } from "next-auth"
 import { UserMenu } from "./user-menu"
 import MegaMenu from "@/components/ui/mega-menu"
 import type { MegaMenuItem } from "@/components/ui/mega-menu"
-import { GlassButton } from "@/components/ui/glass-button"
 import {
   Trophy,
   CalendarDays,
@@ -185,9 +184,31 @@ export function NavbarClient({ session }: NavbarClientProps) {
             {session ? (
               <UserMenu session={session} />
             ) : (
-              <GlassButton href="/auth/signin" size="sm">
-                Sign In
-              </GlassButton>
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                <Link
+                  href="/auth/signin"
+                  className="inline-flex items-center rounded-full font-sans text-sm font-medium px-5 py-2 transition-all duration-200"
+                  style={{
+                    border: "1px solid rgba(255,255,255,0.13)",
+                    background: "rgba(255,255,255,0.05)",
+                    color: "rgba(255,255,255,0.65)",
+                  }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget as HTMLElement
+                    el.style.background = "rgba(255,255,255,0.10)"
+                    el.style.color = "rgba(255,255,255,0.90)"
+                    el.style.borderColor = "rgba(255,255,255,0.22)"
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget as HTMLElement
+                    el.style.background = "rgba(255,255,255,0.05)"
+                    el.style.color = "rgba(255,255,255,0.65)"
+                    el.style.borderColor = "rgba(255,255,255,0.13)"
+                  }}
+                >
+                  Sign In
+                </Link>
+              </motion.div>
             )}
 
             {/* Mobile hamburger */}
