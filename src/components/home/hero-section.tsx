@@ -11,6 +11,7 @@ import {
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { useIsMobile } from "@/hooks/useIsMobile"
+import { AnimatedShaderBackground } from "@/components/ui/animated-shader-background"
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 const SPRING = { stiffness: 55, damping: 22 }
@@ -130,72 +131,13 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
         aria-hidden
       />
 
-      {/* ── BOTTOM ORB — glowing abyss beneath text ── */}
+      {/* ── AURORA SHADER BACKGROUND ── */}
       <motion.div
         style={{ y: isMobile ? 0 : orbY }}
-        className="absolute bottom-[-8%] left-1/2 -translate-x-1/2 pointer-events-none z-0"
+        className="absolute inset-0 pointer-events-none z-0"
         aria-hidden
       >
-        {/* Wide upward diffusion */}
-        <div
-          style={{
-            width: isMobile ? "420px" : "960px",
-            height: isMobile ? "280px" : "620px",
-            transform: "translateX(-50%)",
-            background:
-              "radial-gradient(ellipse at 50% 88%, rgba(59,130,246,0.32) 0%, rgba(59,130,246,0.13) 46%, transparent 70%)",
-            filter: isMobile ? "blur(40px)" : "blur(90px)",
-          }}
-        />
-
-        {/* Animated orb core */}
-        <motion.div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: "50%",
-            width: isMobile ? "200px" : "320px",
-            height: isMobile ? "200px" : "320px",
-            transform: "translateX(-50%)",
-          }}
-          animate={isMobile ? {} : { scale: [1, 1.08, 1], rotate: [0, 10, 0] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              borderRadius: "50%",
-              background:
-                "conic-gradient(from 200deg at 40% 42%, rgba(196,28,53,1) 0deg, rgba(59,130,246,1) 120deg, rgba(196,28,53,0.8) 240deg, rgba(59,130,246,1) 360deg)",
-              filter: "blur(44px)",
-              opacity: 0.55,
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              inset: "30%",
-              borderRadius: "50%",
-              background:
-                "radial-gradient(circle at 32% 28%, rgba(196,28,53,0.9), rgba(59,130,246,0.8) 52%, rgba(59,130,246,0.5) 85%)",
-              filter: "blur(10px)",
-            }}
-          />
-          {/* Specular */}
-          <div
-            style={{
-              position: "absolute",
-              top: "12%",
-              left: "16%",
-              width: "28%",
-              height: "22%",
-              borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(255,255,255,0.7), transparent)",
-              filter: "blur(5px)",
-            }}
-          />
-        </motion.div>
+        <AnimatedShaderBackground className="absolute inset-0 w-full h-full" />
       </motion.div>
 
       {/* ── BOTTOM EDGE FADE ── */}
@@ -302,8 +244,8 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
           className="mt-8 max-w-sm font-sans text-sm leading-relaxed"
           style={{ color: "rgba(255,255,255,0.30)" }}
         >
-          The premier Rocket League league for college students across North &amp; South
-          Carolina. Structured seasons. Ranked divisions. Real competition.
+          The premier multi-title collegiate esports league across North &amp; South
+          Carolina. Structured seasons. Real stakes. Every game.
         </motion.p>
 
         {/* CTAs */}
@@ -379,7 +321,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
                 </span>
               </div>
               <span className="font-sans text-[10px]" style={{ color: "rgba(255,255,255,0.18)" }}>
-                Game 5
+                Valorant · Map 3
               </span>
             </div>
 
@@ -393,7 +335,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
                     <span className="font-display text-[8px] font-bold text-blue-400">NC</span>
                   </div>
                   <span className="font-sans text-xs font-medium" style={{ color: "rgba(255,255,255,0.80)" }}>
-                    NC State RL
+                    NC State Esports
                   </span>
                 </div>
                 <span className="font-display text-base font-bold text-white">3</span>
@@ -429,7 +371,7 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
                 />
               </div>
               <span className="font-sans text-[9px] uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.16)" }}>
-                Premier
+                Valorant
               </span>
             </div>
           </div>
@@ -471,10 +413,10 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
 
             <div className="space-y-3">
               {[
-                { rank: 1, name: "NC State RL",    record: "8–0", accent: "rgba(59,130,246,0.9)" },
-                { rank: 2, name: "UNC Chapel Hill", record: "7–1", accent: "rgba(255,255,255,0.55)" },
-                { rank: 3, name: "Duke Gaming",     record: "6–2", accent: "rgba(255,255,255,0.35)" },
-                { rank: 4, name: "App State RL",    record: "5–3", accent: "rgba(255,255,255,0.22)" },
+                { rank: 1, name: "NC State Esports", record: "8–0", accent: "rgba(59,130,246,0.9)" },
+                { rank: 2, name: "UNC Chapel Hill",  record: "7–1", accent: "rgba(255,255,255,0.55)" },
+                { rank: 3, name: "Duke Gaming",      record: "6–2", accent: "rgba(255,255,255,0.35)" },
+                { rank: 4, name: "App State Esports",record: "5–3", accent: "rgba(255,255,255,0.22)" },
               ].map((team, i) => (
                 <motion.div
                   key={team.rank}
