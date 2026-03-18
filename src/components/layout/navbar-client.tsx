@@ -8,7 +8,7 @@ import type { Session } from "next-auth"
 import { UserMenu } from "./user-menu"
 import MegaMenu from "@/components/ui/mega-menu"
 import type { MegaMenuItem } from "@/components/ui/mega-menu"
-import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
+import { GlassButton } from "@/components/ui/glass-button"
 import {
   Trophy,
   CalendarDays,
@@ -185,11 +185,9 @@ export function NavbarClient({ session }: NavbarClientProps) {
             {session ? (
               <UserMenu session={session} />
             ) : (
-              <InteractiveHoverButton
-                href="/auth/signin"
-                text="Sign In"
-                className="w-auto px-5 py-2 text-sm border-white/13 bg-white/5 text-white/65"
-              />
+              <GlassButton href="/auth/signin" size="sm">
+                Sign In
+              </GlassButton>
             )}
 
             {/* Mobile hamburger */}

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { useIsMobile } from "@/hooks/useIsMobile"
-import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
+import { GlassButton } from "@/components/ui/glass-button"
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
@@ -139,23 +139,17 @@ export function CTASection({ isSignedIn }: CTASectionProps) {
           className="flex flex-wrap items-center justify-center gap-4"
         >
           {isSignedIn ? (
-            <InteractiveHoverButton
-              href="/dashboard"
-              text="Go to Dashboard"
-              className="w-auto px-8 py-4 text-sm"
-            />
+            <GlassButton href="/dashboard" size="lg">
+              Go to Dashboard
+            </GlassButton>
           ) : (
             <>
-              <InteractiveHoverButton
-                href="/auth/register"
-                text="Create an Account"
-                className="w-auto px-8 py-4 text-sm"
-              />
-              <InteractiveHoverButton
-                href="/auth/signin"
-                text="Sign In"
-                className="w-auto px-8 py-4 text-sm border-white/15 bg-transparent text-white/60"
-              />
+              <GlassButton href="/auth/register" size="lg">
+                Create an Account
+              </GlassButton>
+              <GlassButton href="/auth/signin" size="default">
+                Sign In
+              </GlassButton>
             </>
           )}
         </motion.div>
