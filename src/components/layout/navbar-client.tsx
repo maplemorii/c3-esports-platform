@@ -50,7 +50,7 @@ const MEGA_NAV_ITEMS: MegaMenuItem[] = [
         title: "Directory",
         items: [
           { label: "All Teams", description: "Browse competing organizations",    icon: Users,      href: "/teams"         },
-          { label: "Players",   description: "Player profiles and rosters",       icon: UserCircle, href: "/teams"         },
+          { label: "Players",   description: "Player profiles and rosters",       icon: UserCircle, href: "/players"       },
         ],
       },
       {
@@ -68,8 +68,10 @@ const MEGA_NAV_ITEMS: MegaMenuItem[] = [
 /* Flat links used in mobile menu */
 const MOBILE_NAV_LINKS = [
   { href: "/seasons",        label: "Seasons"  },
+  { href: "/schedule",       label: "Schedule" },
   { href: "/matches",        label: "Matches"  },
   { href: "/teams",          label: "Teams"    },
+  { href: "/players",        label: "Players"  },
   { href: "/rules",          label: "Rules"    },
   { href: "https://docs.c3esports.com", label: "Docs" },
 ]

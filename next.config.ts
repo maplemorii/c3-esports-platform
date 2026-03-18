@@ -6,6 +6,15 @@ const MINTLIFY_URL = process.env.MINTLIFY_URL ?? "https://c3-esports.mintlify.ap
 const nextConfig: NextConfig = {
   output: "standalone",
 
+  images: {
+    remotePatterns: [
+      // Discord user avatars
+      { protocol: "https", hostname: "cdn.discordapp.com" },
+      // Cloudflare R2 public bucket (team logos, player avatars)
+      { protocol: "https", hostname: "*.r2.dev" },
+    ],
+  },
+
   async rewrites() {
     return [
       // Proxy /docs and all sub-paths to the Mintlify deployment

@@ -366,8 +366,9 @@ model TeamMembership {
   // Set when the team is approved into a division; cleared when membership ends.
   activeDivisionId String?
 
-  team        Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  player      Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  team           Team      @relation(fields: [teamId],           references: [id], onDelete: Cascade)
+  player         Player    @relation(fields: [playerId],         references: [id], onDelete: Cascade)
+  activeDivision Division? @relation("ActiveDivisionMembers", fields: [activeDivisionId], references: [id])
 
   // A player can only be active on one team per division at a time.
   // leftAt = null means currently active.
@@ -450,6 +451,7 @@ model Division {
   headToHeadRecords  HeadToHeadRecord[]
   bracket            Bracket?
   seeds              TeamSeed[]
+  activeMembers      TeamMembership[]     @relation("ActiveDivisionMembers")
 
   // Division names must be unique within a season
   @@unique([seasonId, name])
