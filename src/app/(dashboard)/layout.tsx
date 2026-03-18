@@ -1,12 +1,3 @@
-/**
- * Dashboard layout — /(dashboard)/*
- *
- * Auth gate: redirects to sign-in if unauthenticated.
- * Wraps all authenticated dashboard pages in DashboardShell, which renders
- * the user sidebar (or AdminSidebar for STAFF/ADMIN roles).
- * Shows an email verification banner until the user's email is confirmed.
- */
-
 import { redirect } from "next/navigation"
 import { Suspense } from "react"
 import { getSession } from "@/lib/session"
@@ -24,15 +15,17 @@ export default async function DashboardLayout({
 
   const dbUser = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { emailVerified: true },
+    select: { emailVerified: true, name: true, image: true },
   })
 
-  const emailVerified = !!dbUser?.emailVerified
-
   return (
-    <DashboardShell role={session.user.role}>
+    <DashboardShell
+      role={session.user.role}
+      userName={dbUser?.name ?? session.user.name ?? "User"}
+      userImage={dbUser?.image ?? session.user.image}
+    >
       <Suspense>
-        <EmailVerificationBanner emailVerified={emailVerified} />
+        <EmailVerificationBanner emailVerified={!!dbUser?.emailVerified} />
       </Suspense>
       {children}
     </DashboardShell>

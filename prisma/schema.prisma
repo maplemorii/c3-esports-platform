@@ -26,6 +26,18 @@ enum Role {
   DEVELOPER     // Highest privilege — injected via DEVELOPER_USER_ID env var, not stored in DB
 }
 
+enum BoardItemType {
+  FEATURE
+  BUG
+  IMPROVEMENT
+}
+
+enum BoardItemStatus {
+  PLANNED
+  IN_DEVELOPMENT
+  COMPLETED
+}
+
 enum SeasonStatus {
   DRAFT         // Being configured; not yet visible to public
   REGISTRATION  // Open for team sign-ups
@@ -973,4 +985,25 @@ model TeamSeed {
   @@unique([divisionId, seed])
   @@index([divisionId])
   @@map("team_seeds")
+}
+
+// =============================================================================
+// ROADMAP BOARD
+// Public-facing kanban board for features, bugs, and improvements.
+// Editable by ADMIN and DEVELOPER roles only.
+// =============================================================================
+
+model BoardItem {
+  id          String          @id @default(cuid())
+  title       String
+  description String?
+  type        BoardItemType   @default(FEATURE)
+  status      BoardItemStatus @default(PLANNED)
+  priority    Int             @default(0)  // higher = shown first within column
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([status, priority])
+  @@map("board_items")
 }
