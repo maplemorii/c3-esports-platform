@@ -20,7 +20,7 @@ import {
   Menu,
   X,
 } from "lucide-react"
-import { Sidebar, SidebarProvider, DesktopSidebar, SidebarLink, useSidebar } from "@/components/ui/sidebar"
+import { SidebarProvider, DesktopSidebar, SidebarLink, useSidebar } from "@/components/ui/sidebar"
 import { hasMinRole } from "@/lib/roles"
 import type { Role } from "@/lib/roles"
 
@@ -28,27 +28,35 @@ import type { Role } from "@/lib/roles"
 // Nav definitions
 // ---------------------------------------------------------------------------
 const USER_NAV = [
-  { href: "/dashboard",         label: "Dashboard",  icon: LayoutDashboard },
-  { href: "/team",              label: "My Teams",   icon: Users },
-  { href: "/dashboard/matches", label: "Matches",    icon: Swords },
-  { href: "/standings",         label: "Standings",  icon: Trophy },
-  { href: "/profile",           label: "Profile",    icon: UserCircle },
-  { href: "/roadmap",           label: "Roadmap",    icon: Map },
+  { href: "/dashboard",         label: "Dashboard", icon: LayoutDashboard },
+  { href: "/team",              label: "My Teams",  icon: Users },
+  { href: "/dashboard/matches", label: "Matches",   icon: Swords },
+  { href: "/standings",         label: "Standings", icon: Trophy },
+  { href: "/profile",           label: "Profile",   icon: UserCircle },
+  { href: "/roadmap",           label: "Roadmap",   icon: Map },
 ]
 
 const STAFF_NAV = [
-  { href: "/admin",                 label: "Overview",      icon: LayoutDashboard },
-  { href: "/admin/seasons",         label: "Seasons",       icon: Calendar },
-  { href: "/admin/teams",           label: "Teams",         icon: Users },
-  { href: "/admin/matches",         label: "Matches",       icon: Swords },
-  { href: "/admin/standings",       label: "Standings",     icon: BarChart2 },
-  { href: "/admin/registrations",   label: "Registrations", icon: ClipboardList },
-  { href: "/admin/disputes",        label: "Disputes",      icon: AlertTriangle },
+  { href: "/admin",               label: "Overview",       icon: LayoutDashboard },
+  { href: "/admin/seasons",       label: "Seasons",        icon: Calendar },
+  { href: "/admin/teams",         label: "Teams",          icon: Users },
+  { href: "/admin/matches",       label: "Matches",        icon: Swords },
+  { href: "/admin/standings",     label: "Standings",      icon: BarChart2 },
+  { href: "/admin/registrations", label: "Registrations",  icon: ClipboardList },
+  { href: "/admin/disputes",      label: "Disputes",       icon: AlertTriangle },
 ]
 
 const ADMIN_EXTRA_NAV = [
-  { href: "/admin/users",  label: "Users",     icon: UserCog },
-  { href: "/admin/audit",  label: "Audit Log", icon: ClipboardList },
+  { href: "/admin/users", label: "Users",     icon: UserCog },
+  { href: "/admin/audit", label: "Audit Log", icon: ClipboardList },
+]
+
+// For STAFF+: personal section shows only unique personal pages
+const STAFF_PERSONAL_NAV = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/team",      label: "My Teams",  icon: Users },
+  { href: "/profile",   label: "Profile",   icon: UserCircle },
+  { href: "/roadmap",   label: "Roadmap",   icon: Map },
 ]
 
 // ---------------------------------------------------------------------------
@@ -62,16 +70,19 @@ function useIsActive() {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Logo
+// ---------------------------------------------------------------------------
 function C3Logo() {
   const { open, animate } = useSidebar()
   return (
-    <Link href="/dashboard" className="flex items-center gap-2.5 py-1 relative z-20 mb-1">
+    <Link href="/dashboard" className="flex items-center gap-2.5 px-1 py-1 mb-2">
       <Image
         src="/logo.png"
         alt="C3 Esports"
         width={120}
         height={30}
-        style={{ height: "22px", width: "auto", flexShrink: 0 }}
+        style={{ height: "20px", width: "auto", flexShrink: 0 }}
         priority
       />
       <motion.span
@@ -79,8 +90,8 @@ function C3Logo() {
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="font-display text-xs font-semibold uppercase tracking-[0.18em] whitespace-pre"
-        style={{ color: "rgba(255,255,255,0.30)" }}
+        className="font-display text-[10px] font-bold uppercase tracking-[0.22em] whitespace-pre"
+        style={{ color: "rgba(255,255,255,0.25)" }}
       >
         Platform
       </motion.span>
@@ -88,130 +99,244 @@ function C3Logo() {
   )
 }
 
-function SectionLabel({ label }: { label: string }) {
+// ---------------------------------------------------------------------------
+// Section separator
+// ---------------------------------------------------------------------------
+function SectionDivider({ label }: { label: string }) {
   const { open, animate } = useSidebar()
   return (
-    <motion.div
-      className="flex items-center gap-2 px-2 mt-4 mb-1"
-      animate={{ opacity: animate ? (open ? 1 : 0) : 1 }}
-    >
-      <span
-        className="text-[10px] font-semibold uppercase tracking-[0.20em] whitespace-pre"
-        style={{ color: "rgba(255,255,255,0.20)" }}
+    <div className="flex items-center gap-2 px-1 mt-5 mb-2">
+      <motion.span
+        animate={{ opacity: animate ? (open ? 1 : 0) : 1, width: animate ? (open ? "auto" : 0) : "auto" }}
+        className="text-[9px] font-bold uppercase tracking-[0.25em] whitespace-nowrap overflow-hidden"
+        style={{ color: "rgba(255,255,255,0.18)" }}
       >
         {label}
-      </span>
-      <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
-    </motion.div>
+      </motion.span>
+      <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
+    </div>
   )
 }
 
-function RoleBadge({ role }: { role: Role }) {
+// ---------------------------------------------------------------------------
+// Role pill
+// ---------------------------------------------------------------------------
+function RolePill({ role }: { role: Role }) {
   const { open, animate } = useSidebar()
   if (!hasMinRole(role, "STAFF")) return null
-  const label = hasMinRole(role, "DEVELOPER") ? "DEV" : hasMinRole(role, "ADMIN") ? "ADMIN" : "STAFF"
+
+  const cfg = hasMinRole(role, "DEVELOPER")
+    ? { label: "Developer", short: "DEV",   color: "rgba(99,102,241,0.9)",  bg: "rgba(99,102,241,0.12)", border: "rgba(99,102,241,0.25)" }
+    : hasMinRole(role, "ADMIN")
+    ? { label: "Admin",     short: "ADMIN", color: "rgba(196,28,53,0.9)",   bg: "rgba(196,28,53,0.12)",  border: "rgba(196,28,53,0.25)" }
+    : { label: "Staff",     short: "STAFF", color: "rgba(251,146,60,0.9)",  bg: "rgba(251,146,60,0.12)", border: "rgba(251,146,60,0.25)" }
+
   return (
-    <motion.div
-      animate={{ display: animate ? (open ? "flex" : "none") : "flex", opacity: animate ? (open ? 1 : 0) : 1 }}
-      className="flex items-center gap-1.5 px-2 mb-1"
-    >
-      <span
-        className="text-[9px] font-bold uppercase tracking-[0.22em] px-2 py-0.5 rounded-full"
-        style={{ background: "rgba(196,28,53,0.15)", color: "rgba(196,28,53,0.85)", border: "1px solid rgba(196,28,53,0.25)" }}
+    <div className="px-1 mb-3">
+      <motion.span
+        animate={{
+          padding: animate ? (open ? "2px 10px" : "2px 6px") : "2px 10px",
+        }}
+        className="inline-flex items-center justify-center rounded-full text-[9px] font-bold uppercase tracking-[0.20em]"
+        style={{ color: cfg.color, background: cfg.bg, border: `1px solid ${cfg.border}` }}
       >
-        {label}
-      </span>
-    </motion.div>
+        <motion.span
+          animate={{
+            display: animate ? (open ? "inline" : "none") : "inline",
+            opacity: animate ? (open ? 1 : 0) : 1,
+          }}
+        >
+          {cfg.label}
+        </motion.span>
+        <motion.span
+          animate={{
+            display: animate ? (open ? "none" : "inline") : "none",
+            opacity: animate ? (open ? 0 : 1) : 0,
+          }}
+        >
+          {cfg.short}
+        </motion.span>
+      </motion.span>
+    </div>
   )
 }
 
+// ---------------------------------------------------------------------------
+// User footer
+// ---------------------------------------------------------------------------
 function UserFooter({ name, image }: { name: string; image?: string | null }) {
   const { open, animate } = useSidebar()
   const initials = name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+
   return (
-    <Link href="/profile" className="flex items-center gap-2.5 p-2 rounded-lg transition-colors hover:bg-white/6 group">
+    <Link
+      href="/profile"
+      className="flex items-center gap-2.5 p-2 rounded-xl transition-all duration-150 group"
+      style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+      onMouseEnter={(e) => {
+        ;(e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"
+        ;(e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"
+      }}
+      onMouseLeave={(e) => {
+        ;(e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"
+        ;(e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.06)"
+      }}
+    >
       {image ? (
-        <Image src={image} alt={name} width={32} height={32} className="h-8 w-8 rounded-full object-cover ring-1 ring-white/10 shrink-0" />
+        <Image
+          src={image}
+          alt={name}
+          width={30}
+          height={30}
+          className="rounded-full object-cover shrink-0"
+          style={{ height: "30px", width: "30px", minWidth: "30px", boxShadow: "0 0 0 1px rgba(255,255,255,0.10)" }}
+        />
       ) : (
-        <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 ring-1 ring-white/10"
-          style={{ background: "linear-gradient(135deg, rgba(196,28,53,0.8), rgba(59,130,246,0.7))" }}>
+        <div
+          className="rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0"
+          style={{
+            height: "30px", width: "30px", minWidth: "30px",
+            background: "linear-gradient(135deg, rgba(196,28,53,0.85), rgba(59,130,246,0.75))",
+            boxShadow: "0 0 0 1px rgba(255,255,255,0.10)",
+          }}
+        >
           {initials}
         </div>
       )}
       <motion.div
-        animate={{ display: animate ? (open ? "flex" : "none") : "flex", opacity: animate ? (open ? 1 : 0) : 1 }}
-        className="flex flex-col min-w-0"
+        animate={{
+          display: animate ? (open ? "flex" : "none") : "flex",
+          opacity: animate ? (open ? 1 : 0) : 1,
+        }}
+        className="flex flex-col min-w-0 flex-1"
       >
-        <span className="text-sm font-medium text-white/75 group-hover:text-white/95 truncate transition-colors leading-tight">{name}</span>
-        <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.28)" }}>View profile</span>
+        <span
+          className="text-[13px] font-semibold truncate leading-tight"
+          style={{ color: "rgba(255,255,255,0.80)" }}
+        >
+          {name}
+        </span>
+        <span className="text-[10px] leading-tight" style={{ color: "rgba(255,255,255,0.28)" }}>
+          View profile →
+        </span>
       </motion.div>
     </Link>
   )
 }
 
 // ---------------------------------------------------------------------------
-// Shared nav content (desktop + mobile drawer)
+// Nav content — shared between desktop expanded state and mobile drawer
 // ---------------------------------------------------------------------------
-function NavContent({ role, name, image, onNavigate }: { role: Role; name: string; image?: string | null; onNavigate?: () => void }) {
+function NavContent({
+  role,
+  name,
+  image,
+  onNavigate,
+}: {
+  role: Role
+  name: string
+  image?: string | null
+  onNavigate?: () => void
+}) {
   const isActive = useIsActive()
   const isStaff = hasMinRole(role, "STAFF")
   const isAdmin = hasMinRole(role, "ADMIN")
 
-  const makeLink = (item: { href: string; label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }, suffix = "") => ({
+  const link = (item: { href: string; label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }) => ({
     href: item.href,
     label: item.label,
-    icon: <item.icon className="h-4 w-4 shrink-0" />,
+    icon: <item.icon className="h-4.25 w-4.25 shrink-0" />,
   })
 
   return (
-    <>
+    <div className="flex flex-col h-full">
       <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
         <C3Logo />
-        <div className="h-px mb-4 mx-2" style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.4), rgba(59,130,246,0.2), transparent)" }} aria-hidden />
-        <RoleBadge role={role} />
+
+        {/* Hairline accent */}
+        <div
+          className="h-px mb-3 mx-1"
+          style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.5), rgba(59,130,246,0.25), transparent)" }}
+          aria-hidden
+        />
+
+        <RolePill role={role} />
 
         {isStaff ? (
           <>
+            {/* Admin navigation */}
             <div className="flex flex-col gap-0.5">
               {STAFF_NAV.map((item) => (
-                <SidebarLink key={item.href} link={makeLink(item)} active={isActive(item.href)} onClick={onNavigate} />
+                <SidebarLink
+                  key={item.href}
+                  link={link(item)}
+                  active={isActive(item.href)}
+                  onClick={onNavigate}
+                />
               ))}
               {isAdmin && ADMIN_EXTRA_NAV.map((item) => (
-                <SidebarLink key={item.href} link={makeLink(item)} active={isActive(item.href)} onClick={onNavigate} />
+                <SidebarLink
+                  key={item.href}
+                  link={link(item)}
+                  active={isActive(item.href)}
+                  onClick={onNavigate}
+                />
               ))}
             </div>
-            <SectionLabel label="My Account" />
+
+            {/* Personal section */}
+            <SectionDivider label="My Account" />
             <div className="flex flex-col gap-0.5">
-              {USER_NAV.map((item) => (
-                <SidebarLink key={item.href + "-u"} link={makeLink(item)} active={isActive(item.href)} onClick={onNavigate} />
+              {STAFF_PERSONAL_NAV.map((item) => (
+                <SidebarLink
+                  key={item.href + "-p"}
+                  link={link(item)}
+                  active={isActive(item.href)}
+                  onClick={onNavigate}
+                />
               ))}
             </div>
           </>
         ) : (
           <div className="flex flex-col gap-0.5">
             {USER_NAV.map((item) => (
-              <SidebarLink key={item.href} link={makeLink(item)} active={isActive(item.href)} onClick={onNavigate} />
+              <SidebarLink
+                key={item.href}
+                link={link(item)}
+                active={isActive(item.href)}
+                onClick={onNavigate}
+              />
             ))}
           </div>
         )}
       </div>
 
-      <div className="mt-auto pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+      {/* Pinned user footer */}
+      <div className="mt-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         <UserFooter name={name} image={image} />
       </div>
-    </>
+    </div>
   )
 }
 
 // ---------------------------------------------------------------------------
-// Desktop sidebar (md+)
+// Desktop sidebar (md+) — icon rail that expands on hover
 // ---------------------------------------------------------------------------
-export function DashboardSidebar({ role, userName, userImage }: { role: Role; userName: string; userImage?: string | null }) {
+export function DashboardSidebar({
+  role,
+  userName,
+  userImage,
+}: {
+  role: Role
+  userName: string
+  userImage?: string | null
+}) {
   const [open, setOpen] = useState(false)
+
   return (
     <SidebarProvider open={open} setOpen={setOpen}>
       <DesktopSidebar
-        className="border-r border-sidebar-border"
+        className="border-r border-sidebar-border overflow-hidden"
         style={{ background: "var(--sidebar)", minHeight: "calc(100vh - 4rem)" }}
       >
         <NavContent role={role} name={userName} image={userImage} />
@@ -223,37 +348,64 @@ export function DashboardSidebar({ role, userName, userImage }: { role: Role; us
 // ---------------------------------------------------------------------------
 // Mobile header bar + slide-in drawer (< md)
 // ---------------------------------------------------------------------------
-export function DashboardMobileHeader({ role, userName, userImage }: { role: Role; userName: string; userImage?: string | null }) {
+export function DashboardMobileHeader({
+  role,
+  userName,
+  userImage,
+}: {
+  role: Role
+  userName: string
+  userImage?: string | null
+}) {
   const [open, setOpen] = useState(false)
   const initials = userName.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
 
   return (
-    <SidebarProvider open={open} setOpen={setOpen} animate={false}>
+    <>
       {/* Thin top bar */}
       <div
         className="flex md:hidden h-14 items-center justify-between px-4 border-b shrink-0"
         style={{ background: "var(--sidebar)", borderColor: "var(--sidebar-border)" }}
       >
         <Link href="/dashboard">
-          <Image src="/logo.png" alt="C3 Esports" width={100} height={26} style={{ height: "22px", width: "auto" }} priority />
+          <Image
+            src="/logo.png"
+            alt="C3 Esports"
+            width={100}
+            height={26}
+            style={{ height: "20px", width: "auto" }}
+            priority
+          />
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           {userImage ? (
-            <Image src={userImage} alt={userName} width={28} height={28} className="h-7 w-7 rounded-full object-cover ring-1 ring-white/10" />
+            <Image
+              src={userImage}
+              alt={userName}
+              width={28}
+              height={28}
+              className="h-7 w-7 rounded-full object-cover"
+              style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.10)" }}
+            />
           ) : (
-            <div className="h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white ring-1 ring-white/10"
-              style={{ background: "linear-gradient(135deg, rgba(196,28,53,0.8), rgba(59,130,246,0.7))" }}>
+            <div
+              className="h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+              style={{
+                background: "linear-gradient(135deg, rgba(196,28,53,0.85), rgba(59,130,246,0.75))",
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.10)",
+              }}
+            >
               {initials}
             </div>
           )}
           <button
             onClick={() => setOpen(true)}
-            className="flex items-center justify-center h-8 w-8 rounded-lg transition-colors"
-            style={{ color: "rgba(255,255,255,0.55)" }}
+            className="flex items-center justify-center h-8 w-8 rounded-lg"
+            style={{ color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.05)" }}
             aria-label="Open navigation"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -262,37 +414,45 @@ export function DashboardMobileHeader({ role, userName, userImage }: { role: Rol
       <AnimatePresence>
         {open && (
           <>
-            {/* Backdrop */}
             <motion.div
               className="fixed inset-0 z-40 md:hidden"
-              style={{ background: "rgba(0,0,0,0.6)" }}
+              style={{ background: "rgba(0,0,0,0.65)" }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={() => setOpen(false)}
             />
-            {/* Panel */}
             <motion.div
-              className="fixed inset-y-0 left-0 z-50 w-72 md:hidden flex flex-col p-5"
+              className="fixed inset-y-0 left-0 z-50 w-72 md:hidden flex flex-col p-4"
               style={{ background: "var(--sidebar)", borderRight: "1px solid var(--sidebar-border)" }}
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ duration: 0.28, ease: "easeInOut" }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
             >
               <button
                 onClick={() => setOpen(false)}
-                className="absolute right-4 top-4 rounded-lg p-1.5 transition-colors"
-                style={{ color: "rgba(255,255,255,0.45)" }}
+                className="absolute right-3 top-3 rounded-lg p-1.5"
+                style={{ color: "rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.05)" }}
                 aria-label="Close navigation"
               >
                 <X className="h-4 w-4" />
               </button>
-              <NavContent role={role} name={userName} image={userImage} onNavigate={() => setOpen(false)} />
+
+              {/* Wrap in a fake provider with animate=false so labels always show */}
+              <SidebarProvider open={true} setOpen={() => {}} animate={false}>
+                <NavContent
+                  role={role}
+                  name={userName}
+                  image={userImage}
+                  onNavigate={() => setOpen(false)}
+                />
+              </SidebarProvider>
             </motion.div>
           </>
         )}
       </AnimatePresence>
-    </SidebarProvider>
+    </>
   )
 }
