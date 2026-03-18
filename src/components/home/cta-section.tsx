@@ -1,9 +1,8 @@
 "use client"
 
 import { motion } from "framer-motion"
-import Link from "next/link"
-import { ArrowRight } from "lucide-react"
 import { useIsMobile } from "@/hooks/useIsMobile"
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
@@ -140,38 +139,23 @@ export function CTASection({ isSignedIn }: CTASectionProps) {
           className="flex flex-wrap items-center justify-center gap-4"
         >
           {isSignedIn ? (
-            <Link
+            <InteractiveHoverButton
               href="/dashboard"
-              className="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-semibold text-black transition-all duration-200 hover:bg-white/90 active:scale-95"
-            >
-              Go to Dashboard
-              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-            </Link>
+              text="Go to Dashboard"
+              className="w-auto px-8 py-4 text-sm"
+            />
           ) : (
             <>
-              <Link
+              <InteractiveHoverButton
                 href="/auth/register"
-                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-8 py-4 text-sm font-semibold text-white transition-all duration-200 active:scale-95"
-                style={{
-                  background: "linear-gradient(135deg, rgba(196,28,53,0.95), rgba(59,130,246,0.9))",
-                  boxShadow: "0 0 40px rgba(196,28,53,0.30)",
-                }}
-              >
-                <span className="relative">Create an Account</span>
-                <ArrowRight className="relative h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-              </Link>
-
-              <Link
+                text="Create an Account"
+                className="w-auto px-8 py-4 text-sm"
+              />
+              <InteractiveHoverButton
                 href="/auth/signin"
-                className="inline-flex items-center gap-2 rounded-full border px-8 py-4 text-sm font-medium backdrop-blur-sm transition-all duration-200"
-                style={{
-                  borderColor: "rgba(255,255,255,0.12)",
-                  background: "rgba(255,255,255,0.04)",
-                  color: "rgba(255,255,255,0.55)",
-                }}
-              >
-                Sign In
-              </Link>
+                text="Sign In"
+                className="w-auto px-8 py-4 text-sm border-white/15 bg-transparent text-white/60"
+              />
             </>
           )}
         </motion.div>
