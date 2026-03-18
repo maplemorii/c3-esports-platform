@@ -7,6 +7,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { CheckCircle2, Circle } from "lucide-react"
+import { CanvasRevealEffect } from "@/components/ui/sign-in-flow-1"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -17,6 +18,7 @@ export default function RegisterPage() {
   const [tosAccepted, setTosAccepted] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -36,18 +38,42 @@ export default function RegisterPage() {
     }
     const result = await signIn("credentials", { email, password, redirect: false })
     setLoading(false)
-    if (result?.error) { router.push("/auth/signin") } else { router.push("/"); router.refresh() }
+    if (result?.error) {
+      router.push("/auth/signin")
+    } else {
+      setSuccess(true)
+      setTimeout(() => { router.push("/"); router.refresh() }, 1800)
+    }
   }
 
   return (
-    <div className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-16 overflow-hidden">
-      {/* Ambient orb */}
-      <div
-        className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-150 h-150 rounded-full opacity-20"
-        style={{ background: "radial-gradient(circle, rgba(59,130,246,0.4) 0%, rgba(220,38,38,0.15) 40%, transparent 70%)", filter: "blur(80px)" }}
-        aria-hidden
-      />
+    <div className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-16 overflow-hidden bg-black">
 
+      {/* ── Canvas background ── */}
+      <div className="absolute inset-0 z-0">
+        <CanvasRevealEffect
+          animationSpeed={3}
+          colors={success
+            ? [[196, 28, 53], [59, 130, 246]]
+            : [[59, 130, 246], [196, 28, 53]]
+          }
+          dotSize={5}
+          showGradient={false}
+          reverse={success}
+        />
+        {/* Radial vignette — keeps form readable */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 70% at 50% 50%, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.15) 100%)",
+          }}
+        />
+        <div className="absolute top-0 left-0 right-0 h-1/3 bg-linear-to-b from-black to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-linear-to-t from-black to-transparent" />
+      </div>
+
+      {/* ── Form ── */}
       <motion.div
         className="relative z-10 flex flex-col items-center gap-7 w-full max-w-sm"
         initial={{ opacity: 0, y: 24 }}
@@ -63,9 +89,11 @@ export default function RegisterPage() {
         <div
           className="w-full flex flex-col gap-5 rounded-2xl p-6"
           style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.07)",
-            boxShadow: "0 32px 64px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
+            background: "rgba(5,8,20,0.75)",
+            border: "1px solid rgba(255,255,255,0.09)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            boxShadow: "0 32px 64px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06)",
           }}
         >
           <div className="text-center">
@@ -125,11 +153,11 @@ export default function RegisterPage() {
               />
               <span className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.35)" }}>
                 I agree to the{" "}
-                <Link href="/legal/terms" target="_blank" className="transition-colors duration-150" style={{ color: "rgba(96,165,250,0.8)" }}>
+                <Link href="/legal/terms" target="_blank" className="transition-colors duration-150 hover:text-blue-300" style={{ color: "rgba(96,165,250,0.8)" }}>
                   Terms of Service
                 </Link>{" "}
                 and{" "}
-                <Link href="/legal/privacy" target="_blank" className="transition-colors duration-150" style={{ color: "rgba(96,165,250,0.8)" }}>
+                <Link href="/legal/privacy" target="_blank" className="transition-colors duration-150 hover:text-blue-300" style={{ color: "rgba(96,165,250,0.8)" }}>
                   Privacy Policy
                 </Link>
               </span>
@@ -161,10 +189,8 @@ export default function RegisterPage() {
             Already have an account?{" "}
             <Link
               href="/auth/signin"
-              className="font-medium transition-colors duration-150"
+              className="font-medium hover:text-blue-300 transition-colors duration-150"
               style={{ color: "rgba(96,165,250,0.8)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(147,197,253,1)" }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(96,165,250,0.8)" }}
             >
               Sign In
             </Link>
@@ -174,7 +200,11 @@ export default function RegisterPage() {
         {/* Requirements checklist */}
         <div
           className="w-full rounded-xl p-4"
-          style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
+          style={{
+            background: "rgba(5,8,20,0.65)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            backdropFilter: "blur(16px)",
+          }}
         >
           <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.22)" }}>
             To compete, you&apos;ll also need to link:

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
+import { CanvasRevealEffect } from "@/components/ui/sign-in-flow-1"
 
 const DiscordIcon = () => (
   <svg viewBox="0 0 24 24" className="size-4 fill-current shrink-0">
@@ -23,6 +24,7 @@ export default function SignInPage() {
   const [totp, setTotp]         = useState("")
   const [error, setError]       = useState<string | null>(null)
   const [loading, setLoading]   = useState(false)
+  const [success, setSuccess]   = useState(false)
 
   async function handleCredentials(e: React.FormEvent) {
     e.preventDefault()
@@ -33,8 +35,8 @@ export default function SignInPage() {
     setLoading(false)
 
     if (!result?.error) {
-      router.push("/")
-      router.refresh()
+      setSuccess(true)
+      setTimeout(() => { router.push("/"); router.refresh() }, 1800)
       return
     }
 
@@ -54,8 +56,8 @@ export default function SignInPage() {
     setLoading(false)
 
     if (!result?.error) {
-      router.push("/")
-      router.refresh()
+      setSuccess(true)
+      setTimeout(() => { router.push("/"); router.refresh() }, 1800)
       return
     }
 
@@ -69,14 +71,41 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-16 overflow-hidden">
-      {/* Ambient orb */}
-      <div
-        className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-150 h-150 rounded-full opacity-20"
-        style={{ background: "radial-gradient(circle, rgba(59,130,246,0.4) 0%, rgba(220,38,38,0.15) 40%, transparent 70%)", filter: "blur(80px)" }}
-        aria-hidden
-      />
+    <div className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-16 overflow-hidden bg-black">
 
+      {/* ── Canvas background ── */}
+      <div className="absolute inset-0 z-0">
+        {!success && (
+          <CanvasRevealEffect
+            animationSpeed={3}
+            colors={[[59, 130, 246], [196, 28, 53]]}
+            dotSize={5}
+            showGradient={false}
+            reverse={false}
+          />
+        )}
+        {success && (
+          <CanvasRevealEffect
+            animationSpeed={4}
+            colors={[[196, 28, 53], [59, 130, 246]]}
+            dotSize={5}
+            showGradient={false}
+            reverse={true}
+          />
+        )}
+        {/* Radial vignette — keeps form readable */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 70% at 50% 50%, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.15) 100%)",
+          }}
+        />
+        <div className="absolute top-0 left-0 right-0 h-1/3 bg-linear-to-b from-black to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-linear-to-t from-black to-transparent" />
+      </div>
+
+      {/* ── Form card ── */}
       <motion.div
         className="relative z-10 flex flex-col items-center gap-8 w-full max-w-sm"
         initial={{ opacity: 0, y: 24 }}
@@ -92,9 +121,11 @@ export default function SignInPage() {
         <div
           className="w-full flex flex-col gap-5 rounded-2xl p-6"
           style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.07)",
-            boxShadow: "0 32px 64px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
+            background: "rgba(5,8,20,0.75)",
+            border: "1px solid rgba(255,255,255,0.09)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            boxShadow: "0 32px 64px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06)",
           }}
         >
           <AnimatePresence mode="wait">
@@ -116,30 +147,26 @@ export default function SignInPage() {
                   </p>
                 </div>
 
-                {/* Discord button */}
+                {/* Discord */}
                 <button
                   onClick={() => signIn("discord", { callbackUrl: "/" })}
-                  className="w-full flex items-center justify-center gap-2.5 rounded-xl px-4 py-2.5 font-sans text-sm font-semibold transition-all duration-150"
+                  className="w-full flex items-center justify-center gap-2.5 rounded-xl px-4 py-2.5 font-sans text-sm font-semibold transition-all duration-150 hover:opacity-90"
                   style={{
                     background: "rgba(88,101,242,0.18)",
                     border: "1px solid rgba(88,101,242,0.35)",
                     color: "rgba(180,190,255,0.9)",
                   }}
-                  onMouseEnter={(e) => { const el = e.currentTarget; el.style.background = "rgba(88,101,242,0.28)"; el.style.borderColor = "rgba(88,101,242,0.55)" }}
-                  onMouseLeave={(e) => { const el = e.currentTarget; el.style.background = "rgba(88,101,242,0.18)"; el.style.borderColor = "rgba(88,101,242,0.35)" }}
                 >
                   <DiscordIcon />
                   Continue with Discord
                 </button>
 
-                {/* Divider */}
                 <div className="flex items-center gap-3">
                   <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.06)" }} />
                   <span className="text-xs" style={{ color: "rgba(255,255,255,0.22)" }}>or</span>
                   <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.06)" }} />
                 </div>
 
-                {/* Credentials form */}
                 <form onSubmit={handleCredentials} className="flex flex-col gap-3.5">
                   <Field label="Email">
                     <input
@@ -171,10 +198,8 @@ export default function SignInPage() {
                     <div className="flex justify-end mt-0.5">
                       <Link
                         href="/auth/forgot-password"
-                        className="text-[11px] transition-colors duration-150"
+                        className="text-[11px] transition-colors duration-150 hover:text-blue-300"
                         style={{ color: "rgba(96,165,250,0.6)" }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(147,197,253,0.9)" }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(96,165,250,0.6)" }}
                       >
                         Forgot password?
                       </Link>
@@ -195,13 +220,7 @@ export default function SignInPage() {
 
                 <p className="text-center text-xs" style={{ color: "rgba(255,255,255,0.28)" }}>
                   No account?{" "}
-                  <Link
-                    href="/auth/register"
-                    className="font-medium transition-colors duration-150"
-                    style={{ color: "rgba(96,165,250,0.8)" }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(147,197,253,1)" }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(96,165,250,0.8)" }}
-                  >
+                  <Link href="/auth/register" className="font-medium hover:text-blue-300 transition-colors duration-150" style={{ color: "rgba(96,165,250,0.8)" }}>
                     Register
                   </Link>
                 </p>
@@ -254,7 +273,7 @@ export default function SignInPage() {
                   <button
                     type="button"
                     onClick={() => { setStep("credentials"); setTotp(""); setError(null) }}
-                    className="text-xs text-center transition-colors duration-150"
+                    className="text-xs text-center transition-colors duration-150 hover:text-white/50"
                     style={{ color: "rgba(255,255,255,0.3)" }}
                   >
                     ← Back
