@@ -12,6 +12,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { useIsMobile } from "@/hooks/useIsMobile"
 import { AnimatedShaderBackground } from "@/components/ui/animated-shader-background"
+import { HeroPill } from "@/components/ui/hero-pill"
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 const SPRING = { stiffness: 55, damping: 22 }
@@ -154,6 +155,16 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
         style={{ y: isMobile ? 0 : textY, opacity: isMobile ? 1 : fadeOut }}
         className="relative z-10 flex flex-col items-center text-center max-w-6xl mx-auto select-none"
       >
+        {/* Announcement pill */}
+        <div className="mb-6">
+          <HeroPill
+            href="/seasons"
+            announcement="🚀 New"
+            label="Introducing our new Website!"
+            className="bg-brand-muted ring-brand/40 [&_div]:bg-brand [&_div]:text-white [&_p]:text-white/70 [&_svg_path]:fill-white/50"
+          />
+        </div>
+
         {/* Season label */}
         <motion.div
           initial={{ opacity: 0 }}
