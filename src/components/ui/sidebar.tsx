@@ -79,7 +79,7 @@ export const DesktopSidebar = ({
   return (
     <motion.div
       className={cn(
-        "h-full px-3 py-4 hidden md:flex md:flex-col flex-shrink-0",
+        "h-full px-3 py-4 hidden md:flex md:flex-col shrink-0",
         className
       )}
       animate={{ width: animate ? (open ? "240px" : "64px") : "240px" }}
@@ -97,15 +97,15 @@ export const MobileSidebar = ({
   children,
   ...props
 }: React.ComponentProps<"div">) => {
-  const { open, setOpen } = useSidebar()
+  // Mobile uses its own independent open state — never tied to the desktop
+  // hover context (which would cause a fixed inset-0 overlay to block desktop clicks)
+  const [mobileOpen, setMobileOpen] = useState(false)
   return (
     <>
       <div
         className={cn(
           "h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between w-full",
-          "border-b",
-          "bg-[var(--sidebar)]",
-          "border-[var(--sidebar-border)]"
+          "border-b bg-sidebar border-sidebar-border"
         )}
         {...props}
       >
@@ -113,26 +113,26 @@ export const MobileSidebar = ({
           <Menu
             className="cursor-pointer h-5 w-5"
             style={{ color: "rgba(255,255,255,0.55)" }}
-            onClick={() => setOpen(!open)}
+            onClick={() => setMobileOpen(true)}
           />
         </div>
         <AnimatePresence>
-          {open && (
+          {mobileOpen && (
             <motion.div
               initial={{ x: "-100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "-100%", opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className={cn(
-                "fixed h-full w-full inset-0 p-6 z-[100] flex flex-col justify-between",
-                "bg-[var(--sidebar)]",
+                "fixed h-full w-full inset-0 p-6 z-100 flex flex-col justify-between",
+                "bg-sidebar",
                 className
               )}
             >
               <div
                 className="absolute right-6 top-6 z-50 cursor-pointer"
                 style={{ color: "rgba(255,255,255,0.55)" }}
-                onClick={() => setOpen(!open)}
+                onClick={() => setMobileOpen(false)}
               >
                 <X className="h-5 w-5" />
               </div>
@@ -182,7 +182,7 @@ export const SidebarLink = ({
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-sm font-medium whitespace-pre inline-block !p-0 !m-0 transition-none"
+        className="text-sm font-medium whitespace-pre inline-block p-0! m-0! transition-none"
       >
         {link.label}
       </motion.span>
