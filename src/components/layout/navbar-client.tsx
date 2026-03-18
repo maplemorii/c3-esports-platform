@@ -6,10 +6,71 @@ import Link from "next/link"
 import Image from "next/image"
 import type { Session } from "next-auth"
 import { UserMenu } from "./user-menu"
+import MegaMenu from "@/components/ui/mega-menu"
+import type { MegaMenuItem } from "@/components/ui/mega-menu"
+import {
+  Trophy,
+  CalendarDays,
+  BarChart2,
+  BookOpen,
+  Swords,
+  Users,
+  UserCircle,
+  PlusCircle,
+  HelpCircle,
+} from "lucide-react"
 
-const NAV_LINKS = [
-  { href: "/seasons", label: "Seasons" },
-  { href: "/teams",   label: "Teams"   },
+const MEGA_NAV_ITEMS: MegaMenuItem[] = [
+  {
+    id: 1,
+    label: "League",
+    subMenus: [
+      {
+        title: "Season",
+        items: [
+          { label: "Seasons",   description: "Browse all seasons and divisions", icon: Trophy,      href: "/seasons"  },
+          { label: "Matches",   description: "Live and completed match results",  icon: Swords,      href: "/matches"  },
+          { label: "Standings", description: "Rankings, records, and points",     icon: BarChart2,   href: "/seasons"  },
+        ],
+      },
+      {
+        title: "Info",
+        items: [
+          { label: "Schedule",  description: "Upcoming match schedule",           icon: CalendarDays, href: "/schedule" },
+          { label: "Rules",     description: "Official competition rulebook",      icon: BookOpen,     href: "/rules"    },
+        ],
+      },
+    ],
+  },
+  {
+    id: 2,
+    label: "Teams",
+    subMenus: [
+      {
+        title: "Directory",
+        items: [
+          { label: "All Teams", description: "Browse competing organizations",    icon: Users,      href: "/teams"         },
+          { label: "Players",   description: "Player profiles and rosters",       icon: UserCircle, href: "/teams"         },
+        ],
+      },
+      {
+        title: "Join",
+        items: [
+          { label: "Register",  description: "Enter your team in Season 4",       icon: PlusCircle, href: "/auth/register"  },
+          { label: "Support",   description: "Get help from our staff",            icon: HelpCircle, href: "/support"        },
+        ],
+      },
+    ],
+  },
+  { id: 3, label: "Docs", link: "https://docs.c3esports.com" },
+]
+
+/* Flat links used in mobile menu */
+const MOBILE_NAV_LINKS = [
+  { href: "/seasons",        label: "Seasons"  },
+  { href: "/matches",        label: "Matches"  },
+  { href: "/teams",          label: "Teams"    },
+  { href: "/rules",          label: "Rules"    },
   { href: "https://docs.c3esports.com", label: "Docs" },
 ]
 
@@ -89,27 +150,8 @@ export function NavbarClient({ session }: NavbarClientProps) {
           </Link>
 
           {/* ── DESKTOP NAV ── */}
-          <nav className="hidden md:flex ml-10 items-center gap-1">
-            {NAV_LINKS.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="group relative px-3 py-1.5 font-sans text-sm font-medium transition-colors duration-200"
-                style={{ color: "rgba(255,255,255,0.45)" }}
-              >
-                <motion.span
-                  className="relative z-10 group-hover:text-white transition-colors duration-200"
-                >
-                  {label}
-                </motion.span>
-                {/* Underline reveal on hover */}
-                <span
-                  className="absolute bottom-0 left-3 right-3 h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left rounded-full"
-                  style={{ background: "linear-gradient(90deg, rgba(196,28,53,0.7), rgba(59,130,246,0.5))" }}
-                  aria-hidden
-                />
-              </Link>
-            ))}
+          <nav className="hidden md:flex ml-6 items-center">
+            <MegaMenu items={MEGA_NAV_ITEMS} />
           </nav>
 
           {/* ── RIGHT SIDE ── */}
@@ -219,7 +261,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
               }}
             >
               <nav className="flex flex-col p-2">
-                {NAV_LINKS.map(({ href, label }, i) => (
+                {MOBILE_NAV_LINKS.map(({ href, label }, i) => (
                   <motion.div
                     key={href}
                     initial={{ opacity: 0, x: -8 }}
@@ -249,7 +291,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
                   <motion.div
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2, delay: NAV_LINKS.length * 0.05 }}
+                    transition={{ duration: 0.2, delay: MOBILE_NAV_LINKS.length * 0.05 }}
                     className="mt-1 p-2"
                     style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
                   >
