@@ -151,7 +151,7 @@ function RolePip({
 }
 
 function DivisionPip({ tier, name }: { tier: DivisionTier; name: string }) {
-  const map: Record<DivisionTier, { cls: string; icon: React.ElementType }> = {
+  const map: Record<DivisionTier, { cls: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }> = {
     PREMIER:    { cls: "text-yellow-400",  icon: Star },
     CHALLENGERS:{ cls: "text-sky-400",     icon: Swords },
     CONTENDERS: { cls: "text-emerald-400", icon: ShieldCheck },

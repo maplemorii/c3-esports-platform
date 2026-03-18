@@ -462,7 +462,7 @@ function RegistrationStatusBlock({
 }) {
   const STATUS_MAP: Record<RegistrationStatus, {
     label: string
-    icon:  React.ElementType
+    icon:  React.ComponentType<React.SVGProps<SVGSVGElement>>
     cls:   string
     dotCls: string
   }> = {
@@ -473,7 +473,7 @@ function RegistrationStatusBlock({
     WITHDRAWN:  { label: "Withdrawn",       icon: XCircle,       cls: "border-border bg-muted/30 text-muted-foreground",        dotCls: "bg-muted-foreground/30" },
   }
 
-  const TIER_MAP: Record<DivisionTier, { icon: React.ElementType; cls: string }> = {
+  const TIER_MAP: Record<DivisionTier, { icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; cls: string }> = {
     PREMIER:    { icon: Star,        cls: "text-yellow-400" },
     CHALLENGERS:{ icon: Swords,      cls: "text-sky-400" },
     CONTENDERS: { icon: ShieldCheck, cls: "text-emerald-400" },

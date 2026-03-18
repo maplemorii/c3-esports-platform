@@ -27,7 +27,7 @@ import type { Role } from "@/lib/roles"
 interface NavItem {
   href: string
   label: string
-  icon: React.ElementType
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   adminOnly?: boolean
 }
 

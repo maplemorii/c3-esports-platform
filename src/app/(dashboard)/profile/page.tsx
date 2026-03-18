@@ -507,7 +507,7 @@ function AccountRow({
   oauthConnected = false,
   action,
 }: {
-  icon:            React.ElementType
+  icon:            React.ComponentType<React.SVGProps<SVGSVGElement>>
   platform:        string
   value?:          string | null
   hint:            string

@@ -449,7 +449,7 @@ function NavCard({
   value,
 }: {
   href:  string
-  icon:  React.ElementType
+  icon:  React.ComponentType<React.SVGProps<SVGSVGElement>>
   label: string
   value: string
 }) {

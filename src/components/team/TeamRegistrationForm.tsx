@@ -62,7 +62,7 @@ export interface ExistingRegistration {
 const TIER_META: Record<DivisionTier, {
   label: string
   desc:  string
-  icon:  React.ElementType
+  icon:  React.ComponentType<React.SVGProps<SVGSVGElement>>
   color: string
   ring:  string
   badge: string
@@ -95,7 +95,7 @@ const TIER_META: Record<DivisionTier, {
 
 const STATUS_META: Record<RegistrationStatus, {
   label:     string
-  icon:      React.ElementType
+  icon:      React.ComponentType<React.SVGProps<SVGSVGElement>>
   className: string
 }> = {
   PENDING:    { label: "Pending Review",  icon: Clock,         className: "text-yellow-400 border-yellow-400/30 bg-yellow-400/10" },

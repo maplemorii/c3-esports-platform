@@ -13,7 +13,7 @@ export type MegaMenuItem = {
     items: {
       label: string
       description: string
-      icon: React.ElementType
+      icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
       href?: string
     }[]
   }[]

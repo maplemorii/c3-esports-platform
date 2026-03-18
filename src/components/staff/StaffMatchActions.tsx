@@ -66,7 +66,7 @@ function SectionButton({
   variant = "default",
 }: {
   label: string
-  icon: React.ElementType
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   open: boolean
   onToggle: () => void
   disabled?: boolean

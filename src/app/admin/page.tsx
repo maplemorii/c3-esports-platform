@@ -114,7 +114,7 @@ function StatCard({
 }: {
   label: string
   value: number
-  icon: React.ElementType
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   href?: string
   alert?: boolean
 }) {

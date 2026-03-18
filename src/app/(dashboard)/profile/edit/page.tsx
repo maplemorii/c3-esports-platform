@@ -202,7 +202,7 @@ function LinkedAccountRow({
   description,
   children,
 }: {
-  icon:        React.ElementType
+  icon:        React.ComponentType<React.SVGProps<SVGSVGElement>>
   platform:    string
   value:       string | null
   accentClass: string

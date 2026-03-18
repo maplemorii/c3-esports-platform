@@ -170,7 +170,7 @@ function MenuItem({
   accent,
   danger,
 }: {
-  icon: React.ElementType
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   label: string
   onClick: () => void
   accent?: "blue" | "red"
