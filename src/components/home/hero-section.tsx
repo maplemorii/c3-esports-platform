@@ -13,6 +13,7 @@ import { ArrowRight } from "lucide-react"
 import { useIsMobile } from "@/hooks/useIsMobile"
 import { AnimatedShaderBackground } from "@/components/ui/animated-shader-background"
 import { HeroPill } from "@/components/ui/hero-pill"
+import { MagnetizeButton } from "@/components/ui/magnetize-button"
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 const SPRING = { stiffness: 55, damping: 22 }
@@ -266,19 +267,13 @@ export function HeroSection({ isSignedIn }: HeroSectionProps) {
           transition={{ duration: 0.85, delay: 0.92, ease: EASE }}
           className="mt-10 flex flex-wrap items-center justify-center gap-3"
         >
-          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-            <Link
-              href={isSignedIn ? "/dashboard" : "/auth/register"}
-              className="group inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 active:scale-95"
-              style={{
-                background: "linear-gradient(135deg, rgba(196,28,53,0.95), rgba(59,130,246,0.9))",
-                boxShadow: "0 0 32px rgba(196,28,53,0.25)",
-              }}
-            >
-              {isSignedIn ? "Go to Dashboard" : "Register Your Team"}
-              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-            </Link>
-          </motion.div>
+          <MagnetizeButton
+            href={isSignedIn ? "/dashboard" : "/auth/register"}
+            particleCount={14}
+          >
+            {isSignedIn ? "Go to Dashboard" : "Register Your Team"}
+            <ArrowRight className="h-4 w-4" />
+          </MagnetizeButton>
 
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
             <Link
