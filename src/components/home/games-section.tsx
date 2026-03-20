@@ -1,252 +1,224 @@
 "use client"
 
-import { useRef } from "react"
-import { motion, useMotionValue, useTransform } from "framer-motion"
-import { useIsMobile } from "@/hooks/useIsMobile"
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import Image from "next/image"
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
 const GAMES = [
   {
-    abbr: "RL",
+    id: "rl",
     name: "Rocket League",
     format: "3v3",
-    genre: "Vehicular Soccer",
-    status: "Active Season",
-    statusLive: true,
-    footer: "32+ teams competing",
     description:
-      "Our founding title. Compete in structured 3v3 series with automated replay parsing and real-time standings.",
-    accentHex: "59,130,246",
-    topBorder:
-      "linear-gradient(90deg, rgba(59,130,246,0.8) 0%, rgba(59,130,246,0.2) 60%, transparent 100%)",
+      "High-octane car soccer with aerial mechanics and split-second team plays. The fastest game in the league.",
+    accent: "80,130,200",
+    image: "/games/rl.svg",
   },
   {
-    abbr: "VAL",
+    id: "val",
     name: "Valorant",
     format: "5v5",
-    genre: "Tactical Shooter",
-    status: "Active Season",
-    statusLive: true,
-    footer: "24+ teams competing",
     description:
-      "Carolina's fastest-growing collegiate title. Structured seasons with ranked divisions and playoff brackets.",
-    accentHex: "196,28,53",
-    topBorder:
-      "linear-gradient(90deg, rgba(196,28,53,0.8) 0%, rgba(196,28,53,0.2) 60%, transparent 100%)",
+      "Tactical shooter combining precise gunplay with agent abilities. Strategy meets reflexes.",
+    accent: "180,60,60",
+    image: "/games/val.svg",
   },
   {
-    abbr: "MR",
-    name: "Marvel Rivals",
-    format: "6v6",
-    genre: "Hero Shooter",
-    status: "Launching S5",
-    statusLive: false,
-    footer: "Registration opening soon",
-    description:
-      "Marvel's breakout hero shooter hits collegiate competition. Season 5 registration opens soon for teams across NC & SC.",
-    accentHex: "200,155,60",
-    topBorder:
-      "linear-gradient(90deg, rgba(200,155,60,0.8) 0%, rgba(200,155,60,0.2) 60%, transparent 100%)",
-  },
-  {
-    abbr: "OW2",
+    id: "ow2",
     name: "Overwatch 2",
     format: "5v5",
-    genre: "Hero Shooter",
-    status: "Coming Soon",
-    statusLive: false,
-    footer: "Join the waitlist",
     description:
-      "Hero shooter competition joins the C3 roster next season. Sign up for first-access registration.",
-    accentHex: "250,140,20",
-    topBorder:
-      "linear-gradient(90deg, rgba(250,140,20,0.8) 0%, rgba(250,140,20,0.2) 60%, transparent 100%)",
+      "Team-based hero shooter where coordination and role synergy decide every engagement.",
+    accent: "220,160,40",
+    image: "/games/ow2.svg",
   },
 ]
 
-function GameCard({
-  game,
-  index,
-}: {
-  game: (typeof GAMES)[number]
-  index: number
-}) {
-  const ref = useRef<HTMLDivElement>(null)
-  const isMobile = useIsMobile()
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-
-  const spotlightBg = useTransform(
-    [mouseX, mouseY],
-    ([x, y]: number[]) =>
-      `radial-gradient(360px circle at ${x}px ${y}px, rgba(${game.accentHex},0.07), transparent 65%)`
-  )
-
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    const rect = ref.current?.getBoundingClientRect()
-    if (!rect) return
-    mouseX.set(e.clientX - rect.left)
-    mouseY.set(e.clientY - rect.top)
-  }
-
-  return (
-    <motion.div
-      ref={ref}
-      onMouseMove={isMobile ? undefined : handleMouseMove}
-      className="group relative flex flex-col overflow-hidden rounded-2xl"
-      style={{
-        background: "rgba(255,255,255,0.022)",
-        border: "1px solid rgba(255,255,255,0.07)",
-      }}
-      initial={{ opacity: 0, y: 36 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.7, delay: index * 0.10, ease: EASE }}
-      whileHover={{
-        y: -6,
-        boxShadow: `0 20px 60px rgba(${game.accentHex},0.10)`,
-        borderColor: `rgba(${game.accentHex},0.22)`,
-        transition: { duration: 0.25, ease: "easeOut" },
-      }}
-    >
-      {/* Top border accent */}
-      <div
-        className="absolute top-0 left-0 right-0 h-px"
-        style={{ background: game.topBorder }}
-        aria-hidden
-      />
-
-      {/* Mouse spotlight */}
-      <motion.div
-        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
-        style={{ background: spotlightBg }}
-        aria-hidden
-      />
-
-      {/* Abbr watermark */}
-      <div
-        className="absolute top-3 right-5 font-display font-bold leading-none pointer-events-none select-none"
-        style={{
-          fontSize: "clamp(3rem, 5vw, 5.5rem)",
-          color: `rgba(${game.accentHex},0.05)`,
-        }}
-        aria-hidden
-      >
-        {game.abbr}
-      </div>
-
-      <div className="relative flex flex-col gap-4 p-7 pt-9 flex-1">
-        {/* Status badge */}
-        <div className="flex items-center gap-2">
-          {game.statusLive && (
-            <motion.div
-              className="h-1.5 w-1.5 rounded-full shrink-0"
-              style={{ background: `rgba(${game.accentHex},0.9)` }}
-              animate={{ opacity: [1, 0.3, 1] }}
-              transition={{ duration: 1.6, repeat: Infinity }}
-            />
-          )}
-          <span
-            className="font-sans text-[10px] font-semibold uppercase tracking-widest"
-            style={{ color: `rgba(${game.accentHex},0.75)` }}
-          >
-            {game.status}
-          </span>
-        </div>
-
-        {/* Game name + format */}
-        <div>
-          <h3
-            className="font-display font-bold uppercase tracking-wide text-white leading-none"
-            style={{ fontSize: "clamp(1.35rem, 2.2vw, 1.7rem)" }}
-          >
-            {game.name}
-          </h3>
-          <div className="flex items-center gap-2 mt-1.5">
-            <span
-              className="font-sans text-[10px] font-medium uppercase tracking-widest"
-              style={{ color: "rgba(255,255,255,0.28)" }}
-            >
-              {game.format}
-            </span>
-            <span style={{ color: "rgba(255,255,255,0.12)" }}>·</span>
-            <span
-              className="font-sans text-[10px] font-medium uppercase tracking-widest"
-              style={{ color: "rgba(255,255,255,0.28)" }}
-            >
-              {game.genre}
-            </span>
-          </div>
-        </div>
-
-        {/* Description */}
-        <p
-          className="font-sans text-sm leading-relaxed flex-1"
-          style={{ color: "rgba(255,255,255,0.40)" }}
-        >
-          {game.description}
-        </p>
-
-        {/* Footer detail */}
-        <div className="flex items-center gap-2">
-          <div
-            className="h-1 w-1 rounded-full shrink-0"
-            style={{ background: `rgba(${game.accentHex},0.55)` }}
-          />
-          <span
-            className="font-sans text-[11px] font-semibold tracking-wide"
-            style={{ color: "rgba(255,255,255,0.22)" }}
-          >
-            {game.footer}
-          </span>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
 export function GamesSection() {
+  const [activeIndex, setActiveIndex] = useState(0)
+
   return (
-    <section className="px-4 py-24">
+    <section className="px-4 md:px-6 lg:px-8 py-24">
       <div className="mx-auto max-w-7xl">
-        {/* Header */}
+        {/* Header — left aligned */}
         <motion.div
-          className="mb-16"
-          initial={{ opacity: 0, y: 24 }}
+          className="mb-12"
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.7, ease: EASE }}
         >
           <p
-            className="font-sans text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
-            style={{ color: "rgba(255,255,255,0.25)" }}
+            className="font-sans text-[11px] font-semibold uppercase tracking-[0.2em] mb-3"
+            style={{ color: "rgba(255,255,255,0.35)" }}
           >
-            Supported Titles
+            Game Titles
           </p>
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <h2
-              className="font-display font-bold uppercase tracking-tight leading-none"
-              style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", color: "white" }}
-            >
-              Your game.
-              <br />
-              <span style={{ color: "rgba(255,255,255,0.25)" }}>Our league.</span>
-            </h2>
-            <p
-              className="font-sans text-sm max-w-xs sm:text-right leading-relaxed"
-              style={{ color: "rgba(255,255,255,0.32)" }}
-            >
-              From fast cars to firefights — C3 runs structured collegiate competition
-              across the titles that matter most in the Carolinas.
-            </p>
-          </div>
+          <h2
+            className="font-display font-bold tracking-tight leading-[0.95]"
+            style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}
+          >
+            <span className="text-white">Three games.</span>{" "}
+            <span style={{ color: "rgba(255,255,255,0.25)" }}>One league.</span>
+          </h2>
         </motion.div>
 
-        {/* Game cards */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Desktop: Accordion strips */}
+        <div className="hidden lg:flex gap-3 h-[420px]">
+          {GAMES.map((game, i) => {
+            const isActive = activeIndex === i
+
+            return (
+              <motion.div
+                key={game.id}
+                className="relative overflow-hidden rounded-2xl cursor-pointer group"
+                style={{
+                  border: `1px solid rgba(${game.accent},${isActive ? 0.3 : 0.1})`,
+                }}
+                animate={{ flex: isActive ? 3 : 1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 180,
+                  damping: 26,
+                }}
+                onMouseEnter={() => setActiveIndex(i)}
+              >
+                {/* Background image */}
+                <Image
+                  src={game.image}
+                  alt=""
+                  fill
+                  className="object-cover transition-all duration-700"
+                  style={{
+                    opacity: isActive ? 0.6 : 0.25,
+                    scale: isActive ? "1.05" : "1",
+                  }}
+                  aria-hidden
+                />
+
+                {/* Gradient overlay for text legibility */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: `linear-gradient(0deg, oklch(0.09 0.015 260) 10%, rgba(${game.accent},0.08) 50%, transparent 100%)`,
+                  }}
+                />
+
+                {/* Radial glow on active */}
+                <div
+                  className="absolute inset-0 transition-opacity duration-500"
+                  style={{
+                    opacity: isActive ? 1 : 0,
+                    background: `radial-gradient(circle at 50% 40%, rgba(${game.accent},0.15) 0%, transparent 65%)`,
+                  }}
+                  aria-hidden
+                />
+
+                {/* Content */}
+                <div className="relative h-full flex flex-col justify-end p-8">
+                  {/* Format badge */}
+                  <span
+                    className="inline-block w-fit text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded mb-3"
+                    style={{
+                      fontFamily: "var(--font-data)",
+                      color: `rgba(${game.accent},0.85)`,
+                      background: `rgba(${game.accent},0.12)`,
+                      border: `1px solid rgba(${game.accent},0.22)`,
+                    }}
+                  >
+                    {game.format}
+                  </span>
+
+                  <h3 className="font-display text-2xl font-bold text-white tracking-tight">
+                    {game.name}
+                  </h3>
+
+                  <AnimatePresence>
+                    {isActive && (
+                      <motion.p
+                        className="font-sans text-sm leading-relaxed mt-3 max-w-[35ch]"
+                        style={{ color: "rgba(255,255,255,0.50)" }}
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3, ease: EASE }}
+                      >
+                        {game.description}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Top accent line */}
+                <div
+                  className="absolute top-0 left-0 right-0 h-[2px] transition-all duration-400"
+                  style={{
+                    background: `linear-gradient(90deg, rgba(${game.accent},${isActive ? 0.6 : 0.15}), transparent)`,
+                  }}
+                  aria-hidden
+                />
+              </motion.div>
+            )
+          })}
+        </div>
+
+        {/* Mobile: Stacked cards */}
+        <div className="flex flex-col gap-4 lg:hidden">
           {GAMES.map((game, i) => (
-            <GameCard key={game.abbr} game={game} index={i} />
+            <motion.div
+              key={game.id}
+              className="relative overflow-hidden rounded-2xl p-6"
+              style={{
+                border: `1px solid rgba(${game.accent},0.15)`,
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: i * 0.1, ease: EASE }}
+            >
+              {/* Background image */}
+              <Image
+                src={game.image}
+                alt=""
+                fill
+                className="object-cover opacity-30"
+                aria-hidden
+              />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: `linear-gradient(145deg, rgba(${game.accent},0.08) 0%, oklch(0.09 0.015 260) 80%)`,
+                }}
+              />
+              <div
+                className="absolute top-0 left-0 right-0 h-[2px]"
+                style={{
+                  background: `linear-gradient(90deg, rgba(${game.accent},0.5), transparent)`,
+                }}
+                aria-hidden
+              />
+              <span
+                className="relative inline-block text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded mb-3"
+                style={{
+                  fontFamily: "var(--font-data)",
+                  color: `rgba(${game.accent},0.85)`,
+                  background: `rgba(${game.accent},0.10)`,
+                }}
+              >
+                {game.format}
+              </span>
+              <h3 className="relative font-display text-xl font-bold text-white tracking-tight mb-2">
+                {game.name}
+              </h3>
+              <p
+                className="relative font-sans text-sm leading-relaxed"
+                style={{ color: "rgba(255,255,255,0.50)" }}
+              >
+                {game.description}
+              </p>
+            </motion.div>
           ))}
         </div>
       </div>

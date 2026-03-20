@@ -28,16 +28,16 @@ const MEGA_NAV_ITEMS: MegaMenuItem[] = [
       {
         title: "Season",
         items: [
-          { label: "Seasons",   description: "Browse all seasons and divisions", icon: Trophy,      href: "/seasons"  },
-          { label: "Matches",   description: "Live and completed match results",  icon: Swords,      href: "/matches"  },
-          { label: "Standings", description: "Rankings, records, and points",     icon: BarChart2,   href: "/seasons"  },
+          { label: "Seasons", description: "Browse all seasons and divisions", icon: Trophy, href: "/seasons" },
+          { label: "Matches", description: "Live and completed match results", icon: Swords, href: "/matches" },
+          { label: "Standings", description: "Rankings, records, and points", icon: BarChart2, href: "/seasons" },
         ],
       },
       {
         title: "Info",
         items: [
-          { label: "Schedule",  description: "Upcoming match schedule",           icon: CalendarDays, href: "/schedule" },
-          { label: "Rules",     description: "Official competition rulebook",      icon: BookOpen,     href: "/rules"    },
+          { label: "Schedule", description: "Upcoming match schedule", icon: CalendarDays, href: "/schedule" },
+          { label: "Rules", description: "Official competition rulebook", icon: BookOpen, href: "/rules" },
         ],
       },
     ],
@@ -49,15 +49,15 @@ const MEGA_NAV_ITEMS: MegaMenuItem[] = [
       {
         title: "Directory",
         items: [
-          { label: "All Teams", description: "Browse competing organizations",    icon: Users,      href: "/teams"         },
-          { label: "Players",   description: "Player profiles and rosters",       icon: UserCircle, href: "/players"       },
+          { label: "All Teams", description: "Browse competing organizations", icon: Users, href: "/teams" },
+          { label: "Players", description: "Player profiles and rosters", icon: UserCircle, href: "/players" },
         ],
       },
       {
         title: "Join",
         items: [
-          { label: "Register",  description: "Enter your team in Season 4",       icon: PlusCircle, href: "/auth/register"  },
-          { label: "Support",   description: "Get help from our staff",            icon: HelpCircle, href: "/support"        },
+          { label: "Register", description: "Enter your team in Season 4", icon: PlusCircle, href: "/auth/register" },
+          { label: "Support", description: "Get help from our staff", icon: HelpCircle, href: "/support" },
         ],
       },
     ],
@@ -65,14 +65,13 @@ const MEGA_NAV_ITEMS: MegaMenuItem[] = [
   { id: 3, label: "Docs", link: "https://docs.c3esports.com" },
 ]
 
-/* Flat links used in mobile menu */
 const MOBILE_NAV_LINKS = [
-  { href: "/seasons",        label: "Seasons"  },
-  { href: "/schedule",       label: "Schedule" },
-  { href: "/matches",        label: "Matches"  },
-  { href: "/teams",          label: "Teams"    },
-  { href: "/players",        label: "Players"  },
-  { href: "/rules",          label: "Rules"    },
+  { href: "/seasons", label: "Seasons" },
+  { href: "/schedule", label: "Schedule" },
+  { href: "/matches", label: "Matches" },
+  { href: "/teams", label: "Teams" },
+  { href: "/players", label: "Players" },
+  { href: "/rules", label: "Rules" },
   { href: "https://docs.c3esports.com", label: "Docs" },
 ]
 
@@ -90,9 +89,10 @@ export function NavbarClient({ session }: NavbarClientProps) {
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  /* Close mobile menu on route change / resize */
   useEffect(() => {
-    const onResize = () => { if (window.innerWidth >= 768) setMobileOpen(false) }
+    const onResize = () => {
+      if (window.innerWidth >= 768) setMobileOpen(false)
+    }
     window.addEventListener("resize", onResize)
     return () => window.removeEventListener("resize", onResize)
   }, [])
@@ -102,12 +102,14 @@ export function NavbarClient({ session }: NavbarClientProps) {
       <motion.header
         className="fixed top-0 left-0 right-0 z-50 w-full"
         animate={{
-          backgroundColor: scrolled ? "rgba(5,8,20,0.92)" : "rgba(5,8,20,0)",
+          backgroundColor: scrolled
+            ? "rgba(8,10,22,0.88)"
+            : "rgba(8,10,22,0)",
           borderBottomColor: scrolled
-            ? "rgba(255,255,255,0.07)"
+            ? "rgba(255,255,255,0.05)"
             : "rgba(255,255,255,0)",
         }}
-        transition={{ duration: 0.28, ease: "easeInOut" }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
         style={{
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
@@ -115,57 +117,56 @@ export function NavbarClient({ session }: NavbarClientProps) {
           borderBottomStyle: "solid",
         }}
       >
-        {/* C3 red→blue glow line at very top — only when scrolled */}
+        {/* Accent line on scroll */}
         <motion.div
           className="absolute top-0 left-0 right-0 h-px pointer-events-none"
           animate={{ opacity: scrolled ? 1 : 0 }}
           transition={{ duration: 0.3 }}
           style={{
             background:
-              "linear-gradient(90deg, transparent 0%, rgba(196,28,53,0.6) 30%, rgba(59,130,246,0.5) 70%, transparent 100%)",
+              "linear-gradient(90deg, transparent 0%, rgba(180,60,60,0.4) 30%, rgba(80,130,200,0.35) 70%, transparent 100%)",
           }}
           aria-hidden
         />
 
-        <div className="mx-auto flex h-16 max-w-7xl items-center px-5">
-
-          {/* ── LOGO ── */}
+        <div className="mx-auto flex h-16 max-w-7xl items-center px-6 lg:px-8">
+          {/* Logo */}
           <Link
             href="/"
             className="shrink-0 flex items-center"
-            aria-label="C3 Esports — home"
+            aria-label="C3 Esports home"
           >
             <motion.div
-              whileHover={{ scale: 1.04 }}
+              whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              transition={{ duration: 0.18 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
             >
               <Image
                 src="/logo.png"
                 alt="C3 Esports"
                 width={200}
                 height={48}
-                style={{ height: "30px", width: "auto" }}
+                style={{ height: "28px", width: "auto" }}
                 priority
               />
             </motion.div>
           </Link>
 
-          {/* ── DESKTOP NAV ── */}
+          {/* Desktop nav */}
           <nav className="hidden md:flex ml-6 items-center">
             <MegaMenu items={MEGA_NAV_ITEMS} />
           </nav>
 
-          {/* ── RIGHT SIDE ── */}
+          {/* Right side */}
           <div className="ml-auto flex items-center gap-3">
-            {/* Season pill — desktop, fades as you scroll */}
+            {/* Season pill */}
             <motion.div
-              animate={{ opacity: scrolled ? 0 : 1, x: scrolled ? 8 : 0 }}
+              animate={{ opacity: scrolled ? 0 : 1, x: scrolled ? 6 : 0 }}
               transition={{ duration: 0.25 }}
               className="hidden lg:flex items-center gap-2 rounded-full px-3.5 py-1.5 pointer-events-none"
               style={{
-                border: "1px solid rgba(255,255,255,0.09)",
-                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.06)",
+                background: "rgba(255,255,255,0.025)",
               }}
               aria-hidden={scrolled}
             >
@@ -176,7 +177,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
               />
               <span
                 className="font-sans text-[11px] font-medium tracking-wide"
-                style={{ color: "rgba(255,255,255,0.38)" }}
+                style={{ color: "rgba(255,255,255,0.32)" }}
               >
                 Season 4 Open
               </span>
@@ -186,29 +187,32 @@ export function NavbarClient({ session }: NavbarClientProps) {
             {session ? (
               <UserMenu session={session} />
             ) : (
-              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+              <motion.div
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
                 <Link
                   href="/auth/signin"
                   className="inline-flex items-center rounded-full font-sans text-sm font-medium px-5 py-2 transition-all duration-200"
                   style={{
-                    border: "1px solid rgba(255,255,255,0.13)",
-                    background: "rgba(255,255,255,0.05)",
-                    color: "rgba(255,255,255,0.65)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "rgba(255,255,255,0.03)",
+                    color: "rgba(255,255,255,0.55)",
                   }}
                   onMouseEnter={(e) => {
-                    const el = e.currentTarget as HTMLElement
-                    el.style.background = "rgba(255,255,255,0.10)"
-                    el.style.color = "rgba(255,255,255,0.90)"
-                    el.style.borderColor = "rgba(255,255,255,0.22)"
+                    const el = e.currentTarget
+                    el.style.background = "rgba(255,255,255,0.07)"
+                    el.style.color = "rgba(255,255,255,0.85)"
+                    el.style.borderColor = "rgba(255,255,255,0.16)"
                   }}
                   onMouseLeave={(e) => {
-                    const el = e.currentTarget as HTMLElement
-                    el.style.background = "rgba(255,255,255,0.05)"
-                    el.style.color = "rgba(255,255,255,0.65)"
-                    el.style.borderColor = "rgba(255,255,255,0.13)"
+                    const el = e.currentTarget
+                    el.style.background = "rgba(255,255,255,0.03)"
+                    el.style.color = "rgba(255,255,255,0.55)"
+                    el.style.borderColor = "rgba(255,255,255,0.08)"
                   }}
                 >
-                  Sign In
+                  Sign in
                 </Link>
               </motion.div>
             )}
@@ -216,35 +220,63 @@ export function NavbarClient({ session }: NavbarClientProps) {
             {/* Mobile hamburger */}
             <button
               className="ml-1 flex md:hidden flex-col justify-center items-center gap-1.5 w-8 h-8 rounded-lg transition-colors"
-              style={{ background: mobileOpen ? "rgba(255,255,255,0.08)" : "transparent" }}
+              style={{
+                background: mobileOpen
+                  ? "rgba(255,255,255,0.06)"
+                  : "transparent",
+              }}
               onClick={() => setMobileOpen((v) => !v)}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
             >
               <motion.span
-                animate={mobileOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }}
+                animate={
+                  mobileOpen
+                    ? { rotate: 45, y: 5 }
+                    : { rotate: 0, y: 0 }
+                }
                 transition={{ duration: 0.22 }}
-                className="block w-4.5 h-px rounded-full"
-                style={{ background: "rgba(255,255,255,0.65)", width: "18px", height: "1.5px" }}
+                className="block rounded-full"
+                style={{
+                  background: "rgba(255,255,255,0.55)",
+                  width: "18px",
+                  height: "1.5px",
+                }}
               />
               <motion.span
-                animate={mobileOpen ? { opacity: 0, x: -4 } : { opacity: 1, x: 0 }}
+                animate={
+                  mobileOpen
+                    ? { opacity: 0, x: -4 }
+                    : { opacity: 1, x: 0 }
+                }
                 transition={{ duration: 0.18 }}
                 className="block rounded-full"
-                style={{ background: "rgba(255,255,255,0.65)", width: "18px", height: "1.5px" }}
+                style={{
+                  background: "rgba(255,255,255,0.55)",
+                  width: "18px",
+                  height: "1.5px",
+                }}
               />
               <motion.span
-                animate={mobileOpen ? { rotate: -45, y: -5 } : { rotate: 0, y: 0 }}
+                animate={
+                  mobileOpen
+                    ? { rotate: -45, y: -5 }
+                    : { rotate: 0, y: 0 }
+                }
                 transition={{ duration: 0.22 }}
                 className="block rounded-full"
-                style={{ background: "rgba(255,255,255,0.65)", width: "18px", height: "1.5px" }}
+                style={{
+                  background: "rgba(255,255,255,0.55)",
+                  width: "18px",
+                  height: "1.5px",
+                }}
               />
             </button>
           </div>
         </div>
       </motion.header>
 
-      {/* ── MOBILE MENU ── */}
+      {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -257,8 +289,8 @@ export function NavbarClient({ session }: NavbarClientProps) {
             <div
               className="mx-3 mt-1 rounded-2xl overflow-hidden"
               style={{
-                background: "rgba(5,8,20,0.97)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "rgba(8,10,22,0.96)",
+                border: "1px solid rgba(255,255,255,0.06)",
                 backdropFilter: "blur(24px)",
               }}
             >
@@ -266,22 +298,22 @@ export function NavbarClient({ session }: NavbarClientProps) {
                 {MOBILE_NAV_LINKS.map(({ href, label }, i) => (
                   <motion.div
                     key={href}
-                    initial={{ opacity: 0, x: -8 }}
+                    initial={{ opacity: 0, x: -6 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2, delay: i * 0.05 }}
+                    transition={{ duration: 0.2, delay: i * 0.04 }}
                   >
                     <Link
                       href={href}
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center px-4 py-3.5 rounded-xl font-sans text-sm font-medium transition-colors duration-150"
-                      style={{ color: "rgba(255,255,255,0.55)" }}
+                      style={{ color: "rgba(255,255,255,0.50)" }}
                       onMouseEnter={(e) => {
-                        ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.90)"
-                        ;(e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"
+                        ;(e.currentTarget).style.color = "rgba(255,255,255,0.85)"
+                        ;(e.currentTarget).style.background = "rgba(255,255,255,0.04)"
                       }}
                       onMouseLeave={(e) => {
-                        ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.55)"
-                        ;(e.currentTarget as HTMLElement).style.background = "transparent"
+                        ;(e.currentTarget).style.color = "rgba(255,255,255,0.50)"
+                        ;(e.currentTarget).style.background = "transparent"
                       }}
                     >
                       {label}
@@ -291,23 +323,28 @@ export function NavbarClient({ session }: NavbarClientProps) {
 
                 {!session && (
                   <motion.div
-                    initial={{ opacity: 0, x: -8 }}
+                    initial={{ opacity: 0, x: -6 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2, delay: MOBILE_NAV_LINKS.length * 0.05 }}
+                    transition={{
+                      duration: 0.2,
+                      delay: MOBILE_NAV_LINKS.length * 0.04,
+                    }}
                     className="mt-1 p-2"
-                    style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+                    style={{
+                      borderTop: "1px solid rgba(255,255,255,0.04)",
+                    }}
                   >
                     <Link
                       href="/auth/signin"
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center justify-center w-full rounded-xl font-sans text-sm font-medium px-4 py-3 transition-all duration-150"
                       style={{
-                        background: "rgba(255,255,255,0.07)",
-                        color: "rgba(255,255,255,0.70)",
-                        border: "1px solid rgba(255,255,255,0.10)",
+                        background: "rgba(255,255,255,0.05)",
+                        color: "rgba(255,255,255,0.60)",
+                        border: "1px solid rgba(255,255,255,0.07)",
                       }}
                     >
-                      Sign In
+                      Sign in
                     </Link>
                   </motion.div>
                 )}
@@ -317,7 +354,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
         )}
       </AnimatePresence>
 
-      {/* Spacer so content doesn't sit under the fixed navbar */}
+      {/* Spacer */}
       <div className="h-16" aria-hidden />
     </>
   )

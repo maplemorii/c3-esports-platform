@@ -29,6 +29,8 @@ import {
   RegistrationStatus,
   CheckInStatus,
   GameResultSource,
+  BoardItemType,
+  BoardItemStatus,
 } from "@prisma/client"
 import bcrypt from "bcryptjs"
 
@@ -433,6 +435,133 @@ async function main() {
     create: { divisionId: challDivId, teamId: teamBeta.id, opponentId: teamAlpha.id, wins: 0, losses: 1, gamesWon: 1, gamesLost: 2, points: 0 },
   })
   console.log(`  ✓ H2H records: Alpha 1-0 vs Beta · Beta 0-1 vs Alpha`)
+
+  // ---------------------------------------------------------------------------
+  // Roadmap board items
+  // ---------------------------------------------------------------------------
+  const boardItems = [
+    // ── COMPLETED ──
+    {
+      title: "Match check-in system",
+      description: "Automated check-in windows with grace periods and forfeit handling for weekly matches.",
+      type: BoardItemType.FEATURE,
+      status: BoardItemStatus.COMPLETED,
+      priority: 10,
+    },
+    {
+      title: "Replay file parsing",
+      description: "Upload Rocket League replays and automatically extract scores, stats, and MVPs via ballchasing.com integration.",
+      type: BoardItemType.FEATURE,
+      status: BoardItemStatus.COMPLETED,
+      priority: 9,
+    },
+    {
+      title: "Role-based access control",
+      description: "Hierarchical role system (Player, Team Manager, Staff, Admin, Owner, Developer) with route-level protection.",
+      type: BoardItemType.FEATURE,
+      status: BoardItemStatus.COMPLETED,
+      priority: 8,
+    },
+    {
+      title: "Real-time standings engine",
+      description: "Automatic W/L record, point totals, goal differential, and head-to-head tiebreaker calculations after each match.",
+      type: BoardItemType.FEATURE,
+      status: BoardItemStatus.COMPLETED,
+      priority: 7,
+    },
+    {
+      title: "Discord OAuth integration",
+      description: "Sign in with Discord and link accounts for team communication and identity verification.",
+      type: BoardItemType.FEATURE,
+      status: BoardItemStatus.COMPLETED,
+      priority: 6,
+    },
+
+    // ── IN DEVELOPMENT ──
+    {
+      title: "Multi-game support (Valorant & Overwatch 2)",
+      description: "Extend the platform beyond Rocket League to support Valorant 5v5 and Overwatch 2 5v5 divisions with game-specific match formats.",
+      type: BoardItemType.FEATURE,
+      status: BoardItemStatus.IN_DEVELOPMENT,
+      priority: 10,
+    },
+    {
+      title: "Team roster management overhaul",
+      description: "Improved roster UI with drag-and-drop lineup ordering, substitute management, and transfer windows between seasons.",
+      type: BoardItemType.IMPROVEMENT,
+      status: BoardItemStatus.IN_DEVELOPMENT,
+      priority: 9,
+    },
+    {
+      title: "Match dispute resolution flow",
+      description: "Structured dispute process: players flag issues, upload evidence, staff review and resolve with an audit trail.",
+      type: BoardItemType.FEATURE,
+      status: BoardItemStatus.IN_DEVELOPMENT,
+      priority: 8,
+    },
+    {
+      title: "Fix match check-in timezone edge cases",
+      description: "Check-in windows sometimes show incorrect times for users in non-Eastern timezones. Standardize all windows to UTC with client-side conversion.",
+      type: BoardItemType.BUG,
+      status: BoardItemStatus.IN_DEVELOPMENT,
+      priority: 7,
+    },
+
+    // ── PLANNED ──
+    {
+      title: "Swiss and GSL bracket formats",
+      description: "Add Swiss-system and GSL group stage formats for playoff and tournament phases beyond round-robin regular seasons.",
+      type: BoardItemType.FEATURE,
+      status: BoardItemStatus.PLANNED,
+      priority: 10,
+    },
+    {
+      title: "Player stats dashboard",
+      description: "Individual player profiles with career stats, match history, per-game performance graphs, and season-over-season comparisons.",
+      type: BoardItemType.FEATURE,
+      status: BoardItemStatus.PLANNED,
+      priority: 9,
+    },
+    {
+      title: "Live match day experience",
+      description: "Real-time match tracker with score updates, check-in status, and live standings recalculation visible to spectators.",
+      type: BoardItemType.FEATURE,
+      status: BoardItemStatus.PLANNED,
+      priority: 8,
+    },
+    {
+      title: "Email notification system",
+      description: "Automated emails for match reminders (24h and 1h before), roster changes, season registration deadlines, and dispute updates via Resend.",
+      type: BoardItemType.FEATURE,
+      status: BoardItemStatus.PLANNED,
+      priority: 7,
+    },
+    {
+      title: "Mobile-optimized match submission",
+      description: "Streamlined mobile flow for post-match result reporting — quick score entry, photo upload for verification, one-tap confirmation.",
+      type: BoardItemType.IMPROVEMENT,
+      status: BoardItemStatus.PLANNED,
+      priority: 6,
+    },
+    {
+      title: "Public API v2 with webhook support",
+      description: "Expanded public API for community tools, bots, and overlays. Add webhook subscriptions for match results and standings changes.",
+      type: BoardItemType.FEATURE,
+      status: BoardItemStatus.PLANNED,
+      priority: 5,
+    },
+    {
+      title: "Improve standings page load performance",
+      description: "Standings queries are slow with large divisions. Add Redis caching layer and materialized standings snapshots.",
+      type: BoardItemType.IMPROVEMENT,
+      status: BoardItemStatus.PLANNED,
+      priority: 4,
+    },
+  ]
+
+  await prisma.boardItem.deleteMany()
+  await prisma.boardItem.createMany({ data: boardItems })
+  console.log(`  ✓ Board items: ${boardItems.length} roadmap entries`)
 
   // ---------------------------------------------------------------------------
   // Done

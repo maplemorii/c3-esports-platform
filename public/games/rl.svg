@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="60%" r="70%">
+      <stop offset="0%" stop-color="#1a3a5c" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#0a0f1a" stop-opacity="1"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="35%">
+      <stop offset="0%" stop-color="#5082c8" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#5082c8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#g)"/>
+  <circle cx="600" cy="400" r="300" fill="url(#glow)"/>
+  <!-- Stylized car/ball icon -->
+  <circle cx="600" cy="340" r="60" fill="none" stroke="#5082c8" stroke-width="2" stroke-opacity="0.25"/>
+  <circle cx="600" cy="340" r="8" fill="#5082c8" fill-opacity="0.3"/>
+  <line x1="540" y1="420" x2="660" y2="420" stroke="#5082c8" stroke-width="2" stroke-opacity="0.15"/>
+  <rect x="530" y="410" width="140" height="30" rx="8" fill="none" stroke="#5082c8" stroke-width="1.5" stroke-opacity="0.12"/>
+  <circle cx="555" cy="440" r="12" fill="none" stroke="#5082c8" stroke-width="1.5" stroke-opacity="0.15"/>
+  <circle cx="645" cy="440" r="12" fill="none" stroke="#5082c8" stroke-width="1.5" stroke-opacity="0.15"/>
+  <text x="600" y="510" font-family="sans-serif" font-size="14" fill="#5082c8" fill-opacity="0.2" text-anchor="middle" letter-spacing="6">ROCKET LEAGUE</text>
+</svg>

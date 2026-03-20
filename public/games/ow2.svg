@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="60%" r="70%">
+      <stop offset="0%" stop-color="#2a2010" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#0a0f1a" stop-opacity="1"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="35%">
+      <stop offset="0%" stop-color="#dca028" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#dca028" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#g)"/>
+  <circle cx="600" cy="400" r="300" fill="url(#glow)"/>
+  <!-- Stylized OW2 shield icon -->
+  <path d="M600 320 L650 345 L650 395 L600 420 L550 395 L550 345 Z" fill="none" stroke="#dca028" stroke-width="1.5" stroke-opacity="0.2"/>
+  <path d="M600 340 L630 355 L630 385 L600 400 L570 385 L570 355 Z" fill="none" stroke="#dca028" stroke-width="1.5" stroke-opacity="0.12"/>
+  <circle cx="600" cy="370" r="8" fill="#dca028" fill-opacity="0.2"/>
+  <text x="600" y="480" font-family="sans-serif" font-size="14" fill="#dca028" fill-opacity="0.2" text-anchor="middle" letter-spacing="6">OVERWATCH 2</text>
+</svg>

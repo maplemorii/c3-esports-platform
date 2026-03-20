@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Inter, Rajdhani, Playfair_Display } from "next/font/google"
+import { Outfit, Space_Grotesk, Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
@@ -7,24 +7,29 @@ import { Providers } from "@/components/providers"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 
-/* Display / headings — condensed bold, esports feel */
-const rajdhani = Rajdhani({
+/* Body — clean, modern sans */
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+})
+
+/* Mono — data, stats, codes */
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+})
+
+/* Display / headings — geometric, bold, distinctive */
+const outfit = Outfit({
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-outfit",
+  subsets: ["latin"],
+})
+
+/* Data accent — for stats displays */
+const spacegrotesk = Space_Grotesk({
   weight: ["400", "500", "600", "700"],
-  variable: "--font-rajdhani",
-  subsets: ["latin"],
-})
-
-/* Body text — clean, readable at small sizes */
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-})
-
-/* Editorial accent — italic serif for hero typography contrast */
-const playfair = Playfair_Display({
-  weight: ["400"],
-  style: ["italic"],
-  variable: "--font-playfair",
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
 })
 
@@ -65,7 +70,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${rajdhani.variable} ${inter.variable} ${playfair.variable} font-sans antialiased min-h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} ${spacegrotesk.variable} font-sans antialiased min-h-screen flex flex-col`}
       >
         <Providers session={session}>
           <Navbar />
